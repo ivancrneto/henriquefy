@@ -1,0 +1,16 @@
+{
+ "bad_django.py": [
+  {
+   "rule": "api.verb-in-uri",
+   "line": 6
+  }
+ ],
+ "bad_fastapi.py": [
+  {
+   "rule": "api.verb-in-uri",
+   "line": 6
+  }
+ ],
+ "clean.py": [],
+ "client_clean.py": []
+}

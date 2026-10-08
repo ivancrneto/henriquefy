@@ -1,4 +1,4 @@
-"""Command line entry point. Phase 0 ships `install` and `--version` only."""
+"""Command line entry point: install, check, grade."""
 
 import argparse
 import sys
@@ -6,6 +6,7 @@ from pathlib import Path
 
 from . import __version__
 from .install import install
+from .overrides import load_overrides
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -29,6 +30,22 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also install the maintainer skills henrique-ingest and henrique-watch",
     )
+    for name, help_ in (
+        ("check", "mechanical rules only; no Claude needed"),
+        ("grade", "Nota mecânica, deterministic"),
+    ):
+        q = sub.add_parser(name, help=help_)
+        q.add_argument("path", nargs="?", default=".", type=Path)
+        q.add_argument("--json", action="store_true", help="machine-readable output")
+        q.add_argument(
+            "--era", type=int, help="grade against his practice of this year (calibration)"
+        )
+        if name == "grade":
+            q.add_argument(
+                "--report",
+                action="store_true",
+                help="also write .henriquefy/report.md and grade.jsonl",
+            )
     return parser
 
 
@@ -50,8 +67,33 @@ def main(argv: list[str] | None = None) -> int:
         if args.project:
             print("note: the KB copy under .claude/skills/ is now inside this repo's git tree")
         return 0
+    if args.command in {"check", "grade"}:
+        return _check_or_grade(args)
     build_parser().print_help()
     return 2
+
+
+def _check_or_grade(args: argparse.Namespace) -> int:
+    from .check import check, describe
+    from .grade import grade, load_principles
+    from .grade.report import render, write_report
+
+    if not args.path.exists():
+        print(f"no such path: {args.path}", file=sys.stderr)
+        return 2
+    result = check(args.path)
+    if args.command == "check":
+        print(result.to_json() if args.json else describe(result))
+        return 1 if result.findings else 0
+    principles = load_principles()
+    overridden = load_overrides(principles)
+    g = grade(result, era=args.era, principles=principles)
+    text = render(g, result, overrides_active=overridden)
+    print(g.to_json() if args.json else text)
+    if args.report:
+        root = args.path if args.path.is_dir() else args.path.parent
+        print(f"wrote {write_report(root.resolve(), g, result, text)}")
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1 @@
+{"test_bad.py": [{"rule": "testing.no-assert", "line": 4}, {"rule": "testing.no-assert", "line": 10}], "test_clean.py": []}

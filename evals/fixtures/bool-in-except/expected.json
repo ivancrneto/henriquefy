@@ -1,0 +1,1 @@
+{"bad.py": [{"rule": "errors.bool-in-except", "line": 9}, {"rule": "errors.bool-in-except", "line": 17}], "clean.py": []}
