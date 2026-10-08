@@ -54,6 +54,8 @@ explicit = true
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# content directories hold verbatim excerpts; never reformat them
+extend-exclude = ["kb", "skills", "evals", "sources"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
