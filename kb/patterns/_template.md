@@ -3,6 +3,7 @@ id: <kebab-case-id>
 title: <short name>
 principle: <principle-id>          # the principle this pattern makes concrete
 category: errors                   # same set as principles
+era: timeless                      # set only when the pattern's subject is a tool (packaging, config, CI)
 frameworks:                        # one entry per rendition; keys: python | django | fastapi
   python:  {origin: his, repo: <owner/name>, path: <path>, commit: <sha>}
   django:  {origin: course, course: <course-id>, lesson: <n>, section: "<n.m>"}   # shape from the lesson, code rewritten by us

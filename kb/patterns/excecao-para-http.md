@@ -45,6 +45,25 @@ Register it in `MIDDLEWARE`. Returning `None` leaves unknown exceptions on Djang
 Our rendition, not his code. `@app.exception_handler` is the same table, one decorator per
 exception type; route functions call the service and return, and never see the handlers.
 
+His 2026 FastAPI code has no such handler. In `henriquebastos/hamsterdan` at commit
+`5d382467eaa4ff837cbd6b93012c99081e0153f9` the route catches the domain exception itself and
+turns it into `HTTPException`: `except WebhookRejected as error: raise
+HTTPException(status_code=400, detail=str(error)) from None` (`src/hamsterdan/host/api.py`
+46-49), and the body-size refusal is raised inline four lines earlier (43-44). The replacement
+tree does the same with a response function instead of an exception: `except
+WebhookRefusalError as error: return refusal_response(error.reason)` and `except
+WebhookInboxCapacityError: return refusal_response("inbox_capacity_exhausted")`
+(`src/hamsterdan2/host/api.py` 51-59), where `refusal_response` (29-34) is the type-to-status
+table in function form, called from the route rather than registered on the app. The domain
+half of the principle holds in both trees: `class WebhookRejected(ValueError)` lives in
+`src/hamsterdan/github_app/webhooks.py` 45-46 and knows nothing about HTTP, and
+`tests/test_architecture.py` 155-158 fails the build if FastAPI is imported outside `host`.
+The one-table half is per route. The closest thing to the table in his code is in
+`henriquebastos/petrus` at commit `3f85fc2094e50ece48bcf6bf9ace19cb0a22a544`,
+`src/petrus/simulation_http.py` 29-32 and 230-235: a private `_RequestError(status, code,
+message)` raised by every validator and mapped once in `_dispatch`, with `http.server` and
+`http.HTTPStatus` instead of a framework.
+
 ```python
 from http import HTTPStatus
 from fastapi import FastAPI, Request

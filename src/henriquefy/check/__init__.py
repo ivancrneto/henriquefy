@@ -6,6 +6,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from .repo_rules import import_cycles, inheritance_depth, module_name
 from .rules import HTTP_METHODS, RESPONSE_CALL, ROUTE_CALLS, RULES, Context, Finding, run_file_rules
 
 IGNORE = re.compile(r"#\s*henriquefy:\s*ignore\[([\w.,\s-]+)\]")
@@ -67,6 +68,8 @@ def check(target: Path) -> Result:
         packages |= {p.name for p in (root / "src").iterdir() if (p / "__init__.py").is_file()}
     sources: list[str] = []
     findings: list[Finding] = []
+    trees: dict[str, ast.AST] = {}
+    rel_paths: dict[str, str] = {}
     test_files = 0
     signals = {"routes": False, "responses": False}
     for path in files:
@@ -92,6 +95,12 @@ def check(target: Path) -> Result:
             continue
         findings.extend(_apply_suppressions(run_file_rules(tree, lines, ctx), lines))
         _collect_signals(tree, signals)
+        mod = module_name(rel, packages)
+        trees[mod] = tree
+        rel_paths[mod] = str(rel)
+    if target.is_dir():
+        findings.extend(import_cycles(trees, rel_paths))
+        findings.extend(inheritance_depth(trees, rel_paths))
     if target.is_dir() and test_files == 0:
         findings.append(Finding("project.no-tests", str(rel_root(root)), 0, "no test files found"))
     return Result(

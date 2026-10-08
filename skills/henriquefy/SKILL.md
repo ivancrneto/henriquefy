@@ -48,7 +48,8 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
    and, when the user shows code, the pattern files whose principle column in the index
    matches (`references/kb/patterns/<id>.md`), which hold his code or a reconstruction of it.
    `references/kb/quotes.md` has more of his lines with lesson and timestamp when a principle
-   file carries no quote.
+   file carries no quote. `references/kb/repos/<name>.md` says how a given repo of his does it,
+   with caveats where his code departs from his teaching; `repos/drift.md` dates his tooling.
    Open `references/kb/courses/<course>.md` only to resolve a citation: a lesson title, the
    playlist link, or a digest section a principle points at.
 3. Answer in the user's language. Keep his words in Portuguese, with a gloss in the user's

@@ -175,7 +175,7 @@ def _rule_applies(rule_id: str, result: Result) -> bool:
     or any status/route call, decouple rule a decouple dependency (signalled by the runner)."""
     if rule_id in {"testing.no-assert"}:
         return result.test_files > 0
-    if rule_id == "project.no-tests":
+    if rule_id in {"project.no-tests", "modeling.import-cycle", "modeling.inheritance-depth"}:
         return result.target_is_dir
     if rule_id == "api.verb-in-uri":
         return result.signals.get("routes", False)

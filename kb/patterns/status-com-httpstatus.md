@@ -5,7 +5,7 @@ principle: httpstatus-em-vez-de-numeros-magicos
 category: readability
 frameworks:
   django:  {origin: course, course: design-api-na-pratica, lesson: 5, section: "5"}
-  fastapi: {origin: translated}
+  fastapi: {origin: his, repo: henriquebastos/hamsterdan, path: src/hamsterdan/host/api.py, commit: 5d382467eaa4ff837cbd6b93012c99081e0153f9}
 ---
 **What.** Every status code in responses, tests and exception mappings is a named member of
 `http.HTTPStatus` (in FastAPI, `fastapi.status` is the equivalent), never an integer literal. A
@@ -44,26 +44,42 @@ def test_create_answers_201(client, payload):
 `HTTPStatus` is an `IntEnum`, so the class attribute works anywhere Django expects an `int`.
 
 ## fastapi
-Our rendition, not his code. FastAPI ships `fastapi.status` (`HTTP_201_CREATED`); `http.HTTPStatus`
-works just as well, since route decorators take an `int`. Pick one spelling per project.
+His code: `src/hamsterdan/host/api.py` 32-50 in `henriquebastos/hamsterdan` at commit
+`5d382467eaa4ff837cbd6b93012c99081e0153f9` (2026, Apache-2.0). The webhook route declares its
+success status by name on the decorator; the two refusals a few lines later pass a bare `400`.
 
 ```python
-from http import HTTPStatus
+    app = FastAPI(title="Hamsterdan host", lifespan=lifespan)
 
-from fastapi import FastAPI, Response, status
+    @app.get("/healthz")
+    def health() -> dict[str, object]:
+        return service.health()
 
-app = FastAPI()
-
-@app.post("/orders", status_code=status.HTTP_201_CREATED)
-def create(payload: OrderIn, response: Response):
-    order = shop.place(**payload.model_dump())
-    response.headers["Location"] = f"/orders/{order.id}"
-    return {"id": order.id}
-
-@app.delete("/orders/{order_id}", status_code=HTTPStatus.NO_CONTENT)
-def cancel(order_id: int):
-    shop.cancel(order_id)
+    @app.post("/github/webhooks", status_code=status.HTTP_202_ACCEPTED)
+    async def webhook(request: Request) -> dict[str, str]:
+        body = bytearray()
+        async for chunk in request.stream():
+            body.extend(chunk)
+            if len(body) > MAX_BODY_BYTES:
+                raise HTTPException(status_code=400, detail="request body is too large")
+        headers = [(name.decode("latin-1"), value.decode("latin-1")) for name, value in request.scope["headers"]]
+        try:
+            receipt = await asyncio.to_thread(service.custody.receive, headers, bytes(body))
+        except WebhookRejected as error:
+            raise HTTPException(status_code=400, detail=str(error)) from None
+        return {"custody": "durable", "delivery_id": receipt.delivery_id, "disposition": receipt.disposition}
 ```
+
+Line 38 is the principle: `status.HTTP_202_ACCEPTED` names the meaning. Lines 44 and 49 are
+against it: `HTTPException(status_code=400, ...)` is the magic number the course removes in
+lesson 5, and rule `api.magic-status` fires on both. The form he teaches is
+`status.HTTP_400_BAD_REQUEST` or `HTTPStatus.BAD_REQUEST`. His own replacement tree in the same
+repository does it that way: `status.HTTP_503_SERVICE_UNAVAILABLE if reason ==
+"inbox_capacity_exhausted" else status.HTTP_400_BAD_REQUEST` (`src/hamsterdan2/host/api.py` 31,
+same commit). The tests for this route also compare bare integers, `assert response.status_code
+== 202` (`tests/integration/host/test_service.py` 402), where the course would write
+`HTTPStatus.ACCEPTED`. `http.HTTPStatus` is never imported anywhere in hamsterdan; `fastapi.status`
+is the only named form he uses there, and either spelling satisfies the principle.
 
 ## Bad
 ```python

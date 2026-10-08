@@ -190,7 +190,7 @@ applying his principle to a framework he did not show. There is no `alumni` orig
 reimplementation may be linked under "see also", never supply the rendition. Findings and
 reports carry the flag, so a FastAPI finding backed by a translated pattern says so.
 
-His FastAPI and Starlette code: `hamsterdan` (2026, host API) and `petrus`; both pydantic-heavy,
+His FastAPI and Starlette code: `hamsterdan` (2026, host API); `petrus` serves HTTP with the standard library at its 2026 commit, not Starlette; both pydantic-heavy,
 like `beans`, `jira-genie` and `python-jsonstar`. So for FastAPI the 2026 default for models and
 serialization is pydantic (Django keeps its models and forms); `python-decouple` for config applies to both.
 

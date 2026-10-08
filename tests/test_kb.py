@@ -106,3 +106,22 @@ def test_rule_ids_in_principles_exist_or_are_marked_candidates():
             assert "candidate" in before, (
                 f"{path.name}: {m.group(1)} is not implemented and not marked candidate"
             )
+
+
+def test_rule_backed_principles_have_an_example_from_his_code_or_lessons():
+    """Phase 3 exit criterion: every mechanical or partial principle has a pattern rendition
+    with origin his (repo, path, commit) or origin course (course, lesson, section)."""
+    from henriquefy.check.rules import RULES
+
+    backed = {r.principle for r in RULES.values()}
+    covered: dict[str, bool] = {}
+    for path in patterns():
+        fm = _frontmatter(path)
+        principle = _field(fm, "principle")
+        for _, body in re.findall(r"^\s{2}(python|django|fastapi):\s*\{(.*)\}", fm, re.M):
+            his = "origin: his" in body and re.search(r"commit:\s*[0-9a-f]{40}", body)
+            course = "origin: course" in body and "lesson:" in body and "section:" in body
+            if his or course:
+                covered[principle] = True
+    missing = sorted(p for p in backed if not covered.get(p))
+    assert not missing, f"no cited example for: {missing}"

@@ -5,7 +5,7 @@ principle: o-verbo-comanda
 category: api
 frameworks:
   django:  {origin: course, course: design-api-na-pratica, lesson: 5, section: "5"}
-  fastapi: {origin: translated}
+  fastapi: {origin: his, repo: henriquebastos/hamsterdan, path: src/hamsterdan/host/api.py, commit: 5d382467eaa4ff837cbd6b93012c99081e0153f9}
 ---
 **What.** Each view declares which HTTP methods it accepts, and anything else gets
 `405 Method Not Allowed` without the view running. In Django that is a decorator built with
@@ -47,23 +47,34 @@ def order(request, order_id):
 view's name and docstring for the URL resolver and the test output; `Allow` is what `405` asks for.
 
 ## fastapi
-Our rendition, not his code. The per-method route decorators are the declaration; another
-method on the same path gets `405` from the router, so there is nothing to write.
+His code: `src/hamsterdan/host/api.py` 32-39 in `henriquebastos/hamsterdan` at commit
+`5d382467eaa4ff837cbd6b93012c99081e0153f9` (2026, Apache-2.0). Two routes, two nouns, and the
+method is the only verb in sight.
 
 ```python
-from http import HTTPStatus
-from fastapi import FastAPI
+    app = FastAPI(title="Hamsterdan host", lifespan=lifespan)
 
-app = FastAPI()
+    @app.get("/healthz")
+    def health() -> dict[str, object]:
+        return service.health()
 
-@app.get("/orders/{order_id}")
-def read(order_id: int):
-    return represent(shop.get(order_id))
-
-@app.delete("/orders/{order_id}", status_code=HTTPStatus.NO_CONTENT)
-def cancel(order_id: int):
-    shop.cancel(order_id)
+    @app.post("/github/webhooks", status_code=status.HTTP_202_ACCEPTED)
+    async def webhook(request: Request) -> dict[str, str]:
 ```
+
+`/healthz` is read with `GET`; `/github/webhooks` receives a delivery with `POST`. The path
+never says `receive` or `check`; the decorator does, and a `DELETE /github/webhooks` gets `405`
+from the router before any of his code runs. The replacement tree keeps the same resource name
+under a different app: `@app.post("/github/webhooks", status_code=status.HTTP_200_OK)`
+(`src/hamsterdan2/host/api.py` 49, same commit). The function names are nouns or the event
+they handle (`health`, `webhook`, `receive`), not `get_health` or `post_webhook`; rule
+`api.verb-in-uri` has nothing to flag here.
+
+See also the Django shape written by hand in the standard library, in `henriquebastos/petrus`
+at commit `3f85fc2094e50ece48bcf6bf9ace19cb0a22a544`, `src/petrus/simulation_http.py` 218-225
+and 237-240: a per-path `Allow` string (`"GET, OPTIONS"`) and `if method not in allow.split(",
+"): self._error(HTTPStatus.METHOD_NOT_ALLOWED, "method_not_allowed", "method not allowed",
+allow=allow)`, which is the `allow` decorator above as a method on the request handler.
 
 ## Bad
 ```python

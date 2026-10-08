@@ -339,6 +339,34 @@ def local_import(tree, lines, ctx):
 
 
 @rule(
+    "modeling.import-cycle",
+    "evite-ciclos-busque-a-arvore",
+    "Import cycle between project modules",
+    "Two or more project modules that import each other, directly or through a chain "
+    "(strongly connected component of the import graph, `__init__` re-exports included).",
+    "Invert one edge: a parameter with a default, a classmethod factory on the leaf, or a "
+    "registry the leaf calls; then import modules directly, not through the package.",
+    scope="repo",
+)
+def import_cycle(tree, lines, ctx):  # evaluated once per repo by the runner
+    return []
+
+
+@rule(
+    "modeling.inheritance-depth",
+    "componha-em-vez-de-herdar",
+    "Deep inheritance chain",
+    "A class three or more levels below another class defined in the project "
+    "(external bases such as `Exception` or `models.Model` do not count).",
+    "Flatten: move the varying behavior into a collaborator the class holds, and keep "
+    "hierarchies one level deep.",
+    scope="repo",
+)
+def inheritance_depth(tree, lines, ctx):  # evaluated once per repo by the runner
+    return []
+
+
+@rule(
     "project.no-tests",
     "teste-primeiro-das-folhas",
     "No tests in the project",
