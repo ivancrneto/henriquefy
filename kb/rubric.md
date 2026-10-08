@@ -9,9 +9,9 @@ Seven dimensions, each 0 to 10. A dimension's weight in the overall is the sum o
 | Modelagem | modeling | 29 | camada-de-servico (3, judgment), chame-a-base-explicitamente (3, partial), componha-em-vez-de-herdar (3, partial), evite-ciclos-busque-a-arvore (4, partial), inicialize-o-estado-no-init (3, partial), pense-localmente (5, judgment), postergue-decisoes (3, judgment), uma-responsabilidade-por-identidade (5, partial) |
 | Simplicidade | simplicity | 16 | deixe-o-codigo-descansar (4, judgment), escolha-a-regra-mais-simples (4, judgment), nao-projete-a-generalizacao (5, judgment), pragmatismo-sobre-pureza (3, judgment) |
 | Erros | errors | 8 | erros-na-fronteira (4, partial), prefira-excecoes-a-booleanos (4, partial) |
-| Testes | testing | 5 | teste-primeiro-das-folhas (5, partial) |
+| Testes | testing | 10 | execute-antes-de-ler (5, partial), teste-primeiro-das-folhas (5, partial) |
 | API | api | 21 | a-interface-e-o-que-importa (5, judgment), hypermedia-como-maquina-de-estados (4, judgment), o-verbo-comanda (4, partial), recurso-nao-e-entidade-de-banco (4, judgment), representacao-nao-e-codificacao (4, partial) |
 | Projeto e config | project | 2 | configuracao-fora-do-codigo (2, partial) |
-| Legibilidade | readability | 7 | httpstatus-em-vez-de-numeros-magicos (3, mechanical), o-codigo-e-a-interface (4, partial) |
+| Legibilidade | readability | 11 | codigo-linear (4, partial), httpstatus-em-vez-de-numeros-magicos (3, mechanical), o-codigo-e-a-interface (4, partial) |
 
 Nota mecânica formula: penalty(principle) = min(1, 2 * findings / files scanned); penalty(dimension) = weighted mean over its mechanical and partial principles whose rules were applicable; score(dimension) = 10 * (1 - penalty), one decimal; overall = weighted mean of the scored dimensions. Judgment-only principles never enter this number. The weight column below sums every principle of the dimension; the CLI report shows the applicable weight, which sums only the mechanical and partial principles whose rules had a chance to fire. Weakest dimension: lowest score, ties broken by higher weight then name. The formula lives here so it can be read, not inferred.
