@@ -1,3 +1,38 @@
 # Glossary
 
-Terms as Henrique uses them, with the course and section where he defines them. Filled in Phase 1.
+Terms as Henrique uses them. Format: `**term** (course, section): definition in English; his
+phrasing in Portuguese when the digest records it.` Alphabetical.
+
+- **Amarração dinâmica** (oo-na-pratica, 16; lesson 9): resolving which code runs at run time rather than at compile time; resolver o que executa em tempo de execução, em vez de compilação.
+- **API** (design-api-na-pratica, 12; lesson 1): the specification of how one piece of software can interact with another; especificação de como um software pode interagir com outro software.
+- **Barramento** (oo-na-pratica, 16; lesson 9): the bus, a single path that replaces wiring everything to everything; his physical metaphor for indirection; via única que substitui a amarração de todos com todos.
+- **Boilerplate** (design-api-na-pratica, 12): repeated code that produces no value, a sign that the design is missing an abstraction; código repetido que não gera valor.
+- **Camada de serviço** (design-api-na-pratica, 12): a structure that concentrates domain logic outside the views, discovered as the code grows rather than planned up front; estrutura que concentra lógica de domínio fora das views, descoberta conforme o código cresce.
+- **Cartão CRC** (oo-na-pratica, 16; lessons 13 and 15): class name plus responsibilities (what it knows or does) plus collaborators; a playful tool from 1989; nome da classe, responsabilidades (o que sabe ou faz) e colaboradores.
+- **Classe Deus** (oo-na-pratica, 16; lesson 15): an object that concentrates everything; the stated reason for not creating a `Jogo` class in the CRC session; objeto que concentra tudo.
+- **Codificação** (design-api-na-pratica, 12): JSON, XML, CSV and the like, encoding agreements for a representation, negotiable through content negotiation and distinct from the representation itself; apenas pactos de codificação da representação.
+- **Débito técnico** (oo-na-pratica, 16; lesson 23): whatever compromises the future ability to change the code with ease; o que compromete a capacidade futura de alterar o código com facilidade.
+- **Decupagem** (oo-na-pratica, 16; lesson 16): rewriting the client's text paragraph by paragraph into short, unambiguous sentences; a step after the brief and before modeling; reescrever o texto do cliente parágrafo por parágrafo em frases curtas e sem ambiguidade.
+- **Design precoce** (oo-na-pratica, 16; lesson 14): anticipating code decisions during modeling, which contaminates understanding; antecipar decisões de código durante a modelagem, contaminando a compreensão.
+- **Despacho dinâmico** (oo-na-pratica, 16; lesson 9): the mechanism that finds the code associated with the type of the object that received the message; o mecanismo que encontra o código associado ao tipo do objeto que recebeu a mensagem.
+- **Exclusão lógica** (oo-na-pratica, 16; lesson 23): marking instead of deleting, so an iteration in progress does not break; marcar em vez de apagar; in the lesson, delete virtual.
+- **Glossário de domínio** (oo-na-pratica, 16; lesson 16): the consolidated vocabulary that decupagem produces, correcting the client's own vocabulary; vocabulário consolidado que a decupagem produz, corrigindo o vocabulário do próprio cliente.
+- **HATEOAS** (design-api-na-pratica, 12): Hypermedia as the Engine of Application State; links in the response guide the client through the actions available in its current state; links na resposta guiam o cliente pelas ações disponíveis.
+- **Indireção** (oo-na-pratica, 16; lesson 9): referring to something by name, reference or container instead of by the value itself; referenciar algo por nome, referência ou continente, em vez do valor em si.
+- **Interface** (design-api-na-pratica, 12; lesson 1): the layer of indirection that lets two systems cooperate; the word that matters in Application Programming Interface; a camada de indireção que permite dois sistemas cooperarem.
+- **Localidade** (oo-na-pratica, 16; lessons 12 and 15): the criterion for allocating a responsibility: decide by looking at the context, never at the whole system; critério de alocação de responsabilidade: decide-se olhando o contexto, não o sistema.
+- **Metadados** (design-api-na-pratica, 12): information in the API that allows safe programmatic conversion, such as the type and precision of a money field; informações na API que permitem conversões programáticas seguras.
+- **Outsight** (oo-na-pratica, 16; lesson 4): understanding fed from outside, by external references, as opposed to an internal epiphany; how he describes Alan Kay's discovery; compreensão alimentada de fora, por referências externas, em oposição a epifania interna.
+- **Pensamento positivo** (oo-na-pratica, 16; lesson 6): writing the test before the implementation and ignoring the editor's error marks; escrever o teste antes da implementação, ignorando as marcas de erro do editor.
+- **Prevalence** (design-api-na-pratica, 12): lightweight persistence (ZODB, for example) used during the design phase to postpone the complexity of a relational database; persistência leve para a fase de design, adiando a complexidade de um banco relacional.
+- **Programação imperativa cooperativa** (oo-na-pratica, 16; lesson 10): the course's closing concept: you control the flow, but the decision belongs to the receiver of the message; controla-se o fluxo, mas a decisão pertence ao receptor da mensagem.
+- **Recurso** (design-api-na-pratica, 12; lesson 2): a projection or interpretation of something, physical or logical, carrying information useful in a context; not a database entity; projeção ou interpretação de algo com informação útil para um contexto; não é uma entidade de banco.
+- **Representação** (design-api-na-pratica, 12): the form in which a resource's state is presented; distinct from the resource itself; a forma como o estado do recurso é apresentado.
+- **REST / Interface uniforme** (design-api-na-pratica, 12): few verbs (the HTTP methods) operating on many nouns (the resources); poucos verbos operando sobre muitos substantivos.
+- **Síndrome do arquiteto astronauta** (oo-na-pratica, 16; lesson 11): drawing imaginary solutions before touching the problem; desenhar soluções imaginárias antes do contato com o problema.
+- **Tipo de dado abstrato (ADT)** (oo-na-pratica, 16; lesson 8): `list`, `dict`, `set`, `tuple`: generic by nature, with no high-level semantics; an insight he credits to Barbara Liskov; genéricos por natureza, sem semântica de alto nível.
+- **Trade-off** (design-api-na-pratica, 12): nothing is absolutely right or wrong; every design decision is a choice with costs and benefits; nada é certo ou errado em absoluto.
+- **Turno / rodada** (oo-na-pratica, 16; lesson 16): a turn is one player's move; a round is the set of everyone's turns; the course adopts turno after finding the client's text used rodada wrongly; turno é a jogada de um jogador; rodada é o conjunto de turnos de todos.
+- **URI** (design-api-na-pratica, 12): the identifier of a resource on the Web; Uniform means standards, not uniqueness, so one resource may have several identifiers; Uniform significa padrões, não unicidade.
+- **Vazamento de responsabilidade** (oo-na-pratica, 16; lessons 8 and 15): semantics that live nowhere, neither in the data structure nor in the object that uses it; semântica que não está em lugar nenhum: nem na estrutura de dados, nem no objeto que a usa.
+- **Web vs. HTTP** (design-api-na-pratica, 12; lesson 2): the Web is a mesh of relationships between identified resources; HTTP is an application protocol that happens on it; a Web é uma malha de relacionamentos entre recursos identificados; HTTP é um protocolo de aplicação que acontece nela.

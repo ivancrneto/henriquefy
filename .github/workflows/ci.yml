@@ -20,6 +20,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
+      - run: uv run python -m henriquefy.ingest.build_index --check
       - name: install smoke test from a built wheel
         run: |
           uv build

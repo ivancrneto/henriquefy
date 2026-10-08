@@ -60,3 +60,34 @@ def test_ask_evals_cite_existing_principles():
         cells = [c.strip() for c in row.split("|")]
         if len(cells) >= 2 and cells[1]:
             assert cells[1] in on_disk, f"evals/ask.md cites unknown principle {cells[1]}"
+
+
+ORIGINS = {"his", "course", "translated"}
+
+
+def patterns() -> list[Path]:
+    return sorted(p for p in (KB / "patterns").glob("*.md") if not p.name.startswith("_"))
+
+
+def test_patterns_reference_existing_principles_and_valid_origins():
+    on_disk = {p.stem for p in principles()}
+    for path in patterns():
+        fm = _frontmatter(path)
+        assert _field(fm, "id") == path.stem
+        assert _field(fm, "principle") in on_disk, f"{path}: unknown principle"
+        renditions = re.findall(r"^\s{2}(python|django|fastapi):\s*\{(.*)\}", fm, re.M)
+        assert renditions, f"{path}: no renditions"
+        for _, body in renditions:
+            origin = re.search(r"origin:\s*(\w+)", body)
+            assert origin and origin.group(1) in ORIGINS, f"{path}: bad origin in {body}"
+            if origin.group(1) == "his":
+                assert re.search(r"commit:\s*[0-9a-f]{40}", body), f"{path}: his needs a full sha"
+        text = path.read_text(encoding="utf-8")
+        for fw, _ in renditions:
+            assert f"\n## {fw}\n" in text, f"{path}: missing ## {fw} section"
+
+
+def test_generated_files_are_up_to_date():
+    from henriquefy.ingest.build_index import main
+
+    assert main(["--check"]) == 0
