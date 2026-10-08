@@ -47,7 +47,8 @@ def test_principles_have_valid_frontmatter_and_citations():
 
 def test_index_lists_every_principle_and_only_existing_ones():
     index = (KB / "INDEX.md").read_text(encoding="utf-8")
-    listed = set(re.findall(r"^- ([a-z0-9-]+) \| ", index, re.M))
+    section = index.split("## Principles", 1)[1].split("\n## ", 1)[0]
+    listed = set(re.findall(r"^- ([a-z0-9-]+) \| ", section, re.M))
     on_disk = {p.stem for p in principles()}
     assert listed == on_disk, f"index/disk mismatch: {listed ^ on_disk}"
 
