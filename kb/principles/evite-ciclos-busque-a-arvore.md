@@ -69,7 +69,7 @@ holds the players.
 
 **How to detect.** Partial. Mechanical: build the import graph of the package, including
 re-exports through `__init__.py`, and report every strongly connected component with more than
-one module (rule `modeling.import-cycle`); an in-package `from package import Name` that
+one module (candidate rule `modeling.import-cycle`, not yet implemented); an in-package `from package import Name` that
 resolves through the package's own `__init__` is a second signal. Judgment: object-level cycles
 (A holds B, B holds A) and a leaf calling back into its caller through a passed-in reference are
 invisible to imports; those need a reading of who sends messages to whom.

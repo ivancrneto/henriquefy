@@ -305,7 +305,8 @@ def _route_findings(call: ast.Call, ctx: Context, seen: set[int]):
     "project.no-tests",
     "teste-primeiro-das-folhas",
     "No tests in the project",
-    "No `tests/` directory and no `test_*.py` or `*_test.py` file anywhere in the target.",
+    "No `tests/` directory and no `test_*.py` or `*_test.py` file anywhere in the target "
+    "(repo-scope rules run only when the target is a directory).",
     "Start with the leaves: one test file per module, written before the code it exercises.",
     scope="repo",
 )

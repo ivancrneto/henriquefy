@@ -68,8 +68,7 @@ to carry interval semantics (digest section 7). Bad: `CautiousPlayer(Player)` an
 siblings, each overriding `invest`, so every money fix must be checked in four classes.
 
 **How to detect.** Partial. Mechanical: project-defined class hierarchies deeper than two levels,
-excluding `Exception`, `ABC` and built-in or third-party bases (rule
-`modeling.inheritance-depth`); a subclass that overrides most of its parent's methods, which
+excluding `Exception`, `ABC` and built-in or third-party bases (candidate rule `modeling.inheritance-depth`, not yet implemented); a subclass that overrides most of its parent's methods, which
 suggests a collaborator in disguise. Judgment: whether a base class is a thin shared mechanic
 (fine) or a behavior axis that should have been an attribute.
 

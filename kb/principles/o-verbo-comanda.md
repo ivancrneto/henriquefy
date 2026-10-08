@@ -65,7 +65,7 @@ that never reads `request.method`.
 **How to detect.** Partial. Mechanical candidates: path segments that are verbs (`create`,
 `read`, `update`, `delete`, `get`, `list`, `add`, `remove`) in URL patterns or route decorators
 (rule `api.verb-in-uri`); a `GET` handler that calls `save()`, `create()`, `delete()` or a
-service method named like a mutation (rule `api.get-with-side-effect`); views routed for every
+service method named like a mutation (candidate rule `api.get-with-side-effect`, not yet implemented); views routed for every
 method that never read `request.method`. Judgment: whether `PUT` really replaces or should be
 `PATCH`; whether cancel is a `DELETE` on the order or a `POST` to a cancellation resource; `405`
 versus `404` for an unknown method on a known resource.

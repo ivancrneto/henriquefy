@@ -177,8 +177,12 @@ def _rule_applies(rule_id: str, result: Result) -> bool:
         return result.test_files > 0
     if rule_id == "project.no-tests":
         return True
-    if rule_id.startswith("api."):
-        return result.framework != "none" or any(f.rule.startswith("api.") for f in result.findings)
+    if rule_id == "api.verb-in-uri":
+        return result.signals.get("routes", False)
+    if rule_id == "api.magic-status":
+        return result.signals.get("responses", False) or any(
+            f.rule == "api.magic-status" for f in result.findings
+        )
     if rule_id == "project.environ-without-decouple":
         return result.depends_on_decouple
     return True

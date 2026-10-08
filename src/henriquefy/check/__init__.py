@@ -3,10 +3,10 @@
 import ast
 import json
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .rules import RULES, Context, Finding, run_file_rules
+from .rules import HTTP_METHODS, RESPONSE_CALL, ROUTE_CALLS, RULES, Context, Finding, run_file_rules
 
 IGNORE = re.compile(r"#\s*henriquefy:\s*ignore\[([\w.,\s-]+)\]")
 SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", ".henriquefy", "build", "dist"}
@@ -22,6 +22,7 @@ class Result:
     framework: str
     findings: list[Finding]
     depends_on_decouple: bool = False
+    signals: dict[str, bool] = field(default_factory=dict)
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -63,6 +64,7 @@ def check(target: Path) -> Result:
     sources: list[str] = []
     findings: list[Finding] = []
     test_files = 0
+    signals = {"routes": False, "responses": False}
     for path in files:
         rel = path.relative_to(root) if path.is_relative_to(root) else path
         source = path.read_text(encoding="utf-8", errors="replace")
@@ -79,9 +81,32 @@ def check(target: Path) -> Result:
             )
             continue
         findings.extend(_apply_suppressions(run_file_rules(tree, lines, ctx), lines))
+        _collect_signals(tree, signals)
     if target.is_dir() and test_files == 0:
         findings.append(Finding("project.no-tests", str(rel_root(root)), 0, "no test files found"))
-    return Result(str(root), len(files), test_files, detect_framework(sources), findings, decouple)
+    return Result(
+        str(root), len(files), test_files, detect_framework(sources), findings, decouple, signals
+    )
+
+
+def _collect_signals(tree: ast.AST, signals: dict[str, bool]) -> None:
+    """Whether the file defines routes or builds responses, so API and status rules count as
+    applicable only where they had a chance to fire."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            func = node.func
+            name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+            if name in ROUTE_CALLS:
+                signals["routes"] = True
+            if name and RESPONSE_CALL.search(name):
+                signals["responses"] = True
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            for deco in node.decorator_list:
+                f = deco.func if isinstance(deco, ast.Call) else deco
+                if isinstance(f, ast.Attribute) and f.attr in HTTP_METHODS:
+                    signals["routes"] = True
+        elif isinstance(node, ast.ClassDef) and RESPONSE_CALL.search(node.name):
+            signals["responses"] = True
 
 
 def rel_root(root: Path) -> str:

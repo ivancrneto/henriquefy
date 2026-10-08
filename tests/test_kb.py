@@ -91,3 +91,18 @@ def test_generated_files_are_up_to_date():
     from henriquefy.ingest.build_index import main
 
     assert main(["--check"]) == 0
+
+
+def test_rule_ids_in_principles_exist_or_are_marked_candidates():
+    from henriquefy.check.rules import RULES
+
+    pattern = re.compile(r"`((?:api|errors|modeling|testing|project|readability)\.[\w-]+)`")
+    for path in principles():
+        text = path.read_text(encoding="utf-8")
+        for m in pattern.finditer(text):
+            if m.group(1) in RULES:
+                continue
+            before = text[max(0, m.start() - 60) : m.start()]
+            assert "candidate" in before, (
+                f"{path.name}: {m.group(1)} is not implemented and not marked candidate"
+            )

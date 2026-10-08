@@ -19,11 +19,12 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 
 ## check
 
-1. Run `scripts/henriquefy.sh check <path> --json` and read the findings (rule, path, line).
+1. Run `scripts/henriquefy.sh check <path> --json` and read the findings (rule, path, line);
+   the command exits 1 when there are findings, which is not an error.
    `references/kb/check-rules.md` maps each rule to its principle, what it fires on and the fix.
 2. Judgment pass. Scope: the path given; with no path, the files with mechanical findings plus,
-   in a git repo, files changed in the working tree; `--all` means every file, and you say how
-   many that is before starting. Read each file with the matching principle files open and add
+   in a git repo, files changed in the working tree; if the user asks for everything, say how
+   many files that is before starting (this is a request to you, not a CLI flag). Read each file with the matching principle files open and add
    findings the rules cannot see: responsibility leaks, generalization designed too early,
    modeling that fights the domain. Cite every one.
 3. Report one line per finding: `path:line`, rule or principle id, why in one sentence in his
@@ -31,11 +32,13 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 
 ## grade
 
-1. Run `scripts/henriquefy.sh grade <path>` and show its table unchanged: that is the Nota
-   mecânica, deterministic, never his verdict, no letter grade.
+1. Run `scripts/henriquefy.sh grade <path>` and show its whole output unchanged: that is the
+   Nota mecânica, deterministic, never his verdict, no letter grade.
 2. Then the Nota do Henrique: all seven dimensions, 0 to 10, from the mechanical findings plus
-   your judgment findings from `check`, with a letter (A 9+, B 8+, C 7+, D 6+, E below) and,
-   per dimension, the evidence (finding, file, line, principle id). Label it non-deterministic.
+   your judgment findings from `check` run over every graded file. Score each dimension, then
+   the overall is the weighted mean using the full weights in `references/kb/rubric.md`; the
+   letter follows it (A 9+, B 8+, C 7+, D 6+, E below). Per dimension give
+   the evidence (finding, file, line, principle id). Label it non-deterministic.
    N/A dimensions stay N/A. Name the weakest dimension and the lesson to watch for it.
 
 ## How to answer in `ask` mode

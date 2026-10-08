@@ -114,7 +114,10 @@ def build_rubric(kb: Path) -> str:
         " penalty(dimension) = weighted mean over its mechanical and partial principles whose"
         " rules were applicable; score(dimension) = 10 * (1 - penalty), one decimal; overall ="
         " weighted mean of the scored dimensions. Judgment-only principles never enter this"
-        " number. The formula lives here so it can be read, not inferred.",
+        " number. The weight column below sums every principle of the dimension; the CLI report"
+        " shows the applicable weight, which sums only the mechanical and partial principles"
+        " whose rules had a chance to fire. Weakest dimension: lowest score, ties broken by"
+        " higher weight then name. The formula lives here so it can be read, not inferred.",
     ]
     return "\n".join(lines) + "\n"
 

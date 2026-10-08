@@ -19,7 +19,7 @@ def render(grade: Grade, result: Result, overrides_active: list[str] | None = No
     if overrides_active:
         lines.append(f"rubric overrides active: {', '.join(overrides_active)}")
     lines.append("")
-    lines.append("| dimension | weight | score | evidence |")
+    lines.append("| dimension | applicable weight | score | evidence |")
     lines.append("|---|---|---|---|")
     for d in grade.dimensions:
         score = "N/A" if d.score is None else f"{d.score}"
@@ -30,10 +30,13 @@ def render(grade: Grade, result: Result, overrides_active: list[str] | None = No
         lines.append(f"| {d.name} | {d.weight} | {score} | {evidence} |")
     scored = [d for d in grade.dimensions if d.score is not None and d.score < 10]
     if scored:
-        w = min(scored, key=lambda d: d.score)
-        worst = max(w.principles.items(), key=lambda kv: kv[1]["findings"])[0]
+        w = min(scored, key=lambda d: (d.score, -d.weight, d.name))
+        worst = max(w.principles.items(), key=lambda kv: (kv[1]["findings"], kv[0]))[0]
         lines.append("")
-        lines.append(f"Weakest dimension: {w.name}. Aula para assistir: kb/principles/{worst}.md")
+        lines.append(
+            f"Weakest dimension: {w.name} (ties broken by weight, then name)."
+            f" Read kb/principles/{worst}.md for the lesson to watch."
+        )
     for note in grade.drift:
         lines.append(f"tooling drift: {note}")
     lines.append("")

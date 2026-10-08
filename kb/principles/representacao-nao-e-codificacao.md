@@ -69,8 +69,8 @@ Bad: `price = float(data["price"])` in a view, `"created_at": str(order.created_
 format decided at each call site, and `/orders/1.json` as a URL.
 
 **How to detect.** Partial. Mechanical candidates: `FloatField` or `float(` applied to names
-such as `price`, `amount`, `total` (rule `api.money-as-float`); URL patterns ending in `.json`
-or `.xml` (rule `api.format-in-uri`); `json.dumps(..., default=str)`, one lossy conversion for
+such as `price`, `amount`, `total` (candidate rule `api.money-as-float`, not yet implemented); URL patterns ending in `.json`
+or `.xml` (candidate rule `api.format-in-uri`, not yet implemented); `json.dumps(..., default=str)`, one lossy conversion for
 every unsupported type. Judgment: `str()` and `isoformat()` calls scattered through views
 instead of one encoder; response shapes that change with `Accept` beyond the encoding itself.
 

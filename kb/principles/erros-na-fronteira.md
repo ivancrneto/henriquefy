@@ -64,8 +64,8 @@ HttpResponse(status=404)` repeated in every view; or a service that raises
 
 **How to detect.** Partial. Mechanical candidates: `HttpResponse`, `JsonResponse`,
 `JSONResponse` or `HTTPException` imported or raised in a module that otherwise imports no web
-framework (rule `errors.http-in-domain`); the same `except X: return <response>` pair repeated
-across views (rule `errors.repeated-except-response`); `raise Http404` inside a function that is
+framework (candidate rule `errors.http-in-domain`, not yet implemented); the same `except X: return <response>` pair repeated
+across views (candidate rule `errors.repeated-except-response`, not yet implemented); `raise Http404` inside a function that is
 not a view. Judgment: whether a given exception is a domain outcome or a transport error, and
 which status fits it (`409` versus `422` versus `400`).
 

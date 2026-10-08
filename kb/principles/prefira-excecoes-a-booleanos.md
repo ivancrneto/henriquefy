@@ -65,7 +65,7 @@ def invest(self, price, rent):
 returning `False` for both "could not afford" and "strategy declined", and every caller
 re-deriving which one happened.
 
-**How to detect.** Partial. Mechanical: `return False` inside an `except` handler (rule
+**How to detect.** Partial. Mechanical: `return False` or `return None` inside an `except` handler (rule
 `errors.bool-in-except`), which swallows a named failure into a flag. Judgment: a function whose
 boolean return is checked by callers to decide between error paths; sibling outcomes encoded as
 `None` versus `False`; a broad `except` that turns distinct failures into one.

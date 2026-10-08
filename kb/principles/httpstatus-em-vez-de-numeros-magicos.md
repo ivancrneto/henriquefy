@@ -64,10 +64,11 @@ expected without a comment. Bad: `return HttpResponse(status=409)`,
 `assert response.status_code == 204`, a middleware table such as `{DoesNotExist: 404}`.
 
 **How to detect.** Mechanical. Rule `api.magic-status`: an integer literal between 100 and 599
-passed as `status=` or `status_code=` to a response constructor or route decorator, compared
-with a `.status_code` attribute, assigned to a `status_code` class attribute, or given to
-`HTTPException(status_code=...)`. `HTTPStatus.X`, `status.HTTP_X` and a named constant are the
-allowed forms. Ports and sizes in the same range are ruled out by the keyword context.
+passed as `status=` or `status_code=` to a response or HTTP error constructor (`JsonResponse`,
+`Response`, `HTTPException`, `render`, ...), assigned to a `status_code` class attribute, or
+assigned to a `.status_code` attribute outside tests. Mocks such as `responses.add(status=200)`
+and fake responses set up in tests describe someone else's reply and are not flagged.
+`HTTPStatus.X`, `status.HTTP_X` and a named constant are the allowed forms. Ports and sizes in the same range are ruled out by the keyword context.
 
 **How to fix.** `from http import HTTPStatus`, then replace each literal with the member of the
 same value; the enum is an `IntEnum`, so comparisons and `status=` arguments keep working. In
