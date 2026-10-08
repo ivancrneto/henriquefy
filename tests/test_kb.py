@@ -125,3 +125,31 @@ def test_rule_backed_principles_have_an_example_from_his_code_or_lessons():
                 covered[principle] = True
     missing = sorted(p for p in backed if not covered.get(p))
     assert not missing, f"no cited example for: {missing}"
+
+
+DIGEST_SCHEMA = [
+    "visão geral",
+    "filosofia",
+    "pilares",
+    "aulas",
+    "princípios",
+    "citações",
+    "evolução técnica",
+    "arsenal",
+    "glossário",
+    "perguntas",
+    "repositórios",
+    "linha a linha",
+    "execução real",
+]
+
+
+def test_course_digests_follow_the_schema():
+    for path in sorted((KB / "courses").glob("*.md")):
+        if path.name == "README.md":
+            continue
+        headings = " | ".join(
+            h.lower() for h in re.findall(r"^## (.+)$", path.read_text(encoding="utf-8"), re.M)
+        )
+        missing = [k for k in DIGEST_SCHEMA if k not in headings]
+        assert not missing, f"{path.name} lacks sections: {missing}"
