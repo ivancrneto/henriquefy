@@ -16,7 +16,7 @@ sources:
     course: oo-na-pratica
     lesson: 23
     section: "10"
-    timestamp: "00:00:00"
+    timestamp: "0:00:00"
     verified: false
 ---
 **Rule.** Before refactoring, let the code sit until you understand it. Write the thing, run
@@ -44,5 +44,4 @@ the second concrete case existed. No mechanical rule.
 
 **How to fix.** Finish the behavior under test first. Leave it. Come back when the pain is
 concrete and nameable (duplicated state, chained access, a wrong name), and extract exactly the
-entity that pain points at. Digest section 12.2, "não projete a generalização", is the same rule applied to
-abstractions; its principle file is Phase 1 work.
+entity that pain points at. The same rule applied to abstractions is nao-projete-a-generalizacao (digest section 12.2).

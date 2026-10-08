@@ -38,8 +38,7 @@ base for shared mechanics, or a built-in extended with domain semantics. Judge b
 `should_buy`; he then discusses composition against inheritance for those strategies and
 validates a student's answer that used inheritance, so the digest records the criterion as the
 effect, not the rule (lesson 18, 17:23, `verified: false`, transcript paraphrase; digest section
-12.8). The background is lesson 7: Originalmente a
-orientação objetos Era exatamente assim os esquemas de classe não era feito para herança mas
+12.8). The background is lesson 7: Originalmente a orientação objetos Era exatamente assim os esquemas de classe não era feito para herança mas
 sim mas sim para criar camada de em direção para passagem de mensagens (lesson 7, 25:55,
 `verified: false`, transcript paraphrase; "em direção" is the caption's misreading of
 "indireção"). Inheritance is a tool for building indirection, not the point of the paradigm

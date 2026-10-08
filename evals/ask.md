@@ -6,7 +6,7 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 
 | question | expected principle id | expected citation |
 |---|---|---|
-| I have two classes that look alike; should I extract a base class now? | deixe-o-codigo-descansar | oo-na-pratica section 12.1, lesson 23 |
+| I have two classes that look alike; should I extract a base class now? | nao-projete-a-generalizacao | oo-na-pratica section 12.2, lesson 7 at 0:26:51 |
 | My `charge()` returns False when the balance is short and False when the order is not paid. What would he do? | prefira-excecoes-a-booleanos | oo-na-pratica section 12.9, monopoly player.py at bffb0c2 |
 | Should my Player subclass each strategy, or hold a strategy object? | componha-em-vez-de-herdar | oo-na-pratica section 12.8, lesson 18 |
 | My Django view does `return JsonResponse(data, status=201)`. Anything he would change? | httpstatus-em-vez-de-numeros-magicos | design-api-na-pratica lesson 5, section 9.3 |
