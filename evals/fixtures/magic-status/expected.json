@@ -1,5 +1,36 @@
-{"bad_django.py": [{"rule": "api.magic-status", "line": 6}, {"rule": "api.magic-status", "line": 10}],
- "bad_fastapi.py": [{"rule": "api.magic-status", "line": 9}],
- "bad_attribute.py": [{"rule": "api.magic-status", "line": 6}],
+{
+ "bad_django.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 6
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 10
+  }
+ ],
+ "bad_fastapi.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 9
+  }
+ ],
+ "bad_attribute.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 6
+  }
+ ],
  "test_mocks_clean.py": [],
- "clean.py": []}
+ "clean.py": [],
+ "bad_compare.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 2
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 8
+  }
+ ]
+}

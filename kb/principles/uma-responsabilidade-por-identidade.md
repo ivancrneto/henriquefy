@@ -3,7 +3,7 @@ id: uma-responsabilidade-por-identidade
 title: Uma responsabilidade por identidade
 category: modeling
 weight: 5
-detectable: judgment
+detectable: partial
 era: timeless
 scope: python
 sources:

@@ -50,3 +50,16 @@ def test_na_dimensions_when_no_evidence(tmp_path):
     by = {d["category"]: d["score"] for d in data["dimensions"]}
     assert by["api"] is None and by["simplicity"] is None
     assert by["testing"] is not None  # project.no-tests fired
+
+
+def test_single_file_target_has_no_vacuous_testing_score(tmp_path):
+    f = tmp_path / "service.py"
+    f.write_text("def f():\n    return 1\n")
+    data = json.loads(grade(check(f)).to_json())
+    assert {d["category"]: d["score"] for d in data["dimensions"]}["testing"] is None
+
+
+def test_principles_with_a_rule_are_not_judgment_only():
+    principles = load_principles()
+    for rule in RULES.values():
+        assert principles[rule.principle].detectable in {"mechanical", "partial"}, rule.id

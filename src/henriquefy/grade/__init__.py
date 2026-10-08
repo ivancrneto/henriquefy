@@ -176,7 +176,7 @@ def _rule_applies(rule_id: str, result: Result) -> bool:
     if rule_id in {"testing.no-assert"}:
         return result.test_files > 0
     if rule_id == "project.no-tests":
-        return True
+        return result.target_is_dir
     if rule_id == "api.verb-in-uri":
         return result.signals.get("routes", False)
     if rule_id == "api.magic-status":

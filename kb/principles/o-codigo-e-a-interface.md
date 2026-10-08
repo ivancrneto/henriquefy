@@ -3,7 +3,7 @@ id: o-codigo-e-a-interface
 title: O código é a interface
 category: readability
 weight: 4
-detectable: judgment
+detectable: partial
 era: timeless
 scope: python
 sources:

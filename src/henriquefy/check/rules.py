@@ -76,7 +76,8 @@ def _f(rule_id: str, ctx: Context, node: ast.AST, message: str) -> Finding:
     "HTTP status as a bare integer",
     "An integer literal from 100 to 599 passed as `status=` or `status_code=` to a response or "
     "HTTP error constructor (`JsonResponse`, `Response`, `HTTPException`, `render`, ...), or "
-    "assigned to `status_code` (as a class attribute anywhere, as an attribute outside tests). "
+    "assigned to `status_code` (as a class attribute anywhere, as an attribute outside tests), "
+    "or compared with a `.status_code` attribute (`!= 401`, `== 200`, tests included). "
     "A mock like `responses.add(status=200)` or a fake `Response()` set up in a test describes "
     "someone else's reply and is not flagged.",
     "Use `http.HTTPStatus.<NAME>` (or `fastapi.status`) so the code reads as the status name.",
@@ -90,6 +91,16 @@ def magic_status(tree, lines, ctx):
         elif isinstance(node, ast.Assign) and _is_status_int(node.value):
             if any(_is_status_target(t, ctx.is_test) for t in node.targets):
                 yield _f("api.magic-status", ctx, node.value, f"status_code = {node.value.value}")
+        elif isinstance(node, ast.Compare):
+            operands = [node.left, *node.comparators]
+            if any(_is_status_attr(o) for o in operands):
+                for o in operands:
+                    if _is_status_int(o):
+                        yield _f("api.magic-status", ctx, o, f"status_code compared with {o.value}")
+
+
+def _is_status_attr(node: ast.AST) -> bool:
+    return isinstance(node, ast.Attribute) and node.attr == "status_code"
 
 
 def _builds_response(call: ast.Call) -> bool:
@@ -299,6 +310,32 @@ def _route_findings(call: ast.Call, ctx: Context, seen: set[int]):
         return
     if any(VERB_SEGMENT.match(seg) for seg in re.split(r"[/^$]", first.value)):
         yield _f("api.verb-in-uri", ctx, first, f"'{first.value}'")
+
+
+@rule(
+    "modeling.local-import",
+    "evite-ciclos-busque-a-arvore",
+    "Project import inside a function",
+    "An `import` or `from ... import` of a relative module or of a top-level package of the "
+    "target placed inside a function or method body, which usually dodges an import cycle.",
+    "Move the import to the top of the module; if that fails with a cycle, invert the dependency "
+    "that creates it.",
+)
+def local_import(tree, lines, ctx):
+    packages = ctx.extra.get("packages", set())
+    for fn in ast.walk(tree):
+        if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef):
+            continue
+        for node in ast.walk(fn):
+            if isinstance(node, ast.ImportFrom):
+                top = (node.module or "").split(".")[0]
+                if node.level > 0 or top in packages:
+                    yield _f("modeling.local-import", ctx, node, ast.unparse(node)[:60])
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name.split(".")[0] in packages:
+                        yield _f("modeling.local-import", ctx, node, f"import {alias.name}")
+                        break
 
 
 @rule(

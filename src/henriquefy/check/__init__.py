@@ -23,6 +23,7 @@ class Result:
     findings: list[Finding]
     depends_on_decouple: bool = False
     signals: dict[str, bool] = field(default_factory=dict)
+    target_is_dir: bool = True
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -61,6 +62,9 @@ def check(target: Path) -> Result:
     root = target if target.is_dir() else target.parent
     files = python_files(target)
     decouple = depends_on_decouple(root)
+    packages = {p.name for p in root.iterdir() if (p / "__init__.py").is_file()} | {root.name}
+    if (root / "src").is_dir():
+        packages |= {p.name for p in (root / "src").iterdir() if (p / "__init__.py").is_file()}
     sources: list[str] = []
     findings: list[Finding] = []
     test_files = 0
@@ -72,7 +76,13 @@ def check(target: Path) -> Result:
         lines = source.splitlines()
         is_test = bool(TEST_FILE.search(str(rel).replace("\\", "/")))
         test_files += is_test
-        ctx = Context(path=rel, root=root, is_test=is_test, depends_on_decouple=decouple)
+        ctx = Context(
+            path=rel,
+            root=root,
+            is_test=is_test,
+            depends_on_decouple=decouple,
+            extra={"packages": packages},
+        )
         try:
             tree = ast.parse(source, filename=str(path))
         except SyntaxError as exc:
@@ -85,7 +95,14 @@ def check(target: Path) -> Result:
     if target.is_dir() and test_files == 0:
         findings.append(Finding("project.no-tests", str(rel_root(root)), 0, "no test files found"))
     return Result(
-        str(root), len(files), test_files, detect_framework(sources), findings, decouple, signals
+        str(root),
+        len(files),
+        test_files,
+        detect_framework(sources),
+        findings,
+        decouple,
+        signals,
+        target.is_dir(),
     )
 
 

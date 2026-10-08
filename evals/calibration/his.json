@@ -5,14 +5,67 @@
       "date": "2026-10-08",
       "henriquefy": "0.2.0",
       "repos": {
-        "henriquebastos/monopoly": {"commit": "bffb0c269b00836066d0bb064ca4e38a80cad210", "nota_mecanica": 10.0, "findings": 0, "scored": {"errors": 10.0, "testing": 10.0}, "expected": "8+ on timeless dimensions; Projeto e config may be low (broken pytest==6.1.2 pin, OO digest 20.3) but no pinning rule exists yet, so that dimension is N/A"},
-        "henriquebastos/requests-pro": {"commit": "cd280f025041c8352823ee6aa5b77c09ddee3cf0", "nota_mecanica": 10.0, "findings": 0, "scored": {"errors": 10.0, "testing": 10.0, "api": 10.0, "readability": 10.0}, "expected": "8+ on every scored dimension"}
+        "henriquebastos/monopoly": {
+          "commit": "bffb0c269b00836066d0bb064ca4e38a80cad210",
+          "nota_mecanica": 10.0,
+          "findings": 0,
+          "scored": {
+            "errors": 10.0,
+            "testing": 10.0
+          },
+          "expected": "8+ on timeless dimensions; Projeto e config may be low (broken pytest==6.1.2 pin, OO digest 20.3) but no pinning rule exists yet, so that dimension is N/A"
+        },
+        "henriquebastos/requests-pro": {
+          "commit": "cd280f025041c8352823ee6aa5b77c09ddee3cf0",
+          "nota_mecanica": 10.0,
+          "findings": 0,
+          "scored": {
+            "errors": 10.0,
+            "testing": 10.0,
+            "api": 10.0,
+            "readability": 10.0
+          },
+          "expected": "8+ on every scored dimension"
+        }
       },
       "hand_review": [
         "requests-pro first scored 6.9 with 24 findings. All 24 were read.",
         "5 api.verb-in-uri on demo/eduzz.py were client calls to Eduzz's own URIs (/user/get_me): he does not own those; the rule now fires only on route definitions (path() calls and @app.<method> decorators). Locked by evals/fixtures/verb-in-uri/client_clean.py.",
         "19 api.magic-status in tests were responses.add(status=200) mocks and fake Response().status_code = 200 setups describing an upstream reply, not a response his code emits; the rule now fires on response and HTTP error constructors anywhere, class-attribute status_code anywhere, and attribute status_code outside tests. Locked by evals/fixtures/magic-status/test_mocks_clean.py and bad_attribute.py.",
         "No weight was changed. Every rule still fires on its bad fixture."
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "henriquefy": "0.2.2",
+      "repos": {
+        "henriquebastos/monopoly": {
+          "commit": "bffb0c269b00836066d0bb064ca4e38a80cad210",
+          "nota_mecanica": 10.0,
+          "findings": 0,
+          "scored": {
+            "modeling": 10.0,
+            "errors": 10.0,
+            "testing": 10.0
+          }
+        },
+        "henriquebastos/requests-pro": {
+          "commit": "cd280f025041c8352823ee6aa5b77c09ddee3cf0",
+          "nota_mecanica": 9.3,
+          "findings": 5,
+          "scored": {
+            "modeling": 10.0,
+            "errors": 10.0,
+            "testing": 10.0,
+            "readability": 5.0
+          },
+          "expected": "8+ on every scored dimension: readability FAILS at 5.0"
+        }
+      },
+      "hand_review": [
+        "Comparison form of api.magic-status added after user feedback on a real codebase (a `!= 200` check went unflagged).",
+        "requests-pro: 5 true findings. src/requestspro/auth.py:62 compares `status_code != 401`; four tests assert `== 200`. His 2026 hamsterdan also writes HTTPException(status_code=400) next to status.HTTP_202_ACCEPTED. His own code departs from the HTTPStatus principle he teaches in Design de API na Prática (digest sections 6.2 and 9.3); the findings stay, the weight does not move.",
+        "The penalty formula (min(1, 2*findings/files)) turns 5 literals in 20 files into a 5.0; that steepness is a design question for the owner, not a calibration adjustment, and is left as is."
       ]
     }
   ]
