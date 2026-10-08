@@ -44,21 +44,15 @@ ALUMNI_NAMED = ["virb30/design-api", "HenriqueCCdA/Design_de_API_na_pratica"]
 
 
 def gh(path: str) -> list | dict:
-    out = subprocess.run(
-        ["gh", "api", "--paginate", path], capture_output=True, text=True, check=True
-    ).stdout
-    # --paginate concatenates JSON arrays; merge them
-    chunks, depth, start, merged = [], 0, 0, []
-    for i, ch in enumerate(out):
-        if ch == "[" and depth == 0:
-            start = i
-        depth += ch == "[" or ch == "{"
-        depth -= ch == "]" or ch == "}"
-        if depth == 0 and ch == "]":
-            chunks.append(out[start : i + 1])
-    for c in chunks:
-        merged.extend(json.loads(c))
-    return merged if chunks else json.loads(out)
+    """GET a GitHub API path; list endpoints are paginated and merged by gh itself."""
+    if "per_page" in path:
+        out = subprocess.run(
+            ["gh", "api", "--paginate", "--slurp", path], capture_output=True, text=True, check=True
+        ).stdout
+        pages = json.loads(out)
+        return [item for page in pages for item in page]
+    out = subprocess.run(["gh", "api", path], capture_output=True, text=True, check=True).stdout
+    return json.loads(out)
 
 
 def repo_record(full_name: str, klass: str) -> dict:

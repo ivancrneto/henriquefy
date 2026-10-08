@@ -1,0 +1,196 @@
+{
+  "note": "Alumni repos graded locally and keyed by random id, never by name; the id map lives in gitignored sources/repos/manifest.json.",
+  "date": "2026-10-08",
+  "alumni": {
+    "3328df04d583": {
+      "nota_mecanica": 9.7,
+      "findings": 8,
+      "files": 57,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 8.9,
+        "project": 8.9,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "ee77245ad0e2": {
+      "nota_mecanica": 9.9,
+      "findings": 4,
+      "files": 80,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 9.2,
+        "project": null,
+        "readability": 9.9
+      },
+      "fork_of": null
+    },
+    "0131349278b3": {
+      "nota_mecanica": 9.9,
+      "findings": 3,
+      "files": 52,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.8,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "f8721c80cac6": {
+      "nota_mecanica": 9.9,
+      "findings": 3,
+      "files": 52,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.8,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "c0454cfc9d88": {
+      "nota_mecanica": 9.9,
+      "findings": 2,
+      "files": 38,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.9,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "f89c52a8a118": {
+      "nota_mecanica": 9.9,
+      "findings": 3,
+      "files": 52,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.8,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "2e6e7c258e65": {
+      "nota_mecanica": 9.9,
+      "findings": 2,
+      "files": 38,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.9,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "62f7beae57a4": {
+      "nota_mecanica": 9.9,
+      "findings": 2,
+      "files": 38,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.9,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "5d962f68fed9": {
+      "nota_mecanica": 9.9,
+      "findings": 2,
+      "files": 38,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.9,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "76a8711728d8": {
+      "nota_mecanica": 9.9,
+      "findings": 3,
+      "files": 52,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.8,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    }
+  },
+  "comparisons": {
+    "henriquebastos/eventex": {
+      "original": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 8.8,
+        "readability": 10.0
+      },
+      "forks": 8,
+      "fork_median": {
+        "modeling": 10.0,
+        "errors": 10.0,
+        "testing": 10.0,
+        "readability": 10.0
+      },
+      "ok": {
+        "modeling": true,
+        "errors": true,
+        "testing": true,
+        "readability": true
+      }
+    },
+    "henriquebastos/pacote-desafios-pythonicos": {
+      "original": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "forks": 0,
+      "fork_median": {},
+      "ok": {}
+    }
+  }
+}
