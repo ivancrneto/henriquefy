@@ -43,14 +43,13 @@ ALUMNI_SOURCES = {
 ALUMNI_NAMED = ["virb30/design-api", "HenriqueCCdA/Design_de_API_na_pratica"]
 
 
-def gh(path: str) -> list | dict:
-    """GET a GitHub API path; list endpoints are paginated and merged by gh itself."""
-    if "per_page" in path:
+def gh(path: str, paginate: bool = False) -> list | dict:
+    """GET a GitHub API path. With paginate=True, gh fetches every page and returns one list."""
+    if paginate:
         out = subprocess.run(
             ["gh", "api", "--paginate", "--slurp", path], capture_output=True, text=True, check=True
         ).stdout
-        pages = json.loads(out)
-        return [item for page in pages for item in page]
+        return [item for page in json.loads(out) for item in page]
     out = subprocess.run(["gh", "api", path], capture_output=True, text=True, check=True).stdout
     return json.loads(out)
 
@@ -85,7 +84,7 @@ def his(root: Path) -> list[dict]:
     listed = []
     for owner in OWNERS:
         kind = "orgs" if owner == "HBNetwork" else "users"
-        listed += [r["full_name"] for r in gh(f"{kind}/{owner}/repos?per_page=100")]
+        listed += [r["full_name"] for r in gh(f"{kind}/{owner}/repos?per_page=100", paginate=True)]
     records = []
     for name in MINING:
         rec = repo_record(name, "his")
@@ -100,7 +99,7 @@ def alumni(root: Path) -> list[dict]:
     records = []
     candidates = list(ALUMNI_NAMED)
     for source, limit in ALUMNI_SOURCES.items():
-        forks = [f["full_name"] for f in gh(f"repos/{source}/forks?per_page=100")]
+        forks = [f["full_name"] for f in gh(f"repos/{source}/forks?per_page=100", paginate=True)]
         forks.sort()
         if limit and len(forks) > limit:
             step = len(forks) / limit
