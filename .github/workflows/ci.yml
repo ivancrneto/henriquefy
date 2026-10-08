@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --group dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      - name: install smoke test from a built wheel
+        run: |
+          uv build
+          cd "$(mktemp -d)"
+          uvx --from "$(ls $GITHUB_WORKSPACE/dist/*.whl)" henriquefy install --project
+          grep -q "henriquefy_version:" .claude/skills/henriquefy/SKILL.md
+          test -f .claude/skills/henriquefy/references/kb/INDEX.md

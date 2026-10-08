@@ -1,0 +1,12 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The prose in this directory written by the henriquefy maintainers (principles, patterns,
+repo digests, career notes, glossary, index) is licensed under CC BY 4.0:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+Exclusions:
+- kb/courses/: course digests derived from Henrique Bastos's lectures are published with his
+  permission, all rights reserved, until he confirms a license in writing (see kb/courses/README.md
+  and NOTICE.md).
+- Quotations attributed to Henrique Bastos remain his; they are brief and cited.
+- Code excerpts from third-party repositories keep their own licenses, recorded per excerpt.

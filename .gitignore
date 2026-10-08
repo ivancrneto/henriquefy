@@ -1,0 +1,16 @@
+# local sources: never committed (transcripts, clones, the digests' originals)
+sources/
+# per-user and tool state
+.henriquefy/
+.claude/
+.serena/
+.orca/
+# python
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/

@@ -1,0 +1,33 @@
+{
+  "channel_id": "UCEbLV4AfUhoxNb_-Ionw83g",
+  "channel": "HB Network",
+  "inventoried": "2026-10-08",
+  "playlists": [
+    {"id": "PLeKXYyZCJHxemNCYYvDUw0wRsMiN7aX1m", "title": "Orientação a Objetos na Prática", "tier": "done", "videos": 23, "hours": 8.0, "course": "oo-na-pratica"},
+    {"id": "PLeKXYyZCJHxdD1CXDeEymwI1S9wlcsmYo", "title": "Design de API na Prática", "tier": "done", "videos": 9, "hours": 24.0, "course": "design-api-na-pratica"},
+    {"id": "PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW", "title": "Raio-X da Orientação a Objetos", "tier": "1", "videos": 5, "hours": 0.7},
+    {"id": "PLeKXYyZCJHxfTqEvicb9dqcbj-eCOFhhj", "title": "Refatoração na Prática", "tier": "1", "videos": 34, "hours": 4.0},
+    {"id": "PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7", "title": "Transforme seu código Procedural em Orientado a Objetos", "tier": "1", "videos": 10, "hours": 3.3},
+    {"id": "PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7", "title": "Raio-X do Test-Driven Development", "tier": "1", "videos": 5, "hours": 2.3},
+    {"id": "PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ", "title": "Dicas de Programação", "tier": "1", "videos": 53, "hours": 2.6},
+    {"id": "PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY", "title": "Domine o Método da Refatoração Rápida", "tier": "2", "videos": 16, "hours": 4.6},
+    {"id": "PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx", "title": "Refatoração com POO em código legado", "tier": "2", "videos": 9, "hours": 1.5},
+    {"id": "PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg", "title": "Superando o Labirinto dos Testes de Software", "tier": "2", "videos": 8, "hours": 2.2},
+    {"id": "PLeKXYyZCJHxetT2NwFzKcslYfiE3yPUWL", "title": "Pacote de Desafios Pythônicos", "tier": "2", "videos": 15, "hours": 0.9},
+    {"id": "PLeKXYyZCJHxeM2DehynN89gk1apr1EwQz", "title": "Publique sua Biblioteca Python do zero", "tier": "2", "videos": 5, "hours": 0.8},
+    {"id": "PLeKXYyZCJHxerM2W71_WeWLuvU-O22vUj", "title": "O Ambiente Python Perfeito", "tier": "2", "videos": 5, "hours": 0.9},
+    {"id": "PLeKXYyZCJHxdxmtm_Kclt_NMvrWLasxgF", "title": "Evolução constante de código usando Kata", "tier": "2", "videos": 5, "hours": 0.6},
+    {"id": "PLeKXYyZCJHxczQsE7L5H9RXTcNFjx3U55", "title": "Welcome to the Django", "tier": "3", "videos": 121, "hours": 32.8},
+    {"id": "PLeKXYyZCJHxcCf96DZdrCwJmZj7cEilus", "title": "Caminho da Autonomia", "tier": "career 1", "videos": 8, "hours": 3.8},
+    {"id": "PLeKXYyZCJHxdeXekJnaSPKtjzL_2Wpwqx", "title": "Workshop: Torne-se protagonista da sua carreira na programação", "tier": "career 1", "videos": 3, "hours": 0.4},
+    {"id": "PLeKXYyZCJHxfpAJAR9q27VTugkNvHMjgP", "title": "Método para Cumprir Qualquer Prazo", "tier": "career 2", "videos": 7, "hours": 2.2},
+    {"id": "PLeKXYyZCJHxf6DOZXFVBRVyNFf3WPAu3e", "title": "Método para Programar do Jeito Fácil", "tier": "career 2", "videos": 6, "hours": 0.8},
+    {"id": "PLeKXYyZCJHxdDXilIsPrEZBQ0AOwyHBgg", "title": "O método rápido para aprender um framework novo", "tier": "career 2", "videos": 7, "hours": 2.0},
+    {"id": "PLeKXYyZCJHxfeseMJ8JCE9J7qEjsWvoNI", "title": "Desmistificando o Desenvolvimento Ágil", "tier": "career 2", "videos": 7, "hours": 1.9},
+    {"id": "PLeKXYyZCJHxe22wb--3Y4x8IH3AVSlbys", "title": "Carreira e Empreendedorismo", "tier": "career 3", "videos": 22, "hours": 1.1},
+    {"id": "PLeKXYyZCJHxcw7CmT_RRw3eY0fNloEwF1", "title": "Mercado de TI", "tier": "career 3", "videos": 20, "hours": 1.0},
+    {"id": "PLeKXYyZCJHxe2kDCsM9N44dLxXvgNksGe", "title": "Visão Estratégica", "tier": "career 3", "videos": 32, "hours": 2.7},
+    {"id": "PLeKXYyZCJHxcyBcjqbmrmX_1PdDFzLgel", "title": "Calculando o Valor que Você Gera", "tier": "career 4", "videos": 5, "hours": 1.3},
+    {"id": "PLeKXYyZCJHxd51nPK6GELCbi29z9qxI0C", "title": "Marketing Pessoal e Vendas", "tier": "career 4", "videos": 7, "hours": 2.3}
+  ]
+}
