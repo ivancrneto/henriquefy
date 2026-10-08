@@ -2,9 +2,9 @@
   "note": "Alumni repos graded locally and keyed by random id, never by name; the id map lives in gitignored sources/repos/manifest.json.",
   "date": "2026-10-08",
   "alumni": {
-    "3328df04d583": {
-      "nota_mecanica": 9.7,
-      "findings": 8,
+    "c67778ca25ec": {
+      "nota_mecanica": 9.8,
+      "findings": 5,
       "files": 57,
       "dimensions": {
         "modeling": 9.8,
@@ -12,12 +12,12 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 8.9,
-        "project": 8.9,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": null
     },
-    "ee77245ad0e2": {
+    "6b96189f84c8": {
       "nota_mecanica": 9.9,
       "findings": 4,
       "files": 80,
@@ -32,9 +32,9 @@
       },
       "fork_of": null
     },
-    "0131349278b3": {
-      "nota_mecanica": 9.9,
-      "findings": 3,
+    "113e0b45db33": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 52,
       "dimensions": {
         "modeling": 10.0,
@@ -42,14 +42,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.8,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "f8721c80cac6": {
-      "nota_mecanica": 9.9,
-      "findings": 3,
+    "c0cab7dd5c4c": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 52,
       "dimensions": {
         "modeling": 10.0,
@@ -57,14 +57,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.8,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "c0454cfc9d88": {
-      "nota_mecanica": 9.9,
-      "findings": 2,
+    "d26cfe7b7933": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 38,
       "dimensions": {
         "modeling": 10.0,
@@ -72,14 +72,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.9,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "f89c52a8a118": {
-      "nota_mecanica": 9.9,
-      "findings": 3,
+    "071d2dd758d2": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 52,
       "dimensions": {
         "modeling": 10.0,
@@ -87,14 +87,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.8,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "2e6e7c258e65": {
-      "nota_mecanica": 9.9,
-      "findings": 2,
+    "313380f0867a": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 38,
       "dimensions": {
         "modeling": 10.0,
@@ -102,14 +102,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.9,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "62f7beae57a4": {
-      "nota_mecanica": 9.9,
-      "findings": 2,
+    "7297434009fb": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 38,
       "dimensions": {
         "modeling": 10.0,
@@ -117,14 +117,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.9,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "5d962f68fed9": {
-      "nota_mecanica": 9.9,
-      "findings": 2,
+    "f3808f4ae0c8": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 38,
       "dimensions": {
         "modeling": 10.0,
@@ -132,14 +132,14 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.9,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
     },
-    "76a8711728d8": {
-      "nota_mecanica": 9.9,
-      "findings": 3,
+    "3178fe170571": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
       "files": 52,
       "dimensions": {
         "modeling": 10.0,
@@ -147,10 +147,865 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.8,
+        "project": 10.0,
         "readability": 10.0
       },
       "fork_of": "henriquebastos/eventex"
+    },
+    "b83bded796b4": {
+      "nota_mecanica": 10.0,
+      "findings": 0,
+      "files": 52,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": 10.0,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/eventex"
+    },
+    "ab7b945212f4": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "803c3d8cfe39": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "851af1931f05": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "bdaf7d560fae": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "fbf6e3685332": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "e383bcef9690": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "6002a30c5486": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "2eca5b4df80f": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "3afea7334cab": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "61c2c87a688b": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "c1398455b413": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "a61fe3363f65": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "05d83b20994c": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 15,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.7,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "c21404c59e4e": {
+      "nota_mecanica": 9.9,
+      "findings": 1,
+      "files": 24,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 9.2,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "be9cef72990a": {
+      "nota_mecanica": 9.7,
+      "findings": 2,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "f692b725fb65": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "fbe30117004f": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "f88f176c182d": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "62a81f688218": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "a3987808199a": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "b7cf01d30791": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "bb079bf64354": {
+      "nota_mecanica": 9.5,
+      "findings": 2,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.6,
+        "api": null,
+        "project": null,
+        "readability": 8.6
+      },
+      "fork_of": "henriquebastos/pacote-desafios-pythonicos"
+    },
+    "062468c45b36": {
+      "nota_mecanica": 8.0,
+      "findings": 1,
+      "files": 0,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 0.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "12e7cc7450e1": {
+      "nota_mecanica": 8.0,
+      "findings": 1,
+      "files": 2,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 0.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "f73a49e2398c": {
+      "nota_mecanica": 8.0,
+      "findings": 1,
+      "files": 0,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 0.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "ec254fd66aae": {
+      "nota_mecanica": 8.9,
+      "findings": 1,
+      "files": 2,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 5.7
+      },
+      "fork_of": null
+    },
+    "89fc26d25552": {
+      "nota_mecanica": 9.9,
+      "findings": 1,
+      "files": 23,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.1,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "9440ef36b6fe": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "affe9b979b4d": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "cffc19004383": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "1fb39090ecdd": {
+      "nota_mecanica": 8.0,
+      "findings": 1,
+      "files": 0,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 0.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "ddcbcbaee551": {
+      "nota_mecanica": 9.8,
+      "findings": 6,
+      "files": 76,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.7,
+        "testing": 9.7,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.5
+      },
+      "fork_of": null
+    },
+    "2845b1fad3b8": {
+      "nota_mecanica": 9.7,
+      "findings": 2,
+      "files": 16,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.8,
+        "testing": 8.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "dd64bd9e37c1": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "faa582206fd4": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "a24489bb8bfa": {
+      "nota_mecanica": 8.0,
+      "findings": 1,
+      "files": 0,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 0.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "c845eecc0ff7": {
+      "nota_mecanica": 9.9,
+      "findings": 6,
+      "files": 84,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.6
+      },
+      "fork_of": null
+    },
+    "937f8307747e": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "911c7a9ae6fc": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "28bc0778ac41": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "892644da88c7": {
+      "nota_mecanica": 9.7,
+      "findings": 11,
+      "files": 87,
+      "dimensions": {
+        "modeling": 9.8,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 9.8,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.3
+      },
+      "fork_of": null
+    },
+    "ee0525075cd8": {
+      "nota_mecanica": 9.8,
+      "findings": 6,
+      "files": 76,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.7,
+        "testing": 9.7,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.5
+      },
+      "fork_of": null
+    },
+    "2487639924b1": {
+      "nota_mecanica": 9.2,
+      "findings": 40,
+      "files": 94,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 6.5
+      },
+      "fork_of": null
+    },
+    "b19b89c7e06d": {
+      "nota_mecanica": 9.3,
+      "findings": 35,
+      "files": 94,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 6.9
+      },
+      "fork_of": null
+    },
+    "409147a5018e": {
+      "nota_mecanica": 9.2,
+      "findings": 40,
+      "files": 89,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 6.3
+      },
+      "fork_of": null
+    },
+    "61c643845778": {
+      "nota_mecanica": 9.9,
+      "findings": 1,
+      "files": 30,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.3,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "454b77e17f49": {
+      "nota_mecanica": 9.8,
+      "findings": 1,
+      "files": 14,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.6,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "38f29bc79603": {
+      "nota_mecanica": 9.8,
+      "findings": 3,
+      "files": 40,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.5,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 9.6
+      },
+      "fork_of": null
+    },
+    "fc46f3dea9da": {
+      "nota_mecanica": 9.2,
+      "findings": 39,
+      "files": 92,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 6.5
+      },
+      "fork_of": null
+    },
+    "d0e652dd2945": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 12,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.3,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "5b8b55280b68": {
+      "nota_mecanica": 9.2,
+      "findings": 40,
+      "files": 95,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 9.8,
+        "testing": 10.0,
+        "api": 10.0,
+        "project": null,
+        "readability": 6.6
+      },
+      "fork_of": null
+    },
+    "21eb12bcfbcb": {
+      "nota_mecanica": 9.6,
+      "findings": 2,
+      "files": 17,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.8,
+        "testing": 8.8,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "22360c2590c0": {
+      "nota_mecanica": 9.8,
+      "findings": 3,
+      "files": 35,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.3,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "7cc2e32bf0fd": {
+      "nota_mecanica": 9.7,
+      "findings": 5,
+      "files": 50,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.0,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "09d5613da9dd": {
+      "nota_mecanica": 9.7,
+      "findings": 5,
+      "files": 50,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 8.0,
+        "testing": 10.0,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
+    },
+    "8d7aab4383e3": {
+      "nota_mecanica": 9.7,
+      "findings": 1,
+      "files": 12,
+      "dimensions": {
+        "modeling": 10.0,
+        "simplicity": null,
+        "errors": 10.0,
+        "testing": 8.3,
+        "api": null,
+        "project": null,
+        "readability": 10.0
+      },
+      "fork_of": null
     }
   },
   "comparisons": {
@@ -161,10 +1016,10 @@
         "errors": 10.0,
         "testing": 10.0,
         "api": 10.0,
-        "project": 8.8,
+        "project": 10.0,
         "readability": 10.0
       },
-      "forks": 8,
+      "forks": 9,
       "fork_median": {
         "modeling": 10.0,
         "errors": 10.0,
@@ -188,9 +1043,26 @@
         "project": null,
         "readability": 10.0
       },
-      "forks": 0,
-      "fork_median": {},
-      "ok": {}
+      "forks": 22,
+      "fork_median": {
+        "modeling": 10.0,
+        "errors": 10.0,
+        "testing": 8.6,
+        "readability": 10.0
+      },
+      "ok": {
+        "modeling": true,
+        "errors": true,
+        "testing": true,
+        "readability": true
+      }
     }
-  }
+  },
+  "hand_review": [
+    "2026-10-08, henriquefy 0.3.0. 67 alumni repos graded: 9 eventex forks, 22 of 260 pacote-desafios-pythonicos forks (evenly sampled), 32 pds-* forks, the 2 API reimplementations named in the API digest, 2 other student repos.",
+    "Distribution of the Nota mecânica: min 8.0, median 9.7, max 10.0, n 67.",
+    "Weak evidence: only 6 of 65 forks differ from their original at all; the fork medians mostly re-measure his own code, so the at-or-above-median check passes trivially. The independent signal is the handful of student-written repos, which show verb-in-URI routes, bare excepts and direct environment reads, all already covered by rules. No new rule came out of this pass.",
+    "One false-positive class found through his own eventex, not through alumni: Django's os.environ.setdefault bootstrap in manage.py, wsgi.py and asgi.py fired project.environ-without-decouple; the rule now skips setdefault. Locked by evals/fixtures/environ/manage.py.",
+    "The worst five are empty or Python-free forks whose only finding is project.no-tests; the best five are the largest pds forks with three to six findings in 52 to 84 files. Nothing to learn from either end beyond what the rules already say."
+  ]
 }

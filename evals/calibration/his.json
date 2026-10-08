@@ -67,6 +67,33 @@
         "requests-pro: 5 true findings. src/requestspro/auth.py:62 compares `status_code != 401`; four tests assert `== 200`. His 2026 hamsterdan also writes HTTPException(status_code=400) next to status.HTTP_202_ACCEPTED. His own code departs from the HTTPStatus principle he teaches in Design de API na Prática (digest sections 6.2 and 9.3); the findings stay, the weight does not move.",
         "The penalty formula (min(1, 2*findings/files)) turns 5 literals in 20 files into a 5.0; that steepness is a design question for the owner, not a calibration adjustment, and is left as is."
       ]
+    },
+    {
+      "date": "2026-10-08",
+      "henriquefy": "0.3.0",
+      "repos": {
+        "henriquebastos/monopoly": {
+          "commit": "bffb0c269b00836066d0bb064ca4e38a80cad210",
+          "nota_mecanica": 9.7,
+          "findings": 1,
+          "note": "modeling.import-cycle on the package: game.py imports Board through __init__, which imports simulation, which imports Game back (OO digest 19.4, 19.6). True finding."
+        },
+        "henriquebastos/requests-pro": {
+          "commit": "cd280f025041c8352823ee6aa5b77c09ddee3cf0",
+          "nota_mecanica": 9.4,
+          "findings": 6,
+          "note": "five status comparisons (0.2.2) plus modeling.inheritance-depth on demo/eduzz.py EduzzSession, three levels under BaseSession. True finding."
+        },
+        "henriquebastos/eventex": {
+          "commit": "26b0ba5",
+          "nota_mecanica": 10.0,
+          "findings": 0,
+          "note": "three environ findings were Django settings bootstrap (setdefault); rule narrowed, see alumni.json."
+        }
+      },
+      "hand_review": [
+        "Whole-repo rules added in Phase 3; both fire on real shapes in his code and stay."
+      ]
     }
   ]
 }

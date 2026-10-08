@@ -238,13 +238,23 @@ def _is_assertion(node) -> bool:
     "configuracao-fora-do-codigo",
     "Environment read directly in a project that uses python-decouple",
     "`os.environ[...]`, `os.environ.get(...)` or `os.getenv(...)` in a project whose "
-    "dependencies include `python-decouple`.",
+    "dependencies include `python-decouple`. `os.environ.setdefault(...)`, Django's settings "
+    "bootstrap in manage.py, wsgi.py and asgi.py, is not a configuration read.",
     "Read it through `decouple.config(...)`, with a cast and a default, in one place.",
 )
 def environ_without_decouple(tree, lines, ctx):
     if not ctx.depends_on_decouple:
         return
+    bootstrap = {
+        id(call.func.value)
+        for call in ast.walk(tree)
+        if isinstance(call, ast.Call)
+        and isinstance(call.func, ast.Attribute)
+        and call.func.attr == "setdefault"
+    }
     for node in ast.walk(tree):
+        if id(node) in bootstrap:
+            continue
         if (
             isinstance(node, ast.Attribute)
             and isinstance(node.value, ast.Name)
