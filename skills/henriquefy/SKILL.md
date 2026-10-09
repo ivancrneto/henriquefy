@@ -15,12 +15,16 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 - **ask**: answer a question or review a snippet against the KB.
 - **check**: mechanical findings from the CLI, then your judgment findings, each cited.
 - **grade**: the Nota mecânica from the CLI, then the Nota do Henrique with your judgment.
-- transform: not shipped yet; say so if asked.
+- **transform**: rewrite in his style, one principle per change, tests between changes.
 
 ## check
 
 1. Run `scripts/henriquefy.sh check <path> --json` and read the findings (rule, path, line);
-   the command exits 1 when there are findings, which is not an error.
+   the command exits 1 when there are findings, which is not an error, and 3 when the CLI
+   could not run at all. Set `HENRIQUEFY_CLI` to an executable (a checkout's
+   `.venv/bin/henriquefy`) to run it instead of the pinned release. Pass `--root <dir>` when the project root is not the nearest
+   pyproject, setup.py or .git above the path. Unparseable files are listed and excluded from
+   scoring; on code newer than the running Python, rerun under `uvx --python 3.14`.
    `references/kb/check-rules.md` maps each rule to its principle, what it fires on and the fix.
 2. Judgment pass. Scope: the path given; with no path, the files with mechanical findings plus,
    in a git repo, files changed in the working tree; if the user asks for everything, say how
@@ -70,6 +74,14 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
    for a framework he did not show. Say which one you are quoting.
 6. Quotes marked `verified: false` are transcript paraphrases: render them without quotation marks.
 7. `scripts/henriquefy.sh` runs the CLI for `check` and `grade`; `ask` never runs it.
+
+## transform
+
+Follow `references/transform-playbook.md` exactly: check, fence behavior with tests before any
+edit, one principle per change with the tests run after each, then explain the diff with
+citations. Never commit or branch unless asked. Public names, signatures and return contracts
+stay; a boolean return stays a boolean even when a principle prefers an exception, and that is
+recorded as a finding that remains. Do not generalize.
 
 ## Never
 

@@ -1,1 +1,14 @@
-{".": [{"rule": "modeling.local-import", "line": 6}, {"rule": "modeling.local-import", "line": 12}]}
+{
+ ".": [
+  {
+   "path": "shop/orders.py",
+   "rule": "modeling.local-import",
+   "line": 6
+  },
+  {
+   "path": "shop/orders.py",
+   "rule": "modeling.local-import",
+   "line": 12
+  }
+ ]
+}

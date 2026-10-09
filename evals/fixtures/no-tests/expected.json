@@ -1,1 +1,9 @@
-{".": [{"rule": "project.no-tests", "line": 0}]}
+{
+ ".": [
+  {
+   "path": ".",
+   "rule": "project.no-tests",
+   "line": 0
+  }
+ ]
+}

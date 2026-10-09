@@ -13,6 +13,7 @@ Auto captions have no punctuation and mis-hear names and code; the distiller is 
 import json
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 from henriquefy.paths import state_dir
@@ -25,29 +26,18 @@ LANGS = ("pt-orig", "pt")
 def playlist_entry(key: str) -> dict:
     data = json.loads((state_dir() / "playlists.json").read_text(encoding="utf-8"))
     for p in data["playlists"]:
-        if key in (p["id"], p.get("course")):
+        if key in (p["id"], p.get("course"), course_id(p)):
             return p
     raise SystemExit(f"unknown playlist or course {key!r}; see state/playlists.json")
 
 
 def course_id(entry: dict) -> str:
+    """The entry's `course`, or a slug of its title: accents folded, punctuation dropped."""
     if entry.get("course"):
         return entry["course"]
-    slug = entry["title"].lower()
-    for a, b in (
-        ("ã", "a"),
-        ("á", "a"),
-        ("â", "a"),
-        ("é", "e"),
-        ("ê", "e"),
-        ("í", "i"),
-        ("ó", "o"),
-        ("õ", "o"),
-        ("ú", "u"),
-        ("ç", "c"),
-    ):
-        slug = slug.replace(a, b)
-    return "-".join(w for w in "".join(c if c.isalnum() else " " for c in slug).split())
+    folded = unicodedata.normalize("NFKD", entry["title"].lower())
+    slug = "".join(c for c in folded if not unicodedata.combining(c))
+    return "-".join("".join(c if c.isalnum() else " " for c in slug).split())
 
 
 def list_videos(playlist_id: str) -> list[dict]:

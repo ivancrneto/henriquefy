@@ -1,1 +1,23 @@
-{"bad.py": [{"rule": "readability.mutable-default", "line": 1}, {"rule": "readability.mutable-default", "line": 6}, {"rule": "readability.mutable-default", "line": 6}], "clean.py": []}
+{
+ "bad.py": [
+  {
+   "rule": "readability.mutable-default",
+   "line": 1
+  },
+  {
+   "rule": "readability.mutable-default",
+   "line": 6
+  },
+  {
+   "rule": "readability.mutable-default",
+   "line": 6
+  }
+ ],
+ "clean.py": [],
+ "bad_lambda.py": [
+  {
+   "rule": "readability.mutable-default",
+   "line": 1
+  }
+ ]
+}

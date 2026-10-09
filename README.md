@@ -14,8 +14,9 @@ uvx henriquefy check path/     # mechanical findings, each mapped to a principle
 uvx henriquefy grade path/     # Nota mecânica: deterministic, never his verdict
 ```
 
-Status: Phase 2. `ask`, `check` and `grade` are live over 21 principles and 12 patterns from two
-courses; `transform` follows. The full plan is in [PLAN.md](PLAN.md).
+Status: Phase 5. `ask`, `check`, `grade` and `transform` are live over 25 principles, 15 patterns,
+four course digests and 14 repo digests. The full plan is in [PLAN.md](PLAN.md). Watch the
+originals: [HB Network on YouTube](https://www.youtube.com/@hbnetworkoficial).
 
 Independent project, not affiliated with or endorsed by Henrique Bastos or HB Network; published
 with his permission. See [NOTICE.md](NOTICE.md). Code is MIT; knowledge-base prose is CC BY 4.0

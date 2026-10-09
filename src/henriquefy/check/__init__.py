@@ -1,18 +1,38 @@
-"""Mechanical checks: parse each Python file once, run the per-file rules, apply suppressions."""
+"""Mechanical checks: find the project root, parse every Python file once, run the per-file
+rules on the files in scope, the whole-repo rules over the root, and apply suppressions."""
 
 import ast
 import json
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .repo_rules import import_cycles, inheritance_depth, module_name
+from .repo_rules import import_cycles, inheritance_depth, module_name, test_support
 from .rules import HTTP_METHODS, RESPONSE_CALL, ROUTE_CALLS, RULES, Context, Finding, run_file_rules
 
 IGNORE = re.compile(r"#\s*henriquefy:\s*ignore\[([\w.,\s-]+)\]")
-SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", ".henriquefy", "build", "dist"}
-TEST_FILE = re.compile(r"(^|/)(tests?/|test_[^/]+\.py$|[^/]+_test\.py$)")
+SKIP_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    ".henriquefy",
+    "build",
+    "dist",
+    ".tox",
+    ".nox",
+    ".eggs",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "site-packages",
+}
+TEST_FILE = re.compile(r"(^|/)(tests?/|testing/|test_[^/]+\.py$|[^/]+_test\.py$|conftest\.py$)")
+ROOT_MARKERS = ("pyproject.toml", "setup.py", "setup.cfg", ".git")
 UNPARSEABLE = "tooling.unparseable"
+PARSE_ERRORS = (SyntaxError, ValueError, RecursionError, MemoryError)
 
 
 @dataclass
@@ -25,6 +45,9 @@ class Result:
     depends_on_decouple: bool = False
     signals: dict[str, bool] = field(default_factory=dict)
     target_is_dir: bool = True
+    unparseable: int = 0
+    target: str = ""
+    nested_repos: int = 0  # subdirectories of the target pruned as repositories of their own
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -32,92 +55,185 @@ class Result:
         return json.dumps(data, indent=2, ensure_ascii=False)
 
 
-def python_files(target: Path) -> list[Path]:
-    if target.is_file():
-        return [target]
-    return sorted(p for p in target.rglob("*.py") if not any(part in SKIP_DIRS for part in p.parts))
+DECOUPLE_REQUIREMENT = re.compile(r"(^|[\"'\s,\[])python[-_.]decouple\b", re.I)
+OWN_NAME = re.compile(r"\bname\s*[=:]\s*[\"'][^\"']*[\"']")
 
 
-def depends_on_decouple(root: Path) -> bool:
-    names = ("pyproject.toml", "setup.py", "setup.cfg", "Pipfile")
-    candidates = [root / n for n in names] + list(root.glob("requirements*.txt"))
-    return any(
-        f.is_file() and "decouple" in f.read_text(encoding="utf-8", errors="replace")
-        for f in candidates
+def find_root(target: Path) -> Path:
+    """Nearest ancestor holding a project marker; the target's directory when none exists.
+    The search stops below the home directory: a dotfiles `~/.git` is not the project."""
+    start = target if target.is_dir() else target.parent
+    home = Path.home().resolve()
+    for directory in (start, *start.parents):
+        if directory == home and directory != start:
+            break
+        if any((directory / marker).exists() for marker in ROOT_MARKERS):
+            return directory
+    return start
+
+
+def python_files(
+    root: Path, target: Path | None = None, repos: list[Path] | None = None
+) -> list[Path]:
+    """Regular `.py` files under root. Tool directories, virtualenvs and nested repositories
+    (a subdirectory with its own `.git`: a clone, a submodule, a worktree) are pruned, unless
+    the target lies inside them; pruned repositories are appended to `repos` when given."""
+    if root.is_file():
+        return [root]
+    keep = {target, *target.parents} if target else set()
+    found = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        here = Path(dirpath)
+        kept = []
+        for d in dirnames:
+            if here / d in keep or not _foreign(here / d):
+                kept.append(d)
+            elif repos is not None and (here / d / ".git").exists():
+                repos.append(here / d)
+        dirnames[:] = kept
+        found += [here / f for f in filenames if f.endswith(".py") and (here / f).is_file()]
+    return sorted(found)
+
+
+def _foreign(directory: Path) -> bool:
+    return (
+        directory.name in SKIP_DIRS
+        or (directory / ".git").exists()
+        or (directory / "pyvenv.cfg").is_file()
     )
 
 
+def depends_on_decouple(root: Path) -> bool:
+    """A `python-decouple` requirement in the dependency files; a comment, or the project's own
+    `name = "python-decouple"`, is not one."""
+    names = ("pyproject.toml", "setup.py", "setup.cfg", "Pipfile")
+    candidates = [root / n for n in names] + list(root.glob("requirements*.txt"))
+    for f in candidates:
+        if not f.is_file():
+            continue
+        for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = OWN_NAME.sub("", line.split("#", 1)[0])
+            if DECOUPLE_REQUIREMENT.search(line):
+                return True
+    return False
+
+
 def detect_framework(sources: list[str]) -> str:
+    """Every web framework imported anywhere in scope, comma-joined; "none" otherwise."""
     joined = "\n".join(sources)
-    if re.search(r"^\s*(from|import)\s+django\b", joined, re.M):
-        return "django"
-    if re.search(r"^\s*(from|import)\s+fastapi\b", joined, re.M):
-        return "fastapi"
-    if re.search(r"^\s*(from|import)\s+starlette\b", joined, re.M):
-        return "starlette"
-    return "none"
+    found = [
+        name
+        for name in ("django", "fastapi", "starlette")
+        if re.search(rf"^\s*(from|import)\s+{name}\b", joined, re.M)
+    ]
+    return ",".join(found) or "none"
 
 
-def check(target: Path) -> Result:
-    target = target.resolve()
-    root = target if target.is_dir() else target.parent
-    files = python_files(target)
-    decouple = depends_on_decouple(root)
-    packages = {p.name for p in root.iterdir() if (p / "__init__.py").is_file()} | {root.name}
+def _packages(root: Path) -> set[str]:
+    found = {p.name for p in root.iterdir() if (p / "__init__.py").is_file()} | {root.name}
     if (root / "src").is_dir():
-        packages |= {p.name for p in (root / "src").iterdir() if (p / "__init__.py").is_file()}
-    sources: list[str] = []
-    findings: list[Finding] = []
+        found |= {p.name for p in (root / "src").iterdir() if (p / "__init__.py").is_file()}
+    return found
+
+
+def check(target: Path, root: Path | None = None) -> Result:
+    """`root` overrides project-root discovery (the nearest pyproject, setup or .git above
+    the target); every repo-level signal is computed from the root, findings from the target."""
+    target = target.resolve()
+    root = root.resolve() if root else find_root(target)
+    if target != root and root not in target.parents:
+        raise ValueError(f"{target} is not inside the project root {root}")
+    # A file target needs no other file parsed: the repo rules run on directories only.
+    repos: list[Path] = []
+    all_files = python_files(root, target, repos) if target.is_dir() else [target]
+    nested_repos = sum(target == r or target in r.parents for r in repos)
+    in_scope = {p for p in all_files if p == target or target in p.parents}
+    decouple = depends_on_decouple(root)
+    packages = _packages(root)
     trees: dict[str, ast.AST] = {}
     rel_paths: dict[str, str] = {}
-    test_files = 0
+    lines_by_path: dict[str, list[str]] = {}
+    sources: list[str] = []
+    findings: list[Finding] = []
     signals = {"routes": False, "responses": False}
-    for path in files:
+    files = test_files = unparseable = root_test_files = 0
+    parsed = []
+    for path in all_files:
         rel = path.relative_to(root) if path.is_relative_to(root) else path
-        source = path.read_text(encoding="utf-8", errors="replace")
-        sources.append(source)
+        rel_str = str(rel).replace("\\", "/")
+        is_test = bool(TEST_FILE.search(rel_str))
+        try:
+            source = path.read_text(encoding="utf-8", errors="replace")
+            tree = ast.parse(source, filename=str(path))
+        except (OSError, *PARSE_ERRORS) as exc:
+            if path in in_scope:
+                unparseable += 1
+                if isinstance(exc, OSError):
+                    reason = exc.strerror or type(exc).__name__
+                    msg = f"cannot read ({reason}); excluded from scoring"
+                else:
+                    msg = (
+                        f"cannot parse ({getattr(exc, 'msg', None) or type(exc).__name__});"
+                        " excluded from scoring. Newer syntax? Run under"
+                        " `uvx --python 3.14 henriquefy`"
+                    )
+                findings.append(
+                    Finding(UNPARSEABLE, rel_str, getattr(exc, "lineno", None) or 1, msg)
+                )
+            continue
+        root_test_files += is_test
         lines = source.splitlines()
-        is_test = bool(TEST_FILE.search(str(rel).replace("\\", "/")))
+        mod = module_name(rel, packages)
+        trees[mod] = tree
+        rel_paths[mod] = rel_str
+        lines_by_path[rel_str] = lines
+        parsed.append((path, rel, mod, is_test, source, tree, lines))
+    support = test_support(trees, {mod for *_, mod, is_test, _, _, _ in parsed if is_test})
+    for path, rel, mod, is_test, source, tree, lines in parsed:
+        if path not in in_scope:
+            continue
+        files += 1
         test_files += is_test
+        sources.append(source)
         ctx = Context(
             path=rel,
             root=root,
             is_test=is_test,
             depends_on_decouple=decouple,
+            is_support=mod in support,
             extra={"packages": packages},
         )
-        try:
-            tree = ast.parse(source, filename=str(path))
-        except SyntaxError as exc:
-            findings.append(
-                Finding(UNPARSEABLE, str(rel), exc.lineno or 1, f"cannot parse: {exc.msg}")
-            )
-            continue
-        findings.extend(_apply_suppressions(run_file_rules(tree, lines, ctx), lines))
+        findings.extend(run_file_rules(tree, lines, ctx))
         _collect_signals(tree, signals)
-        mod = module_name(rel, packages)
-        trees[mod] = tree
-        rel_paths[mod] = str(rel)
     if target.is_dir():
-        findings.extend(import_cycles(trees, rel_paths))
-        findings.extend(inheritance_depth(trees, rel_paths))
-    if target.is_dir() and test_files == 0:
-        findings.append(Finding("project.no-tests", str(rel_root(root)), 0, "no test files found"))
+        scope_paths = {
+            str(p.relative_to(root)).replace("\\", "/") for p in in_scope if p.is_relative_to(root)
+        }
+        repo_findings = import_cycles(trees, rel_paths, scope_paths)
+        repo_findings += inheritance_depth(trees, rel_paths)
+        findings.extend(f for f in repo_findings if f.path in scope_paths)
+        if root_test_files == 0:
+            findings.append(Finding("project.no-tests", ".", 0, "no test files found"))
+    findings = _apply_suppressions(findings, lines_by_path)
+    findings = _dedupe(findings)
     return Result(
         str(root),
-        len(files),
+        files,
         test_files,
         detect_framework(sources),
         findings,
         decouple,
         signals,
         target.is_dir(),
+        unparseable,
+        str(target),
+        nested_repos,
     )
 
 
 def _collect_signals(tree: ast.AST, signals: dict[str, bool]) -> None:
-    """Whether the file defines routes or builds responses, so API and status rules count as
-    applicable only where they had a chance to fire."""
+    """Whether the file defines routes or builds responses, so API rules count as applicable
+    only where they had a chance to fire."""
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
             func = node.func
@@ -135,43 +251,53 @@ def _collect_signals(tree: ast.AST, signals: dict[str, bool]) -> None:
             signals["responses"] = True
 
 
-def rel_root(root: Path) -> str:
-    return "."
-
-
-def _apply_suppressions(findings: list[Finding], lines: list[str]) -> list[Finding]:
+def _apply_suppressions(
+    findings: list[Finding], lines_by_path: dict[str, list[str]]
+) -> list[Finding]:
     kept = []
     for f in findings:
-        candidates = [lines[f.line - 1]] if 0 < f.line <= len(lines) else []
-        if f.line >= 2:
-            candidates.append(lines[f.line - 2])
+        lines = lines_by_path.get(f.path, [])
+        anchors = [n for n in (f.line, f.line - 1, 1, 2) if 0 < n <= len(lines)] if f.line else []
         suppressed = any(
             f.rule in {r.strip() for r in m.group(1).split(",")}
-            for text in candidates
-            for m in IGNORE.finditer(text)
+            for n in anchors
+            for m in IGNORE.finditer(lines[n - 1])
         )
         if not suppressed:
             kept.append(f)
     return kept
 
 
-def describe(result: Result, principles: dict[str, dict] | None = None) -> str:
-    """One line per finding: path:line, rule, why, citation, fix."""
+def _dedupe(findings: list[Finding]) -> list[Finding]:
+    seen: set[tuple] = set()
+    out = []
+    for f in findings:
+        key = (f.rule, f.path, f.line, f.col, f.message)
+        if key not in seen:
+            seen.add(key)
+            out.append(f)
+    return out
+
+
+def describe(result: Result, principles: dict | None = None) -> str:
+    """One line per finding: path:line, rule, what, why, citation, fix."""
     principles = principles or {}
-    lines = [
-        f"{result.root}: {result.files} files, {result.test_files} test files,"
-        f" framework {result.framework}"
-    ]
+    head = f"{result.root}: {result.files} files in scope, {result.test_files} test files"
+    lines = [f"{head}, framework {result.framework}"]
+    if result.unparseable:
+        lines.append(
+            f"{result.unparseable} file(s) could not be parsed and are excluded from scoring"
+        )
     for f in sorted(result.findings, key=lambda f: (f.path, f.line, f.rule)):
         rule = RULES.get(f.rule)
         if rule is None:
             lines.append(f"{f.path}:{f.line}  {f.rule}  {f.message}")
             continue
-        p = principles.get(rule.principle, {})
-        citation = p.get("citation", rule.principle)
+        p = principles.get(rule.principle)
+        citation = getattr(p, "citation", None) or rule.principle
         lines.append(
-            f"{f.path}:{f.line}  {f.rule}  {f.message}. {rule.title}: {rule.detect}"
-            f" [{citation}] Fix: {rule.fix}"
+            f"{f.path}:{f.line}  {f.rule}  {f.message}. {rule.title} [{rule.principle}; {citation}]"
+            f" Fix: {rule.fix}"
         )
     if not result.findings:
         lines.append("no findings")
