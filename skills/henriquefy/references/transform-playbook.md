@@ -12,9 +12,10 @@ explanation of the diff is the deliverable. Every step cites the principle it ap
    the code as it is, warts included, using the project's runner; if there is no runner, add
    pytest under `tests/` and say so. Run the program when it is a program. Do not change a line
    of code before this step is green.
-3. **One principle per change** (deixe-o-codigo-descansar, uma coisa de cada vez). Apply the
-   highest-weight finding's fix, run the tests, then the next. Each change is small enough to
-   describe in one sentence. Never commit, stage or branch unless asked; leave the working tree
+3. **One principle per change** (deixe-o-codigo-descansar, uma coisa de cada vez). All findings
+   of one principle go in one change; apply the highest-weight principle first, run the tests,
+   then the next. When two rules share a principle, fix the mechanical, fewer-lines one first.
+   Each change is small enough to describe in one sentence. Never commit, stage or branch unless asked; leave the working tree
    changed and say what a commit per principle would be.
 4. **Explain the diff.** For each change: `path:line`, principle id, why in one sentence in his
    reasoning, citation (course, lesson, timestamp, or repo path and commit), and what the tests
@@ -31,6 +32,12 @@ explanation of the diff is the deliverable. Every step cites the principle it ap
   classes, helpers or abstractions that the code did not ask for. If two things look alike,
   leave them alike.
 - **Do not fix what is not a finding.** Style you dislike that no principle names stays.
+- **An existing test that forbids the fix wins.** If a pre-existing test fails on a change, the
+  change is a behavior change: revert it, record the finding as remaining, and say what the
+  test and the callers would need. Do not add an ignore marker to a legitimate finding.
+- **Narrow a broad `except` to the narrowest class that keeps every existing test green**, and
+  list the untested paths that now propagate instead of being swallowed; that list is part of
+  the explanation, not a reason to keep the broad catch.
 - **Stop when the tests stop telling you anything.** If a change cannot be verified by a test
   that existed before it, undo it and say so.
 

@@ -1,6 +1,7 @@
 """Orders API, Django function views. henriquefy transform fixture."""
 
 import json
+from http import HTTPStatus
 
 from django.http import JsonResponse
 
@@ -25,15 +26,15 @@ def charge(order, amount):
 def create_order(request):
     try:
         data = json.loads(request.body)
-    except:
-        return JsonResponse({"error": "bad json"}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "bad json"}, status=HTTPStatus.BAD_REQUEST)
     order = {"id": len(ORDERS) + 1, "balance": data.get("balance", 0)}
     ORDERS[order["id"]] = order
-    return JsonResponse(order, status=201)
+    return JsonResponse(order, status=HTTPStatus.CREATED)
 
 
 def order_detail(request, pk):
     order = ORDERS.get(pk)
     if order is None:
-        return JsonResponse({"error": "not found"}, status=404)
-    return JsonResponse(order, status=200)
+        return JsonResponse({"error": "not found"}, status=HTTPStatus.NOT_FOUND)
+    return JsonResponse(order, status=HTTPStatus.OK)
