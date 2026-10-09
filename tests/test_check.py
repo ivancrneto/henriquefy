@@ -246,3 +246,115 @@ def test_malformed_overrides_are_named_not_tracebacks(tmp_path, monkeypatch, cap
     (tmp_path / "rubric.toml").write_text("[weights]\nno-such-principle = 4\n")
     assert load_overrides(load_principles()) == []
     assert "names no principle" in capsys.readouterr().err
+
+
+def test_folder_of_repositories_says_why_it_has_nothing_to_grade(tmp_path, capsys):
+    from henriquefy.cli import main
+
+    for name in ("one", "two"):
+        _project(tmp_path / name)
+        (tmp_path / name / ".git").mkdir()
+    assert main(["grade", str(tmp_path), "--root", str(tmp_path)]) == 0
+    captured = capsys.readouterr()
+    assert "Nota mecânica: N/A" in captured.out
+    assert "2 subdirectories are repositories of their own" in captured.err
+    _project(tmp_path / "three")
+    (tmp_path / "m.py").write_text("x = 1\n")
+    main(["grade", str(tmp_path), "--root", str(tmp_path)])
+    assert "repositories of their own" not in capsys.readouterr().err
+
+
+def test_subdirectory_without_tests_is_na_on_testing_not_ten(tmp_path):
+    root = _project(tmp_path / "proj")
+    (root / "app").mkdir()
+    (root / "app" / "m.py").write_text("x = 1\n")
+    by = {d.category: d.score for d in grade(check(root / "app")).dimensions}
+    assert by["testing"] is None
+    assert {d.category: d.score for d in grade(check(root)).dimensions}["testing"] == 10.0
+    bare = tmp_path / "bare"
+    (bare / "app").mkdir(parents=True)
+    (bare / "pyproject.toml").write_text("")
+    (bare / "app" / "m.py").write_text("x = 1\n")
+    # the project has no tests at all: that is evidence, even for a subdirectory
+    assert {d.category: d.score for d in grade(check(bare / "app")).dimensions}["testing"] < 10
+
+
+def test_era_drops_dated_principles_and_names_the_drift(tmp_path):
+    from henriquefy.check import Finding, Result
+
+    rule = "project.environ-without-decouple"
+    result = Result("/x", 5, 1, "none", [Finding(rule, "s.py", 3, "os.getenv")])
+    result.depends_on_decouple = True
+    now = grade(result)
+    then = grade(result, era=2015)
+    project = {d.category: d.score for d in now.dimensions}["project"]
+    assert project == 8.0 and not now.drift
+    assert {d.category: d.score for d in then.dimensions}["project"] is None
+    assert then.drift and "configuracao-fora-do-codigo: 1 finding(s)" in then.drift[0]
+    assert {d.category: d.score for d in grade(result, era=2026).dimensions}["project"] == 8.0
+
+
+def test_report_renders_the_weakest_dimension_and_appends_a_trend(tmp_path):
+    from henriquefy.check import Finding, Result
+    from henriquefy.grade.report import render, write_report
+
+    clean = Result(str(tmp_path), 5, 1, "none", [])
+    assert "Weakest dimension" not in render(grade(clean), clean)
+    bad = Result(str(tmp_path), 5, 1, "none", [Finding("errors.bare-except", "a.py", 1, "x")])
+    text = render(grade(bad), bad)
+    assert "Weakest dimension: Erros" in text and "prefira-excecoes-a-booleanos.md" in text
+    for _ in range(2):
+        write_report(tmp_path, grade(bad), bad, text)
+    trend = (tmp_path / ".henriquefy" / "grade.jsonl").read_text().splitlines()
+    assert len(trend) == 2
+    entry = json.loads(trend[0])
+    assert entry["commit"] is None and entry["dimensions"]["errors"] == 8.0  # not a git repo
+    assert (tmp_path / ".henriquefy" / "report.md").read_text() == text
+
+
+def test_report_goes_to_the_project_root_and_survives_a_read_only_one(tmp_path, capsys):
+    from henriquefy.cli import main
+
+    root = _project(tmp_path / "proj")
+    (root / "app").mkdir()
+    (root / "app" / "m.py").write_text("x = 1\n")
+    assert main(["grade", "--report", str(root / "app")]) == 0
+    assert (root / ".henriquefy" / "report.md").is_file()
+    assert not (root / "app" / ".henriquefy").exists()
+    if os.geteuid() == 0:
+        return  # root writes anywhere
+    ro = _project(tmp_path / "ro")
+    ro.chmod(0o555)
+    try:
+        assert main(["grade", "--report", str(ro)]) == 2
+    finally:
+        ro.chmod(0o755)
+    assert "cannot write the report" in capsys.readouterr().err
+
+
+def test_project_without_tests_scores_zero_on_testing(tmp_path):
+    for i in range(20):
+        (tmp_path / f"m{i}.py").write_text("def f():\n    return 1\n")
+    data = json.loads(grade(check(tmp_path, root=tmp_path)).to_json())
+    testing = next(d for d in data["dimensions"] if d["category"] == "testing")
+    assert testing["score"] == 0.0
+
+
+def test_testing_package_counts_as_test_support(tmp_path):
+    pkg = tmp_path / "app" / "testing"
+    pkg.mkdir(parents=True)
+    (pkg / "fakes.py").write_text(
+        "def fake():\n    resp = object()\n    resp.status_code = 404\n    return resp\n"
+    )
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_x.py").write_text("def test_x():\n    assert True\n")
+    assert not [f for f in check(tmp_path, root=tmp_path).findings if f.rule == "api.magic-status"]
+
+
+def test_check_rejects_era_and_grade_accepts_it(tmp_path):
+    from henriquefy.cli import build_parser
+
+    parser = build_parser()
+    assert parser.parse_args(["grade", str(tmp_path), "--era", "2022"]).era == 2022
+    with pytest.raises(SystemExit):
+        parser.parse_args(["check", str(tmp_path), "--era", "2022"])

@@ -9,6 +9,27 @@
    "path": "bad.py",
    "rule": "project.environ-without-decouple",
    "line": 4
+  },
+  {
+   "path": "bad_from_import.py",
+   "rule": "project.environ-without-decouple",
+   "line": 4
+  },
+  {
+   "path": "bad_from_import.py",
+   "rule": "project.environ-without-decouple",
+   "line": 5
+  }
+ ],
+ "writes_clean.py": [],
+ "bad_from_import.py": [
+  {
+   "rule": "project.environ-without-decouple",
+   "line": 4
+  },
+  {
+   "rule": "project.environ-without-decouple",
+   "line": 5
   }
  ]
 }

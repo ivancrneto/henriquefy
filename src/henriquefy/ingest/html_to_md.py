@@ -73,13 +73,16 @@ class _Converter(HTMLParser):
             self.out.append("> " * self.quote)
         elif tag in ("ul", "ol"):
             self._newline(2 if not self.lists else 1)
-            self.lists.append((tag, 0))
+            start = a.get("start") or "1"
+            self.lists.append((tag, int(start) - 1 if tag == "ol" and start.isdigit() else 0))
         elif tag == "li":
             kind, n = self.lists[-1] if self.lists else ("ul", 0)
             if self.lists:
                 self.lists[-1] = (kind, n + 1)
             self._newline(1)
-            indent = "  " * (len(self.lists) - 1)
+            # CommonMark nests a list under its parent item's content column: 2 after "- ",
+            # 3 after "1. ", 4 after "10. "
+            indent = "".join(" " * (len(f"{m}. ") if k == "ol" else 2) for k, m in self.lists[:-1])
             self._write(f"{indent}{n + 1}. " if kind == "ol" else f"{indent}- ")
         elif tag == "table":
             self._newline(2)
@@ -150,7 +153,8 @@ class _Converter(HTMLParser):
             self._write(data)
             return
         text = re.sub(r"\s+", " ", data)
-        if text.strip() or (self.out and not self.out[-1].endswith("\n")):
+        buf = self.cell if self.cell is not None else self.out
+        if text.strip() or (buf and not buf[-1].endswith("\n")):
             self._write(text)
 
     def _emit_table(self) -> None:

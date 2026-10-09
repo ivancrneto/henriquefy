@@ -20,5 +20,11 @@
    "line": 8
   }
  ],
- "nested_def_clean.py": []
+ "nested_def_clean.py": [],
+ "bare_return.py": [
+  {
+   "rule": "errors.bool-in-except",
+   "line": 5
+  }
+ ]
 }

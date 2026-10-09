@@ -64,8 +64,11 @@ def import_cycles(
     modules = set(trees)
     graph: dict[str, set[str]] = {m: set() for m in modules}
     for name, tree in trees.items():
+        typing_only = {
+            id(n) for block in _type_checking_blocks(tree) for s in block for n in ast.walk(s)
+        }
         for node in ast.walk(tree):
-            if isinstance(node, ast.Import | ast.ImportFrom):
+            if isinstance(node, ast.Import | ast.ImportFrom) and id(node) not in typing_only:
                 graph[name] |= _resolve(name, node, modules) - {name}
     findings = []
     for component in _tarjan(graph):
@@ -77,6 +80,16 @@ def import_cycles(
                 Finding(CYCLE_RULE, root_paths[anchor], 1, "import cycle: " + " -> ".join(members))
             )
     return findings
+
+
+def _type_checking_blocks(tree: ast.AST):
+    """The bodies of `if TYPE_CHECKING:` and `if typing.TYPE_CHECKING:`; the else branch runs."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.If):
+            test = node.test
+            name = test.attr if isinstance(test, ast.Attribute) else getattr(test, "id", None)
+            if name == "TYPE_CHECKING":
+                yield node.body
 
 
 def _tarjan(graph: dict[str, set[str]]) -> list[set[str]]:

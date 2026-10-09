@@ -40,9 +40,12 @@ def frontmatter(path: Path) -> dict[str, str]:
 
 
 def rule_line(path: Path) -> str:
-    """The one-sentence rule: first sentence after `**Rule.**`."""
+    """The one-sentence rule: first sentence after `**Rule.**`. A sentence ends at `.`, `!` or
+    `?` before a capital, a blank line or the end, so "e.g. through" does not end it."""
     text = path.read_text(encoding="utf-8")
-    m = re.search(r"\*\*Rule\.\*\*\s*(.+?)(?<=[.!?])\s", text, re.S)
+    m = re.search(
+        r"\*\*Rule\.\*\*\s*(.+?)(?<=[.!?])(?=\s+[A-ZÀ-Ý`*(\[\"]|\s*\n\s*\n|\s*$)", text, re.S
+    )
     if not m:
         raise ValueError(f"{path}: no **Rule.** paragraph")
     return re.sub(r"\s+", " ", m.group(1)).strip()
@@ -120,7 +123,8 @@ def build_rubric(kb: Path) -> str:
     lines += [
         "",
         "Nota mecânica formula: penalty(principle) = files with a finding of that principle divided"
-        " by max(files in scope, 5), so one bad file costs at most a fifth of a dimension;"
+        " by max(files in scope, 5), so one bad file costs at most a fifth of a dimension; a"
+        " repo-level finding such as no tests at all is a full penalty for its principle;"
         " penalty(dimension) = weighted mean over its mechanical and partial principles whose"
         " rules were applicable; score(dimension) = 10 * (1 - penalty), one decimal; overall ="
         " weighted mean of the scored dimensions. Judgment-only principles never enter this"

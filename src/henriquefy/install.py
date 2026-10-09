@@ -18,8 +18,10 @@ _VERSION_LINE = re.compile(r"^(\s*henriquefy_version:\s*).*$", re.M)
 
 
 def install(target: Path, *, all_skills: bool = False) -> list[Path]:
-    """Install skills under `target` (a `skills/` directory). Returns the written dirs."""
-    names = (CONSUMER, *MAINTAINER) if all_skills else (CONSUMER,)
+    """Install skills under `target` (a `skills/` directory). Returns the written dirs.
+    A maintainer skill already there is refreshed too, so no skill is left on an old version."""
+    present = tuple(n for n in MAINTAINER if (target / n).is_dir() or (target / n).is_symlink())
+    names = (CONSUMER, *MAINTAINER) if all_skills else (CONSUMER, *present)
     written = []
     for name in names:
         src = skills_dir() / name

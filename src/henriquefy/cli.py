@@ -41,14 +41,14 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("path", nargs="?", default=".", type=Path)
         q.add_argument("--json", action="store_true", help="machine-readable output")
         q.add_argument(
-            "--era", type=int, help="grade against his practice of this year (calibration)"
-        )
-        q.add_argument(
             "--root",
             type=Path,
             help="project root; default: nearest pyproject, setup or .git above path",
         )
         if name == "grade":
+            q.add_argument(
+                "--era", type=int, help="grade against his practice of this year (calibration)"
+            )
             q.add_argument(
                 "--report",
                 action="store_true",
@@ -67,24 +67,19 @@ def _skills_target(args: argparse.Namespace) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if args.command == "install":
-        target = _skills_target(args)
-        target.mkdir(parents=True, exist_ok=True)
+    if args.command in {"install", "update"}:
+        update = args.command == "update"
+        target = Path.home() / ".claude" / "skills" if update else _skills_target(args)
         try:
-            written = install(target, all_skills=args.all)
-        except ValueError as exc:
-            print(exc, file=sys.stderr)
+            target.mkdir(parents=True, exist_ok=True)
+            written = install(target, all_skills=not update and args.all)
+        except (OSError, ValueError) as exc:  # a file in the way, no permission, own source
+            print(f"cannot install into {target}: {exc}", file=sys.stderr)
             return 2
         for path in written:
-            print(f"installed {path}")
-        if args.project:
+            print(f"updated {path} to {__version__}" if update else f"installed {path}")
+        if not update and args.project:
             print("note: the KB copy under .claude/skills/ is now inside this repo's git tree")
-        return 0
-    if args.command == "update":
-        target = Path.home() / ".claude" / "skills"
-        target.mkdir(parents=True, exist_ok=True)
-        for path in install(target):
-            print(f"updated {path} to {__version__}")
         return 0
     if args.command in {"check", "grade"}:
         return _check_or_grade(args)
@@ -105,6 +100,12 @@ def _check_or_grade(args: argparse.Namespace) -> int:
     except ValueError as exc:  # --root that does not contain the path
         print(exc, file=sys.stderr)
         return 2
+    if result.target_is_dir and result.files == 0 and result.nested_repos:
+        print(
+            f"note: {result.nested_repos} subdirectories are repositories of their own;"
+            " grade them one by one",
+            file=sys.stderr,
+        )
     principles = load_principles()
     if args.command == "check":
         print(result.to_json() if args.json else describe(result, principles))
@@ -114,9 +115,12 @@ def _check_or_grade(args: argparse.Namespace) -> int:
     g.overrides = overridden
     text = render(g, result, overrides_active=overridden)
     print(g.to_json() if args.json else text)
-    if args.report:
-        root = args.path if args.path.is_dir() else args.path.parent
-        print(f"wrote {write_report(root.resolve(), g, result, text)}")
+    if args.report:  # under the project root, so every target of a project shares one trend
+        try:
+            print(f"wrote {write_report(Path(result.root), g, result, text)}")
+        except OSError as exc:
+            print(f"cannot write the report: {exc}", file=sys.stderr)
+            return 2
     return 0
 
 

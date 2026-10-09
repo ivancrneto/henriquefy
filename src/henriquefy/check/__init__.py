@@ -29,7 +29,7 @@ SKIP_DIRS = {
     ".ruff_cache",
     "site-packages",
 }
-TEST_FILE = re.compile(r"(^|/)(tests?/|test_[^/]+\.py$|[^/]+_test\.py$|conftest\.py$)")
+TEST_FILE = re.compile(r"(^|/)(tests?/|testing/|test_[^/]+\.py$|[^/]+_test\.py$|conftest\.py$)")
 ROOT_MARKERS = ("pyproject.toml", "setup.py", "setup.cfg", ".git")
 UNPARSEABLE = "tooling.unparseable"
 PARSE_ERRORS = (SyntaxError, ValueError, RecursionError, MemoryError)
@@ -47,6 +47,7 @@ class Result:
     target_is_dir: bool = True
     unparseable: int = 0
     target: str = ""
+    nested_repos: int = 0  # subdirectories of the target pruned as repositories of their own
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -71,17 +72,25 @@ def find_root(target: Path) -> Path:
     return start
 
 
-def python_files(root: Path, target: Path | None = None) -> list[Path]:
+def python_files(
+    root: Path, target: Path | None = None, repos: list[Path] | None = None
+) -> list[Path]:
     """Regular `.py` files under root. Tool directories, virtualenvs and nested repositories
     (a subdirectory with its own `.git`: a clone, a submodule, a worktree) are pruned, unless
-    the target lies inside them."""
+    the target lies inside them; pruned repositories are appended to `repos` when given."""
     if root.is_file():
         return [root]
     keep = {target, *target.parents} if target else set()
     found = []
     for dirpath, dirnames, filenames in os.walk(root):
         here = Path(dirpath)
-        dirnames[:] = [d for d in dirnames if here / d in keep or not _foreign(here / d)]
+        kept = []
+        for d in dirnames:
+            if here / d in keep or not _foreign(here / d):
+                kept.append(d)
+            elif repos is not None and (here / d / ".git").exists():
+                repos.append(here / d)
+        dirnames[:] = kept
         found += [here / f for f in filenames if f.endswith(".py") and (here / f).is_file()]
     return sorted(found)
 
@@ -110,11 +119,14 @@ def depends_on_decouple(root: Path) -> bool:
 
 
 def detect_framework(sources: list[str]) -> str:
+    """Every web framework imported anywhere in scope, comma-joined; "none" otherwise."""
     joined = "\n".join(sources)
-    for name in ("django", "fastapi", "starlette"):
-        if re.search(rf"^\s*(from|import)\s+{name}\b", joined, re.M):
-            return name
-    return "none"
+    found = [
+        name
+        for name in ("django", "fastapi", "starlette")
+        if re.search(rf"^\s*(from|import)\s+{name}\b", joined, re.M)
+    ]
+    return ",".join(found) or "none"
 
 
 def _packages(root: Path) -> set[str]:
@@ -132,7 +144,9 @@ def check(target: Path, root: Path | None = None) -> Result:
     if target != root and root not in target.parents:
         raise ValueError(f"{target} is not inside the project root {root}")
     # A file target needs no other file parsed: the repo rules run on directories only.
-    all_files = python_files(root, target) if target.is_dir() else [target]
+    repos: list[Path] = []
+    all_files = python_files(root, target, repos) if target.is_dir() else [target]
+    nested_repos = sum(target == r or target in r.parents for r in repos)
     in_scope = {p for p in all_files if p == target or target in p.parents}
     decouple = depends_on_decouple(root)
     packages = _packages(root)
@@ -208,6 +222,7 @@ def check(target: Path, root: Path | None = None) -> Result:
         target.is_dir(),
         unparseable,
         str(target),
+        nested_repos,
     )
 
 

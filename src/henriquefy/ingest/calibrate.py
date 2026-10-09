@@ -33,10 +33,14 @@ def score(path: Path) -> dict:
     }
 
 
-def fork_of(repo: str) -> str | None:
-    name = repo.split("/")[1].lower()
+def fork_of(rec: dict) -> str | None:
+    """The original a fork came from: the `source` gh_fetch records; for records written
+    before it did, a name that starts with the original's full name (a renamed fork is lost)."""
+    if "source" in rec:
+        return rec["source"] if rec["source"] in ORIGINALS else None
+    name = rec["repo"].split("/")[1].lower()
     for original, folder in ORIGINALS.items():
-        if name.startswith(folder.split("-")[0]):
+        if name.startswith(folder):
             return original
     return None
 
@@ -65,7 +69,7 @@ def main() -> int:
     for rec in alumni:
         clone = root / "alumni" / rec["id"]
         if clone.is_dir():
-            scored[rec["id"]] = score(clone) | {"fork_of": fork_of(rec["repo"])}
+            scored[rec["id"]] = score(clone) | {"fork_of": fork_of(rec)}
     comparisons = {
         original: compare(
             original,

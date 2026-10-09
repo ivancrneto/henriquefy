@@ -1,7 +1,8 @@
 """Nota mecânica: a pure function of the mechanical findings and the rubric weights.
 
 Formula (also stated in kb/rubric.md; changed 2026-10-08 from finding density to spread):
-  penalty(principle) = files with a finding of that principle / max(files in scope, 5)
+  penalty(principle) = files with a finding of that principle / max(files in scope, 5);
+                       a repo-level finding (path '.', e.g. no tests) is a penalty of 1
   penalty(dimension) = weighted mean of its mechanical/partial principles' penalties
   score(dimension)   = 10 * (1 - penalty), rounded to one decimal
   overall            = weighted mean of the scored dimensions
@@ -166,7 +167,8 @@ def grade(
         for p in members:
             n = counts.get(p.id, 0)
             spread = len(touched.get(p.id, ()))
-            pen = min(1.0, spread / files)
+            # a repo-level finding (path '.') is the whole project, not one file
+            pen = 1.0 if "." in touched.get(p.id, ()) else min(1.0, spread / files)
             penalty += p.weight * pen
             detail[p.id] = {
                 "weight": p.weight,
@@ -190,7 +192,12 @@ def _rule_applies(rule_id: str, result: Result) -> bool:
     or any status/route call, decouple rule a decouple dependency (signalled by the runner)."""
     if rule_id in {"testing.no-assert"}:
         return result.test_files > 0
-    if rule_id in {"project.no-tests", "modeling.import-cycle", "modeling.inheritance-depth"}:
+    if rule_id == "project.no-tests":
+        # a project-wide fact: evidence for a subdirectory target only when it fired; a
+        # subdirectory with no test files is N/A on Testes, not a 10 earned elsewhere
+        fired = any(f.rule == rule_id for f in result.findings)
+        return result.target_is_dir and (result.target in {"", result.root} or fired)
+    if rule_id in {"modeling.import-cycle", "modeling.inheritance-depth"}:
         return result.target_is_dir
     if rule_id == "api.verb-in-uri":
         return result.signals.get("routes", False)

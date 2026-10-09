@@ -46,5 +46,33 @@
    "rule": "api.magic-status",
    "line": 9
   }
+ ],
+ "test_assert_equal.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 7
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 8
+  }
+ ],
+ "bad_positional.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 8
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 10
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 12
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 13
+  }
  ]
 }

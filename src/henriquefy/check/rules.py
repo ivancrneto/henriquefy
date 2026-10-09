@@ -19,6 +19,9 @@ VERB_SEGMENT = re.compile(
 ROUTE_CALLS = {"path", "re_path", "url", "route", "add_api_route", "api_route"}
 HTTP_METHODS = {"get", "post", "put", "patch", "delete", "options", "head"}
 BROAD_EXCEPTIONS = {"Exception", "BaseException"}
+ENV_NAMES = {"environ", "getenv"}
+ENV_WRITES = {"setdefault", "update"}
+ASSERT_EQUALS = {"assertEqual", "assertEquals", "assertNotEqual", "assertNotEquals"}
 ASSERT_PREFIX = "assert"
 CLASS_METHOD_LIMIT = 15
 SCOPES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)
@@ -75,21 +78,38 @@ def _f(rule_id: str, ctx: Context, node: ast.AST, message: str) -> Finding:
     "api.magic-status",
     "httpstatus-em-vez-de-numeros-magicos",
     "HTTP status as a bare integer",
-    "An integer literal from 100 to 599 passed as `status=` or `status_code=` to a response or "
-    "HTTP error constructor (`JsonResponse`, `Response`, `HTTPException`, `render`, ...), or "
+    "An integer literal from 100 to 599 passed as `status=` or `status_code=`, or as a "
+    "positional argument, to a response or HTTP error constructor (`JsonResponse(data, 201)`, "
+    "`HttpResponse(body, 200)`, `HTTPException(404, ...)`, `abort(404)`, `render`, ...), or "
     "assigned to `status_code` (as a class attribute anywhere, annotated or not, as an attribute "
     "outside tests), or compared with a `.status_code` attribute (`!= 401`, `== 200`, "
-    "`in (200, 201)`, tests included). "
-    "A mock like `responses.add(status=200)` or a fake `Response()` set up in a test describes "
-    "someone else's reply and is not flagged.",
+    "`in (200, 201)`, `self.assertEqual(resp.status_code, 200)`, `assertNotEqual`, tests "
+    "included). "
+    "A mock like `responses.add(status=200)` or a fake `Response(body, 200)` built in a test "
+    "file describes someone else's reply and is not flagged; tests are flagged for "
+    "comparisons and `assertEqual` only.",
     "Use `http.HTTPStatus.<NAME>` (or `fastapi.status`) so the code reads as the status name.",
 )
 def magic_status(tree, lines, ctx):
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and _builds_response(node):
+        if isinstance(node, ast.Call) and _builds_response(node) and not ctx.is_test:
             for kw in node.keywords:
                 if kw.arg in STATUS_KWARGS and _is_status_int(kw.value):
                     yield _f("api.magic-status", ctx, kw.value, f"{kw.arg}={kw.value.value}")
+            for arg in node.args:
+                if _is_status_int(arg):
+                    yield _f("api.magic-status", ctx, arg, f"{_callee(node)}(..., {arg.value})")
+        elif isinstance(node, ast.Call) and _callee(node) in ASSERT_EQUALS:
+            pair = node.args[:2]
+            if any(_is_status_attr(a) for a in pair):
+                for a in pair:
+                    if _is_status_int(a):
+                        yield _f(
+                            "api.magic-status",
+                            ctx,
+                            a,
+                            f"{_callee(node)}(status_code, {a.value})",
+                        )
         elif isinstance(node, ast.Assign | ast.AnnAssign) and _is_status_int(node.value):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
             if any(_is_status_target(t, ctx.is_test) for t in targets):
@@ -178,7 +198,7 @@ def _walk_local(node: ast.AST):
     "errors.bool-in-except",
     "prefira-excecoes-a-booleanos",
     "Failure turned into a boolean",
-    "`return False` (or `return None`) inside an `except` handler.",
+    "`return False`, `return None` or a bare `return` inside an `except` handler.",
     "Let the exception propagate, or raise a specific domain exception the caller can name.",
 )
 def bool_in_except(tree, lines, ctx):
@@ -190,12 +210,14 @@ def bool_in_except(tree, lines, ctx):
                     if id(inner) in seen:
                         continue
                     seen.add(id(inner))
-                    yield _f(
-                        "errors.bool-in-except", ctx, inner, f"return {ast.unparse(inner.value)}"
-                    )
+                    what = "return" if inner.value is None else f"return {ast.unparse(inner.value)}"
+                    yield _f("errors.bool-in-except", ctx, inner, what)
 
 
 def _is_false_or_none(node) -> bool:
+    """`return False`, `return None`, or a bare `return` (no value), which returns None."""
+    if node is None:
+        return True
     return isinstance(node, ast.Constant) and (node.value is False or node.value is None)
 
 
@@ -280,31 +302,54 @@ def _is_assertion(node) -> bool:
     "project.environ-without-decouple",
     "configuracao-fora-do-codigo",
     "Environment read directly in a project that uses python-decouple",
-    "`os.environ[...]`, `os.environ.get(...)` or `os.getenv(...)` in a project whose "
-    "dependencies include `python-decouple`. `os.environ.setdefault(...)`, Django's settings "
-    "bootstrap in manage.py, wsgi.py and asgi.py, is not a configuration read.",
+    "A configuration read from the environment, `os.environ[...]`, `os.environ.get(...)` or "
+    "`os.getenv(...)`, also through `from os import environ, getenv`, in a project whose "
+    "dependencies include `python-decouple`. Writes are not reads: an assignment or `del` on "
+    "`os.environ[...]`, `os.environ.setdefault(...)` (Django's settings bootstrap in manage.py, "
+    "wsgi.py and asgi.py), `os.environ.update(...)`, and `mock.patch.dict(os.environ, ...)` or "
+    "`monkeypatch.setitem(os.environ, ...)` in a test.",
     "Read it through `decouple.config(...)`, with a cast and a default, in one place.",
 )
 def environ_without_decouple(tree, lines, ctx):
     if not ctx.depends_on_decouple:
         return
-    bootstrap = {
-        id(call.func.value)
-        for call in ast.walk(tree)
-        if isinstance(call, ast.Call)
-        and isinstance(call.func, ast.Attribute)
-        and call.func.attr == "setdefault"
+    imported = {
+        alias.asname or alias.name: alias.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ImportFrom) and node.module == "os"
+        for alias in node.names
+        if alias.name in ENV_NAMES
     }
+
+    def env(node) -> str | None:
+        """`os.environ`, `os.getenv`, or a name imported from them; None for anything else."""
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+            if node.value.id == "os" and node.attr in ENV_NAMES:
+                return f"os.{node.attr}"
+        if isinstance(node, ast.Name) and node.id in imported:
+            return imported[node.id]
+        return None
+
+    writes: set[int] = set()
     for node in ast.walk(tree):
-        if id(node) in bootstrap:
-            continue
-        if (
-            isinstance(node, ast.Attribute)
-            and isinstance(node.value, ast.Name)
-            and node.value.id == "os"
-        ):
-            if node.attr in {"environ", "getenv"}:
-                yield _f("project.environ-without-decouple", ctx, node, f"os.{node.attr}")
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+            if node.func.attr in ENV_WRITES and env(node.func.value):
+                writes.add(id(node.func.value))
+            if node.func.attr == "dict" and _callee_name(node.func.value) == "patch":
+                writes |= {id(a) for a in node.args if env(a)}
+            if node.func.attr in {"setitem", "delitem"}:  # monkeypatch.setitem(os.environ, ...)
+                writes |= {id(a) for a in node.args if env(a)}
+        elif isinstance(node, ast.Subscript) and isinstance(node.ctx, ast.Store | ast.Del):
+            if env(node.value):
+                writes.add(id(node.value))
+    for node in ast.walk(tree):
+        what = env(node)
+        if what and id(node) not in writes:
+            yield _f("project.environ-without-decouple", ctx, node, what)
+
+
+def _callee_name(node) -> str | None:
+    return node.attr if isinstance(node, ast.Attribute) else getattr(node, "id", None)
 
 
 @rule(
@@ -401,7 +446,11 @@ def local_import(tree, lines, ctx):
     "evite-ciclos-busque-a-arvore",
     "Import cycle between project modules",
     "Two or more project modules that import each other, directly or through a chain "
-    "(strongly connected component of the import graph, `__init__` re-exports included).",
+    "(strongly connected component of the import graph, `__init__` re-exports included). "
+    "`from pkg import sub` goes through `pkg/__init__.py`, so a package whose `__init__` imports "
+    "a module that imports its siblings through the package is a cycle (hamsterdan "
+    "`readiness/net_v5`). Imports under `if TYPE_CHECKING:` run only for the type checker and "
+    "add no edge.",
     "Invert one edge: a parameter with a default, a classmethod factory on the leaf, or a "
     "registry the leaf calls; then import modules directly, not through the package.",
     scope="repo",

@@ -21,7 +21,8 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 
 1. Run `scripts/henriquefy.sh check <path> --json` and read the findings (rule, path, line);
    the command exits 1 when there are findings, which is not an error, and 3 when the CLI
-   could not run at all. Pass `--root <dir>` when the project root is not the nearest
+   could not run at all. Set `HENRIQUEFY_CLI` to an executable (a checkout's
+   `.venv/bin/henriquefy`) to run it instead of the pinned release. Pass `--root <dir>` when the project root is not the nearest
    pyproject, setup.py or .git above the path. Unparseable files are listed and excluded from
    scoring; on code newer than the running Python, rerun under `uvx --python 3.14`.
    `references/kb/check-rules.md` maps each rule to its principle, what it fires on and the fix.

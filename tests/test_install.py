@@ -114,3 +114,53 @@ def test_wrapper_pins_the_stamped_version_under_cdpath_and_spaces(tmp_path, shel
     )
     assert out.returncode == 0, out.stderr
     assert out.stdout == "uvx --offline henriquefy==1.2.3 check a b\n"
+
+
+def test_wrapper_runs_henriquefy_cli_when_set(tmp_path):
+    import shutil
+
+    skill = tmp_path / "henriquefy"
+    (skill / "scripts").mkdir(parents=True)
+    shutil.copy(WRAPPER, skill / "scripts" / "henriquefy.sh")
+    (skill / "SKILL.md").write_text("---\nmetadata:\n  henriquefy_version: 9.9.9\n---\n")
+    cli = tmp_path / "my cli"
+    cli.write_text('#!/bin/sh\necho "local $*"\n')
+    cli.chmod(0o755)
+    out = subprocess.run(
+        ["sh", str(skill / "scripts" / "henriquefy.sh"), "grade", "a b"],
+        env={"PATH": "/usr/bin:/bin", "HENRIQUEFY_CLI": str(cli)},
+        capture_output=True,
+        text=True,
+    )
+    assert out.returncode == 0 and out.stdout == "local grade a b\n", out.stderr
+
+
+def test_plain_install_refreshes_maintainer_skills_already_there(tmp_path):
+    main(["install", "--target", str(tmp_path), "--all"])
+    stale = tmp_path / "henrique-watch" / "SKILL.md"
+    stale.write_text(
+        re.sub(r"henriquefy_version: .*", "henriquefy_version: 0.1.0", stale.read_text())
+    )
+    main(["install", "--target", str(tmp_path)])
+    assert f"henriquefy_version: {__version__}" in stale.read_text()
+    fresh = tmp_path / "fresh"
+    main(["install", "--target", str(fresh)])
+    assert not (fresh / "henrique-watch").exists()
+
+
+def test_install_and_update_report_a_blocked_target(tmp_path, monkeypatch, capsys):
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude" / "skills").write_text("not a directory")
+    monkeypatch.chdir(tmp_path)
+    assert main(["install", "--project"]) == 2
+    assert "cannot install" in capsys.readouterr().err
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "newhome"))
+    assert main(["update"]) == 0  # ~/.claude/skills does not exist yet
+    assert (tmp_path / "newhome" / ".claude" / "skills" / "henriquefy" / "SKILL.md").is_file()
+
+
+def test_stamped_version_is_the_package_version():
+    import tomllib
+
+    pyproject = tomllib.loads((SKILLS.parent / "pyproject.toml").read_text(encoding="utf-8"))
+    assert __version__ == pyproject["project"]["version"]
