@@ -8,7 +8,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .repo_rules import import_cycles, inheritance_depth, module_name
+from .repo_rules import import_cycles, inheritance_depth, module_name, test_support
 from .rules import HTTP_METHODS, RESPONSE_CALL, ROUTE_CALLS, RULES, Context, Finding, run_file_rules
 
 IGNORE = re.compile(r"#\s*henriquefy:\s*ignore\[([\w.,\s-]+)\]")
@@ -157,6 +157,7 @@ def check(target: Path, root: Path | None = None) -> Result:
     findings: list[Finding] = []
     signals = {"routes": False, "responses": False}
     files = test_files = unparseable = root_test_files = 0
+    parsed = []
     for path in all_files:
         rel = path.relative_to(root) if path.is_relative_to(root) else path
         rel_str = str(rel).replace("\\", "/")
@@ -186,6 +187,9 @@ def check(target: Path, root: Path | None = None) -> Result:
         trees[mod] = tree
         rel_paths[mod] = rel_str
         lines_by_path[rel_str] = lines
+        parsed.append((path, rel, mod, is_test, source, tree, lines))
+    support = test_support(trees, {mod for *_, mod, is_test, _, _, _ in parsed if is_test})
+    for path, rel, mod, is_test, source, tree, lines in parsed:
         if path not in in_scope:
             continue
         files += 1
@@ -196,6 +200,7 @@ def check(target: Path, root: Path | None = None) -> Result:
             root=root,
             is_test=is_test,
             depends_on_decouple=decouple,
+            is_support=mod in support,
             extra={"packages": packages},
         )
         findings.extend(run_file_rules(tree, lines, ctx))

@@ -52,6 +52,7 @@ class Context:
     root: Path
     is_test: bool
     depends_on_decouple: bool
+    is_support: bool = False  # test-support code outside the test paths (fakes, worlds)
     extra: dict = field(default_factory=dict)
 
 
@@ -86,13 +87,15 @@ def _f(rule_id: str, ctx: Context, node: ast.AST, message: str) -> Finding:
     "`in (200, 201)`, `self.assertEqual(resp.status_code, 200)`, `assertNotEqual`, tests "
     "included). "
     "A mock like `responses.add(status=200)` or a fake `Response(body, 200)` built in a test "
-    "file describes someone else's reply and is not flagged; tests are flagged for "
-    "comparisons and `assertEqual` only.",
+    "file or a test-support module (one that imports a test library such as pytest or "
+    "unittest.mock, or a `testing`/`tests` module, or that only tests and test support import "
+    "and that imports test support) describes someone else's reply and is not flagged; tests "
+    "are flagged for comparisons and `assertEqual` only.",
     "Use `http.HTTPStatus.<NAME>` (or `fastapi.status`) so the code reads as the status name.",
 )
 def magic_status(tree, lines, ctx):
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and _builds_response(node) and not ctx.is_test:
+        if isinstance(node, ast.Call) and _builds_response(node) and not _builds_fakes(ctx):
             for kw in node.keywords:
                 if kw.arg in STATUS_KWARGS and _is_status_int(kw.value):
                     yield _f("api.magic-status", ctx, kw.value, f"{kw.arg}={kw.value.value}")
@@ -112,7 +115,7 @@ def magic_status(tree, lines, ctx):
                         )
         elif isinstance(node, ast.Assign | ast.AnnAssign) and _is_status_int(node.value):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            if any(_is_status_target(t, ctx.is_test) for t in targets):
+            if any(_is_status_target(t, _builds_fakes(ctx)) for t in targets):
                 yield _f("api.magic-status", ctx, node.value, f"status_code = {node.value.value}")
         elif isinstance(node, ast.Compare):
             operands = [node.left, *node.comparators]
@@ -138,6 +141,11 @@ def _builds_response(call: ast.Call) -> bool:
     `responses.add(..., status=200)` describes someone else's reply and is not flagged."""
     name = _callee(call) or ""
     return bool(RESPONSE_CALL.search(name))
+
+
+def _builds_fakes(ctx: Context) -> bool:
+    """Tests and test-support modules build fake replies; a status there is someone else's."""
+    return ctx.is_test or ctx.is_support
 
 
 def _is_status_target(target: ast.AST, is_test: bool) -> bool:

@@ -216,3 +216,68 @@ def _base_name(node: ast.AST) -> str:
     if isinstance(node, ast.Attribute):
         return node.attr
     return ""
+
+
+TEST_LIBRARIES = {
+    "pytest",
+    "unittest",
+    "mock",
+    "responses",
+    "respx",
+    "httpretty",
+    "hypothesis",
+    "factory",
+    "faker",
+    "freezegun",
+    "time_machine",
+    "vcr",
+    "requests_mock",
+    "model_bakery",
+}
+TEST_SEGMENTS = {"test", "tests", "testing", "testclient", "testcases"}
+
+
+def test_support(trees: dict[str, ast.AST], tests: set[str]) -> set[str]:
+    """Modules outside the test paths that exist for the tests: a fake, a scenario world.
+    A module is test support when it imports a test library (`pytest`, `unittest.mock`, ...)
+    or a module with a test segment (`django.test`, `fastapi.testclient`, `x.testing.dst`);
+    or when every project module importing it is a test or test support and it imports test
+    support itself. The second clause carries the label through a package's `__init__` and
+    private helpers; a library's public module that only tests import stays production code."""
+    modules = set(trees)
+    imports: dict[str, set[str]] = {}
+    support: set[str] = set()
+    for name, tree in trees.items():
+        imports[name] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import | ast.ImportFrom):
+                imports[name] |= _resolve(name, node, modules) - {name}
+                if name not in tests and _imports_test_code(node):
+                    support.add(name)
+    importers: dict[str, set[str]] = {m: set() for m in modules}
+    for name, targets in imports.items():
+        for t in targets:
+            importers[t].add(name)
+    changed = True
+    while changed:
+        changed = False
+        for name in modules - support - tests:
+            users = importers[name]
+            if users and users <= tests | support and imports[name] & support:
+                support.add(name)
+                changed = True
+    return support
+
+
+def _imports_test_code(node: ast.Import | ast.ImportFrom) -> bool:
+    if isinstance(node, ast.ImportFrom):
+        dotted = [node.module or ""] if node.level == 0 else []
+    else:
+        dotted = [alias.name for alias in node.names]
+    for name in dotted:
+        parts = name.split(".")
+        if parts[0] in TEST_LIBRARIES or parts[0].startswith("pytest_"):
+            return True
+        if parts[0] in {"test", "tests"} or TEST_SEGMENTS & set(parts[1:]):
+            return True
+    return False
