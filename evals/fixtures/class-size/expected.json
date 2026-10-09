@@ -1,1 +1,10 @@
-{"bad.py": [{"rule": "modeling.class-size", "line": 1}], "clean.py": []}
+{
+ "bad.py": [
+  {
+   "rule": "modeling.class-size",
+   "line": 1
+  }
+ ],
+ "clean.py": [],
+ "properties_clean.py": []
+}

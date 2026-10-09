@@ -4,10 +4,8 @@ Goal: a set of Claude Code skills that know how Henrique Bastos (HB Network) wri
 designs APIs, models objects, tests, and thinks about a developer career, and that can
 **apply** that knowledge to any codebase: explain, check, grade, and transform.
 
-Status (2026-10-08): repo has two course digests, `oo-na-pratica` (121 PDF pages) and
-`design-api-na-pratica` (56), as HTML plus a browser-printed PDF of each. Ivan built them from
-transcripts of the two playlists; their quotes were not checked against the video, so they carry
-`verified: false`. Nothing else yet. No commits.
+Status (2026-10-08): Phases 0 to 5 built; v0.4.0 on PyPI. Four course digests, 25 principles,
+15 patterns, 14 repo digests. Work goes through pull requests Ivan merges, then a tag.
 
 ## 1. Shape of the system
 
@@ -25,7 +23,7 @@ what a task needs (progressive disclosure: short `SKILL.md`, details in `referen
 
 ### Repo layout
 
-Published as the `henriquefy` package on PyPI (name free as of 2026-10-08). One package, one
+Published as the `henriquefy` package on PyPI since v0.0.1. One package, one
 CLI, three skills shipped as package data.
 
 ```
@@ -36,11 +34,12 @@ henriquefy/
 ├── NOTICE.md                      # non-affiliation note, Henrique's OK, licensing facts per repo, YouTube terms note on caption fetching
 ├── pyproject.toml                 # name henriquefy, src layout, [project.scripts] henriquefy = "henriquefy.cli:main"
 ├── src/henriquefy/
-│   ├── cli.py                     # install | update | check | grade | ingest | watch
-│   ├── check/                     # AST rules, one module per rule family, each rule -> principle id
+│   ├── cli.py                     # install | update | check | grade (ingest and watch run as python -m from a checkout)
+│   ├── check/                     # rules.py (per-file), repo_rules.py (whole repo); each rule -> principle id
 │   ├── grade/                     # rubric loader, aggregation, report.py renders report.md and the JSON
-│   ├── ingest/                    # html_to_md, yt_fetch, gh_fetch, distill prompts, build_index
-│   ├── watch.py
+│   ├── ingest/                    # html_to_md, yt_fetch, gh_fetch, build_index, calibrate
+│   ├── watch.py                   # Phase 6
+│   ├── install.py overrides.py
 │   └── paths.py                   # importlib.resources access to kb/, skills/ and state/
 ├── kb/                            # knowledge base, shipped into the wheel via hatch force-include
 │   ├── INDEX.md
@@ -96,7 +95,7 @@ because Claude Code loads every installed skill's frontmatter into every session
 Version policy: the KB is content, so every KB change is a release. Patch for fixes and new
 quotes, minor for new principles or courses, major for rubric changes that move grades.
 Releases: tag `vX.Y.Z`; `release.yml` runs `uv build` and `uv publish` with trusted publishing
-(`permissions: id-token: write`) to TestPyPI (needs a `[[tool.uv.index]]` with `publish-url`) and
+(`permissions: id-token: write`) to TestPyPI (`uv publish --publish-url`) and
 then PyPI. Each index needs a pending publisher, registered by Ivan in the browser before the first
 tag, with the exact GitHub repo name, the workflow filename `release.yml` and the environment
 name the job uses. No tokens in the repo.
@@ -320,8 +319,12 @@ advice as its own, never his; a `translated` pattern is named as ours.
    only mechanical form of "boolean as error signal" (the rest is judgment in step 2).
    Whole-repo rules needing cross-file import resolution: import cycles, inheritance depth.
    A file `ast.parse` rejects (newer syntax than the running Python) is one finding, never a crash.
-   Every rule has a `# henriquefy: ignore[rule-id]` suppression and a clean fixture it must not
-   fire on. Output: JSON findings keyed by rule id.
+   Every rule, per-file or whole-repo, has a `# henriquefy: ignore[rule-id]` suppression (on the
+   finding's line, the line above, or the file's first two lines) and a clean fixture it must not
+   fire on. Output: a JSON list of findings, each with its rule id. The project root is the
+   nearest pyproject, setup.py or .git above the target (`--root` overrides); repo-level signals
+   come from the root, findings from the target. Unparseable files are reported and excluded
+   from scoring.
 2. Claude reads the code plus the matching principle files and adds judgment findings:
    responsibility leaks, generalization designed too early, modeling that fights the domain.
    Scope: the path given; with no path, the files with mechanical findings plus, inside a git
@@ -341,28 +344,36 @@ present, settings via decouple, README, dependency pinning sanity (the OO digest
 `monopoly`'s own `pytest==6.1.2` pin broken; the check is honest, not fan-like).
 Two scores, always labeled:
 - **Nota mecânica.** A pure function of the mechanical JSON findings and the weights in
-  `rubric.md`: two runs on the same commit give the same number. It is what
+  principle frontmatter (mirrored in `rubric.md`): two runs on the same commit give the same
+  number. Penalty per principle is spread, files with a finding over max(files in scope, 5),
+  decided 2026-10-08 in place of finding density, which saturated on one dense file. It is what
   `uvx henriquefy grade` prints, what the JSON trend file stores, and what exit criteria and calibration use.
-  Dimensions with a mechanical component: Erros, Testes, API and Projeto e config fully;
+  Dimensions with a mechanical component: Erros and Testes fully; API through status codes and
+  verbs; Projeto e config through the decouple rule only, until the README, settings and
+  pin-sanity signals exist;
   Modelagem and Legibilidade through shape signals only (class size, inheritance depth, mutable
   defaults); Simplicidade none, so it is absent here.
 - **Nota do Henrique.** The full rubric over all seven dimensions, produced only when Claude
   runs `grade` and adds its judgment findings from `check` step 2. Labeled non-deterministic;
   every dimension lists its evidence (finding, file, line, principle id). The judgment
   contribution is unbounded but labeled until the Phase 7 spread data exists.
-Output: stdout by default; `--report` writes `.henriquefy/report.md` in the target repo with both scores, plus JSON holding the
+Output: stdout by default; `--report` writes `.henriquefy/report.md` (the Nota mecânica and
+findings; the Nota do Henrique is produced by the skill) and appends to `.henriquefy/grade.jsonl`, the
 Nota mecânica for trend across runs.
 
 Era policy (decided 2026-10-08): grade strict to his current, 2026 practice by default. `era` on
 principles serves only the `--era` flag (older repos graded against their time, for calibration)
-and the report's tooling-drift note on Projeto e config findings. Modeling, simplicity, errors
-and testing are timeless.
+and the report's tooling-drift note on Projeto e config findings. Modeling, simplicity, errors,
+testing and readability are timeless.
 
-Calibration rule, on the Nota mecânica: `requests-pro` (2026) at 8 or above on every scored
-dimension of the default rubric; `monopoly` (2022) at 8 or above on the timeless dimensions, with
+Calibration rule, on the Nota mecânica (threshold lowered from 8 to 7.5 on 2026-10-08 after the
+status-comparison rule found five true literals in requests-pro): `requests-pro` (2026) at 7.5 or
+above on every scored dimension of the default rubric; `monopoly` (2022) at 7.5 or above on the
+timeless dimensions, with
 Projeto e config allowed to be low (the OO digest, section 20.3, documents the broken
-`pytest==6.1.2` pin) and marked as tooling drift; `monopoly` with `--era 2022` is the check for
-the drift logic, and his older repos follow the same pattern. If a timeless dimension of
+`pytest==6.1.2` pin) and marked as tooling drift. No principle is dated after 2020, so the
+`--era` drift logic has nothing to drop on monopoly yet; it is exercised once a 2026-dated tooling
+principle exists. If a timeless dimension of
 `monopoly` scores a 5, read every finding: true findings stay, and the rubric changes only for
 false positives or a weight that contradicts a principle he states. Weights never move to raise
 his score.
@@ -401,7 +412,7 @@ Order follows his method, not a lint list:
 - `check/` with the first 8 to 10 per-file mechanical rules, each mapped to a principle id; `build_index.py` emits `kb/check-rules.md` from them. Whole-repo rules (import cycles, inheritance depth) come in Phase 3 with the repo corpus to test them on.
 - `grade/` with `report.py`. Rubric weights from frontmatter; the scoring formula written in `rubric.md`.
 - `evals/fixtures/`: five bad samples with expected findings; one clean sample per rule with zero findings. API fixtures come in pairs, one Django and one FastAPI, with the same expected findings.
-- Calibrate on `monopoly` and `requests-pro`, cloned by hand into gitignored `sources/repos/` (no `gh_fetch.py` yet); the repo and commit SHA used go in `evals/calibration/his.json`, which Phase 3's `gh_fetch.py` reads and extends.
+- Calibrate on `monopoly` and `requests-pro`, cloned by hand into gitignored `sources/repos/`; the repo and commit SHA used go in `evals/calibration/his.json`, updated by hand after each calibration run.
 - **Exit criterion (CI):** every fixture matches its expected findings exactly; two runs of `grade` on the same commit give identical JSON. **(manual):** the Nota mecânica meets the calibration rule in section 3 for `monopoly` and `requests-pro`, and every finding on them survives a hand review as true. **(release):** `0.1.0` is on PyPI.
 
 ### Phase 3: Repo mining (3 sessions)
@@ -411,7 +422,7 @@ Order follows his method, not a lint list:
 - Mine `hamsterdan` first: its `engineering-conventions.md`, `AGENTS.md` and architecture tests are his rules in his words, and its `host/api.py` is the FastAPI reference. Then `monopoly`, `requests-pro`, `eventex`.
 - `prompts/distill-repo.md`: what to extract (layout, test style, naming, error handling, packaging, Makefile, CI, README voice). Output `kb/repos/<name>.md` and new or amended `kb/patterns/`.
 - Set `era` on tooling principles and patterns only; everything else stays `timeless`. Note drift between old and new repos as its own KB entry, so the report can say "he did this in 2013, not now".
-- **Exit criterion (CI):** a test asserts every principle with `detectable: mechanical` or `partial` has at least one `his` example in `kb/patterns/`, cited with repo, path and commit, or with course, lesson and section for lesson code. **(manual):** `evals/calibration/alumni.json` exists and `eventex` and `pacote-desafios-pythonicos` each score at or above the median of their own forks on every timeless dimension of the Nota mecânica.
+- **Exit criterion (CI):** a test asserts every principle that backs a mechanical rule has at least one `his` example in `kb/patterns/`, cited with repo, path and commit, or with course, lesson and section for lesson code. Partial principles without a rule yet (the four from Phase 4) get their examples in Phase 7. **(manual):** `evals/calibration/alumni.json` exists and `eventex` and `pacote-desafios-pythonicos` each score at or above the median of their own forks on every timeless dimension of the Nota mecânica.
 
 ### Phase 4: YouTube ingest (2-3 sessions)
 - Channel id and playlists are pinned (see the inventory in section 2). `state/playlists.json` seeds from that table.
@@ -419,12 +430,12 @@ Order follows his method, not a lint list:
 - `prompts/distill-transcript.md`: the two PDFs' table of contents becomes the output schema of the distiller, so every course digest has the same shape: visão geral, filosofia e método, pilares conceituais, tabela de aulas, resumo por aula, princípios transversais, citações-chave, evolução técnica aula a aula, arsenal técnico, glossário, perguntas e respostas, repositórios, análise linha a linha do código real, execução real dos testes.
 - The distiller works lesson by lesson from the timestamped transcript, then a second pass writes the cross-cutting sections. Timestamps survive into quotes and principle citations. A quote lifted from an auto caption carries `verified: false` and is rendered as a paraphrase with timestamp, not in quotation marks, until someone has listened to the clip and fixed the wording; only then is it a verbatim Portuguese quote.
 - Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order.
-- **Exit criterion (CI):** a third course digest exists under `kb/courses/` and a test checks it has every section of the digest schema. **(manual):** `evals/ask.md` gains two questions answerable only from the new course, each with an expected principle id and a lesson plus timestamp citation, and the installed skill answers both with the expected id and a citation that exists in the digest.
+- **Exit criterion (CI):** a third course digest exists under `kb/courses/` and a test checks it has a heading per schema section (keyword match; the line-by-line and execution sections may be placeholders when a course published no code). **(manual):** `evals/ask.md` gains two questions answerable only from the new course, each with an expected principle id and a lesson plus timestamp citation, and the installed skill answers both with the expected id and a citation that exists in the digest.
 
 ### Phase 5: transform (2 sessions)
 - `transform-playbook.md` with the ordered method and the stop rules.
 - `evals/transform/magic-status/`: a Django view module (Django is a dev dependency) with magic status numbers, a bare `except` and a boolean error return, plus `tests/` that pass on it and `expected.md` listing which rule ids must be gone after the transform, which findings must remain (the boolean return: raising instead changes public behavior), and the public names and signatures that must survive. Django only in Phase 5; a FastAPI twin is Phase 7 work.
-- Run on that fixture and on one small real module. Verify tests still pass, diff explained.
+- Run on that fixture and on one small real module (done on python-decouple: its one change was rejected by his own test and reverted; not committed).
 - **Exit criterion (manual run, CI verified):** the agent transforms the fixture; a CI test then runs the fixture's `tests/` on the committed `after/`, runs `check` on it and asserts the rule ids in `expected.md` are gone and the ones listed as remaining are still reported, and imports `after/` to assert the public names and signatures are unchanged.
 
 ### Phase 6: watch (1 session)

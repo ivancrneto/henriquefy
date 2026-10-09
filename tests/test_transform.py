@@ -50,18 +50,21 @@ def test_after_exists():
 
 def test_fixture_tests_pass_on_before_and_after():
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", str(FIXTURE / "tests")],
+        [sys.executable, "-m", "pytest", "-q", "-rA", str(FIXTURE / "tests")],
         capture_output=True,
         text=True,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "after" in result.stdout or "passed" in result.stdout
+    passed = re.findall(r"^PASSED \S+\[(\w+)\]$", result.stdout, re.M)
+    assert passed.count("after") == passed.count("before") > 0, result.stdout
 
 
 def test_findings_gone_and_remaining():
     want = expected()
-    before = {f.rule for f in check(FIXTURE / "before" / "views.py").findings}
-    after = {f.rule for f in check(FIXTURE / "after" / "views.py").findings}
+    before = {
+        f.rule for f in check(FIXTURE / "before" / "views.py", root=FIXTURE / "before").findings
+    }
+    after = {f.rule for f in check(FIXTURE / "after" / "views.py", root=FIXTURE / "after").findings}
     for rule in want["gone"]:
         assert rule in before, f"{rule} never fired on before/; the fixture is wrong"
         assert rule not in after, f"{rule} still fires on after/"

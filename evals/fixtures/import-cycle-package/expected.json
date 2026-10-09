@@ -1,0 +1,5 @@
+{
+ ".": [
+  {"path": "net/__init__.py", "rule": "modeling.import-cycle", "line": 1}
+ ]
+}

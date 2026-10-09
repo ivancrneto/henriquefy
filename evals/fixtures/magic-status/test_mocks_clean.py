@@ -8,3 +8,8 @@ def test_fake_reply(responses):
     fake = Response()
     fake.status_code = 200
     assert fake.status_code == HTTPStatus.OK
+
+
+def test_fake_positional_reply():
+    fake = Response(b"{}", 201)
+    assert fake.status_code == HTTPStatus.CREATED

@@ -1,0 +1,9 @@
+{
+ ".": [
+  {"path": "app/views.py", "rule": "api.magic-status", "line": 5}
+ ],
+ "app/fakes.py": [],
+ "app/views.py": [
+  {"rule": "api.magic-status", "line": 5}
+ ]
+}

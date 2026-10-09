@@ -1,1 +1,9 @@
-{".": [{"rule": "modeling.import-cycle", "line": 1}]}
+{
+ ".": [
+  {
+   "path": "shop/billing.py",
+   "rule": "modeling.import-cycle",
+   "line": 1
+  }
+ ]
+}

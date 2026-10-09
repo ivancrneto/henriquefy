@@ -1,7 +1,7 @@
 ---
 id: httpstatus-em-vez-de-numeros-magicos
 title: HTTPStatus em vez de números mágicos
-category: readability
+category: api
 weight: 3
 detectable: mechanical
 era: timeless

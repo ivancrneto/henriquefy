@@ -1,1 +1,14 @@
-{".": [{"rule": "modeling.inheritance-depth", "line": 13}]}
+{
+ ".": [
+  {
+   "path": "zoo/animals.py",
+   "rule": "modeling.inheritance-depth",
+   "line": 13
+  },
+  {
+   "path": "zoo/generic.py",
+   "rule": "modeling.inheritance-depth",
+   "line": 18
+  }
+ ]
+}

@@ -1,11 +1,13 @@
 """Nota mecânica: a pure function of the mechanical findings and the rubric weights.
 
-Formula (also stated in kb/rubric.md):
-  penalty(principle) = min(1, 2 * findings(principle) / files)
+Formula (also stated in kb/rubric.md; changed 2026-10-08 from finding density to spread):
+  penalty(principle) = files with a finding of that principle / max(files in scope, 5);
+                       a repo-level finding (path '.', e.g. no tests) is a penalty of 1
   penalty(dimension) = weighted mean of its mechanical/partial principles' penalties
   score(dimension)   = 10 * (1 - penalty), rounded to one decimal
   overall            = weighted mean of the scored dimensions
-A dimension is N/A when none of its principles has an applicable rule in the target.
+A dimension is N/A when none of its principles has an applicable rule in the target; everything
+is N/A when no file in scope parsed. The floor of 5 keeps a one-file target from saturating.
 """
 
 import json
@@ -27,6 +29,7 @@ DIMENSIONS = {
     "readability": "Legibilidade",
 }
 ERA_YEAR = {"timeless": 0, "2010s": 2010, "2020s": 2020, "2026": 2026}
+MIN_FILES = 5
 
 
 @dataclass
@@ -57,6 +60,7 @@ class Grade:
     framework: str
     era: int | None
     drift: list[str]
+    overrides: list[str] = field(default_factory=list)
 
     def to_json(self) -> str:
         return json.dumps(
@@ -77,6 +81,7 @@ class Grade:
                     for d in self.dimensions
                 ],
                 "tooling_drift": self.drift,
+                "rubric_overrides": self.overrides,
             },
             indent=2,
             ensure_ascii=False,
@@ -116,13 +121,18 @@ def grade(
     result: Result, era: int | None = None, principles: dict[str, Principle] | None = None
 ) -> Grade:
     principles = principles or load_principles()
-    files = max(result.files, 1)
+    if result.files == 0:
+        dims = [DimensionScore(name, cat, 0, None) for cat, name in DIMENSIONS.items()]
+        return Grade(None, dims, 0, len(result.findings), result.framework, era, [])
+    files = max(result.files, MIN_FILES)
     counts: dict[str, int] = {}
+    touched: dict[str, set[str]] = {}
     applicable: set[str] = set()
     for f in result.findings:
         rule = RULES.get(f.rule)
         if rule:
             counts[rule.principle] = counts.get(rule.principle, 0) + 1
+            touched.setdefault(rule.principle, set()).add(f.path)
     for rule in RULES.values():
         if _rule_applies(rule.id, result):
             applicable.add(rule.principle)
@@ -156,9 +166,16 @@ def grade(
         penalty = 0.0
         for p in members:
             n = counts.get(p.id, 0)
-            pen = min(1.0, 2 * n / files)
+            spread = len(touched.get(p.id, ()))
+            # a repo-level finding (path '.') is the whole project, not one file
+            pen = 1.0 if "." in touched.get(p.id, ()) else min(1.0, spread / files)
             penalty += p.weight * pen
-            detail[p.id] = {"weight": p.weight, "findings": n, "penalty": round(pen, 3)}
+            detail[p.id] = {
+                "weight": p.weight,
+                "findings": n,
+                "files": spread,
+                "penalty": round(pen, 3),
+            }
         score = round(10 * (1 - penalty / total_w), 1)
         dims.append(DimensionScore(name, category, total_w, score, detail))
     scored = [d for d in dims if d.score is not None]
@@ -175,7 +192,12 @@ def _rule_applies(rule_id: str, result: Result) -> bool:
     or any status/route call, decouple rule a decouple dependency (signalled by the runner)."""
     if rule_id in {"testing.no-assert"}:
         return result.test_files > 0
-    if rule_id in {"project.no-tests", "modeling.import-cycle", "modeling.inheritance-depth"}:
+    if rule_id == "project.no-tests":
+        # a project-wide fact: evidence for a subdirectory target only when it fired; a
+        # subdirectory with no test files is N/A on Testes, not a 10 earned elsewhere
+        fired = any(f.rule == rule_id for f in result.findings)
+        return result.target_is_dir and (result.target in {"", result.root} or fired)
+    if rule_id in {"modeling.import-cycle", "modeling.inheritance-depth"}:
         return result.target_is_dir
     if rule_id == "api.verb-in-uri":
         return result.signals.get("routes", False)
