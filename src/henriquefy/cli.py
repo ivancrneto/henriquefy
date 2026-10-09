@@ -30,6 +30,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also install the maintainer skills henrique-ingest and henrique-watch",
     )
+    sub.add_parser(
+        "update", help="re-install the skill from this version; run as uvx henriquefy@latest update"
+    )
     for name, help_ in (
         ("check", "mechanical rules only; no Claude needed"),
         ("grade", "Nota mecânica, deterministic"),
@@ -39,6 +42,11 @@ def build_parser() -> argparse.ArgumentParser:
         q.add_argument("--json", action="store_true", help="machine-readable output")
         q.add_argument(
             "--era", type=int, help="grade against his practice of this year (calibration)"
+        )
+        q.add_argument(
+            "--root",
+            type=Path,
+            help="project root; default: nearest pyproject, setup or .git above path",
         )
         if name == "grade":
             q.add_argument(
@@ -67,6 +75,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.project:
             print("note: the KB copy under .claude/skills/ is now inside this repo's git tree")
         return 0
+    if args.command == "update":
+        target = Path.home() / ".claude" / "skills"
+        target.mkdir(parents=True, exist_ok=True)
+        for path in install(target):
+            print(f"updated {path} to {__version__}")
+        return 0
     if args.command in {"check", "grade"}:
         return _check_or_grade(args)
     build_parser().print_help()
@@ -81,13 +95,14 @@ def _check_or_grade(args: argparse.Namespace) -> int:
     if not args.path.exists():
         print(f"no such path: {args.path}", file=sys.stderr)
         return 2
-    result = check(args.path)
-    if args.command == "check":
-        print(result.to_json() if args.json else describe(result))
-        return 1 if result.findings else 0
+    result = check(args.path, root=args.root)
     principles = load_principles()
+    if args.command == "check":
+        print(result.to_json() if args.json else describe(result, principles))
+        return 1 if result.findings else 0
     overridden = load_overrides(principles)
     g = grade(result, era=args.era, principles=principles)
+    g.overrides = overridden
     text = render(g, result, overrides_active=overridden)
     print(g.to_json() if args.json else text)
     if args.report:

@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 STATUS_KWARGS = {"status", "status_code"}
-RESPONSE_CALL = re.compile(r"(Response|Exception|Error|^render$|^abort$|^redirect$)$")
+RESPONSE_CALL = re.compile(r"(Response|HTTPException|^render$|^abort$|^redirect$)$")
 VERB_SEGMENT = re.compile(
     r"^(create|update|delete|remove|get|set|add|list|fetch|edit|save|new)([_-][a-z0-9_-]+)?$"
 )
@@ -160,10 +160,14 @@ def _reraises(handler: ast.ExceptHandler) -> bool:
     "Let the exception propagate, or raise a specific domain exception the caller can name.",
 )
 def bool_in_except(tree, lines, ctx):
+    seen: set[int] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.ExceptHandler):
             for inner in ast.walk(node):
                 if isinstance(inner, ast.Return) and _is_false_or_none(inner.value):
+                    if id(inner) in seen:
+                        continue
+                    seen.add(id(inner))
                     yield _f(
                         "errors.bool-in-except", ctx, inner, f"return {ast.unparse(inner.value)}"
                     )
@@ -208,14 +212,17 @@ def _is_mutable_literal(node) -> bool:
     "Assert the behavior the test name promises, or delete the test.",
 )
 def no_assert(tree, lines, ctx):
-    if not ctx.is_test:
+    if not ctx.is_test or ctx.path.name == "conftest.py":
         return
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name.startswith(
-            "test"
-        ):
-            if not any(_is_assertion(n) for n in ast.walk(node)):
-                yield _f("testing.no-assert", ctx, node, f"{node.name} asserts nothing")
+        if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            continue
+        if not node.name.startswith("test"):
+            continue
+        if any("fixture" in ast.unparse(d) for d in node.decorator_list):
+            continue
+        if not any(_is_assertion(n) for n in ast.walk(node)):
+            yield _f("testing.no-assert", ctx, node, f"{node.name} asserts nothing")
 
 
 def _is_assertion(node) -> bool:
@@ -223,7 +230,9 @@ def _is_assertion(node) -> bool:
         return True
     if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
         name = node.func.attr
-        return name.startswith(ASSERT_PREFIX) or name in {"raises", "warns"}
+        return name.startswith(ASSERT_PREFIX) or name in {"raises", "warns", "fail"}
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        return node.func.id in {"raises", "warns", "fail"}
     if isinstance(node, ast.With):
         for item in node.items:
             call = item.context_expr
@@ -333,10 +342,14 @@ def _route_findings(call: ast.Call, ctx: Context, seen: set[int]):
 )
 def local_import(tree, lines, ctx):
     packages = ctx.extra.get("packages", set())
+    seen: set[int] = set()
     for fn in ast.walk(tree):
         if not isinstance(fn, ast.FunctionDef | ast.AsyncFunctionDef):
             continue
         for node in ast.walk(fn):
+            if id(node) in seen:
+                continue
+            seen.add(id(node))
             if isinstance(node, ast.ImportFrom):
                 top = (node.module or "").split(".")[0]
                 if node.level > 0 or top in packages:

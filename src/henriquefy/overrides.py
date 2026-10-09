@@ -20,7 +20,9 @@ def load_overrides(principles: dict) -> list[str]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     applied = []
     for pid, weight in data.get("weights", {}).items():
+        if not isinstance(weight, int) or isinstance(weight, bool) or weight < 1:
+            raise SystemExit(f"{path}: weights.{pid} must be a positive integer, got {weight!r}")
         if pid in principles:
-            principles[pid].weight = int(weight)
+            principles[pid].weight = weight
             applied.append(f"weights.{pid}={weight}")
     return applied

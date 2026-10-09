@@ -119,7 +119,8 @@ def build_rubric(kb: Path) -> str:
         lines.append(f"| {DIMENSIONS[cat]} | {cat} | {total} | {listed} |")
     lines += [
         "",
-        "Nota mecânica formula: penalty(principle) = min(1, 2 * findings / files scanned);"
+        "Nota mecânica formula: penalty(principle) = files with a finding of that principle divided"
+        " by max(files in scope, 5), so one bad file costs at most a fifth of a dimension;"
         " penalty(dimension) = weighted mean over its mechanical and partial principles whose"
         " rules were applicable; score(dimension) = 10 * (1 - penalty), one decimal; overall ="
         " weighted mean of the scored dimensions. Judgment-only principles never enter this"

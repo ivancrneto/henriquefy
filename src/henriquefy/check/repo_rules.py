@@ -112,34 +112,53 @@ def _tarjan(graph: dict[str, set[str]]) -> list[set[str]]:
 
 
 def inheritance_depth(trees: dict[str, ast.AST], root_paths: dict[str, str]) -> list[Finding]:
-    classes: dict[str, tuple[str, int, list[str]]] = {}
-    for name, tree in trees.items():
+    """Classes are keyed by module and name; a base resolves to the same module first, then to
+    a unique class of that name anywhere in the project. `class Model(models.Model)` is not a
+    level: an attribute base whose name equals the class's own is external."""
+    classes: dict[tuple[str, str], tuple[int, list[str]]] = {}
+    by_name: dict[str, list[tuple[str, str]]] = {}
+    for module, tree in trees.items():
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                bases = [_base_name(b) for b in node.bases]
-                classes.setdefault(node.name, (name, node.lineno, [b for b in bases if b]))
-    cache: dict[str, int] = {}
+                bases = []
+                for b in node.bases:
+                    name = _base_name(b)
+                    if name and not (isinstance(b, ast.Attribute) and name == node.name):
+                        bases.append(name)
+                key = (module, node.name)
+                if key not in classes:
+                    classes[key] = (node.lineno, bases)
+                    by_name.setdefault(node.name, []).append(key)
 
-    def depth(cls: str, seen: frozenset[str] = frozenset()) -> int:
-        if cls not in classes or cls in seen:
+    def resolve(module: str, base: str) -> tuple[str, str] | None:
+        if (module, base) in classes:
+            return (module, base)
+        candidates = by_name.get(base, [])
+        return candidates[0] if len(candidates) == 1 else None
+
+    cache: dict[tuple[str, str], int] = {}
+
+    def depth(key: tuple[str, str], seen: frozenset = frozenset()) -> int:
+        if key in seen:
             return 0
-        if cls in cache:
-            return cache[cls]
-        _, _, bases = classes[cls]
-        d = max((1 + depth(b, seen | {cls}) for b in bases if b in classes), default=0)
-        cache[cls] = d
+        if key in cache:
+            return cache[key]
+        _, bases = classes[key]
+        resolved = [resolve(key[0], b) for b in bases]
+        d = max((1 + depth(r, seen | {key}) for r in resolved if r is not None), default=0)
+        cache[key] = d
         return d
 
     findings = []
-    for cls, (module, line, _) in sorted(classes.items(), key=lambda kv: (kv[1][0], kv[1][1])):
-        d = depth(cls)
+    for key, (line, _) in sorted(classes.items(), key=lambda kv: (kv[0][0], kv[1][0])):
+        d = depth(key)
         if d > MAX_DEPTH:
             findings.append(
                 Finding(
                     DEPTH_RULE,
-                    root_paths[module],
+                    root_paths[key[0]],
                     line,
-                    f"{cls} is {d} levels below a project class",
+                    f"{key[1]} is {d} levels below a project class",
                 )
             )
     return findings

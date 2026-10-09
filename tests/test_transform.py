@@ -60,8 +60,10 @@ def test_fixture_tests_pass_on_before_and_after():
 
 def test_findings_gone_and_remaining():
     want = expected()
-    before = {f.rule for f in check(FIXTURE / "before" / "views.py").findings}
-    after = {f.rule for f in check(FIXTURE / "after" / "views.py").findings}
+    before = {
+        f.rule for f in check(FIXTURE / "before" / "views.py", root=FIXTURE / "before").findings
+    }
+    after = {f.rule for f in check(FIXTURE / "after" / "views.py", root=FIXTURE / "after").findings}
     for rule in want["gone"]:
         assert rule in before, f"{rule} never fired on before/; the fixture is wrong"
         assert rule not in after, f"{rule} still fires on after/"

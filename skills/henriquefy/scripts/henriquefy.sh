@@ -10,5 +10,6 @@ fi
 if uvx "henriquefy==$V" --version >/dev/null 2>&1; then
   exec uvx "henriquefy==$V" "$@"
 fi
-echo "henriquefy $V not cached; connect once or run uvx henriquefy@latest update" >&2
-exit 1
+# exit 3: the CLI could not run (exit 1 means findings were found)
+echo "henriquefy $V is not cached and could not be fetched; connect once, or run: uvx henriquefy@latest update" >&2
+exit 3

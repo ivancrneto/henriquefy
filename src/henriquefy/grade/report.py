@@ -24,7 +24,9 @@ def render(grade: Grade, result: Result, overrides_active: list[str] | None = No
     for d in grade.dimensions:
         score = "N/A" if d.score is None else f"{d.score}"
         evidence = (
-            ", ".join(f"{p} {v['findings']}" for p, v in d.principles.items())
+            ", ".join(
+                f"{p} {v['findings']} in {v['files']} file(s)" for p, v in d.principles.items()
+            )
             or "no applicable rule"
         )
         lines.append(f"| {d.name} | {d.weight} | {score} | {evidence} |")

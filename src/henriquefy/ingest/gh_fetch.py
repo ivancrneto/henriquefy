@@ -4,7 +4,7 @@
     python -m henriquefy.ingest.gh_fetch --alumni   # forks of his course repos, class alumni
 
 Writes sources/repos/manifest.json (gitignored) with sha, pushed date, license and class, and
-extends evals/calibration/his.json's repo list with the shas used. Needs `gh auth login`.
+evals/calibration/his.json is updated by hand after each calibration run. Needs `gh auth login`.
 Alumni repos are cloned under random ids; the id-to-repo map stays in the gitignored manifest.
 """
 
@@ -95,7 +95,8 @@ def his(root: Path) -> list[dict]:
     ]
 
 
-def alumni(root: Path) -> list[dict]:
+def alumni(root: Path, previous: list[dict] | None = None) -> list[dict]:
+    known = {r["repo"]: r["id"] for r in (previous or []) if r.get("id")}
     records = []
     candidates = list(ALUMNI_NAMED)
     for source, limit in ALUMNI_SOURCES.items():
@@ -110,7 +111,7 @@ def alumni(root: Path) -> list[dict]:
             rec = repo_record(name, "alumni")
         except subprocess.CalledProcessError:
             continue
-        rec["id"] = secrets.token_hex(6)
+        rec["id"] = known.get(name) or secrets.token_hex(6)
         clone(name, root / "alumni" / rec["id"], rec["sha"])
         records.append(rec)
     return records
@@ -123,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     manifest_path = root / "manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
     if "--alumni" in argv:
-        manifest["alumni"] = alumni(root)
+        manifest["alumni"] = alumni(root, manifest.get("alumni"))
     else:
         manifest["his"] = his(root)
     manifest["fetched"] = str(date.today())

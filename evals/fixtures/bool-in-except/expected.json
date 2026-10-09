@@ -1,1 +1,23 @@
-{"bad.py": [{"rule": "errors.bool-in-except", "line": 9}, {"rule": "errors.bool-in-except", "line": 17}], "clean.py": []}
+{
+ "bad.py": [
+  {
+   "rule": "errors.bool-in-except",
+   "line": 9
+  },
+  {
+   "rule": "errors.bool-in-except",
+   "line": 17
+  }
+ ],
+ "clean.py": [],
+ "nested.py": [
+  {
+   "rule": "errors.bool-in-except",
+   "line": 6
+  },
+  {
+   "rule": "errors.bool-in-except",
+   "line": 8
+  }
+ ]
+}

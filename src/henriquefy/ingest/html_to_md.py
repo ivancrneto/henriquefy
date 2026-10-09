@@ -12,7 +12,7 @@ from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 
-SKIP = {"style", "script", "nav", "head", "title", "meta"}
+SKIP = {"style", "script", "nav", "head", "title"}
 BLOCK = {"p", "div", "section", "article", "header", "footer", "h1", "h2", "h3", "h4", "li"}
 HEADING = {"h1": "#", "h2": "##", "h3": "###", "h4": "####"}
 
