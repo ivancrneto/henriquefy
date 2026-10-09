@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -11,16 +12,28 @@ FIXTURES = Path(__file__).resolve().parents[1] / "evals" / "fixtures"
 CASES = sorted(p for p in FIXTURES.iterdir() if (p / "expected.json").is_file())
 
 
+def _same_findings(findings, want: list[dict], target: str) -> bool:
+    """A directory target names the file of each finding, so a finding that moves to another
+    file on the same line fails; a file target's findings are all in that file."""
+    with_path = not target.endswith(".py")
+    assert all("path" in w for w in want) or not with_path, f"{target}: name each finding's path"
+
+    def key(f: dict) -> tuple:
+        return (f.get("path", ""), f["line"], f["rule"])
+
+    got = [
+        {"rule": f.rule, "line": f.line} | ({"path": f.path} if with_path else {}) for f in findings
+    ]
+    return sorted(got, key=key) == sorted(want, key=key)
+
+
 @pytest.mark.parametrize("case", CASES, ids=[c.name for c in CASES])
 def test_fixture_findings_match_exactly(case):
     expected = json.loads((case / "expected.json").read_text())
     for target, want in expected.items():
         path = case if target == "." else case / target
-        got = [
-            {"rule": f.rule, "line": f.line}
-            for f in sorted(check(path, root=case).findings, key=lambda f: (f.path, f.line, f.rule))
-        ]
-        assert got == sorted(want, key=lambda f: (f["line"], f["rule"])), f"{case.name}/{target}"
+        findings = check(path, root=case).findings
+        assert _same_findings(findings, want, target), f"{case.name}/{target}: {findings}"
 
 
 def test_every_rule_has_a_fixture_and_a_known_principle():
@@ -35,8 +48,9 @@ def test_every_rule_has_a_fixture_and_a_known_principle():
 
 
 def test_grade_is_deterministic_and_bounded():
-    result = check(FIXTURES, root=FIXTURES)
-    a, b = grade(result).to_json(), grade(result).to_json()
+    """Two full runs, check included, give the same JSON."""
+    a = grade(check(FIXTURES, root=FIXTURES)).to_json()
+    b = grade(check(FIXTURES, root=FIXTURES)).to_json()
     assert a == b
     data = json.loads(a)
     assert data["nota_mecanica"] is not None and 0 <= data["nota_mecanica"] <= 10
@@ -70,12 +84,9 @@ def test_subdirectory_target_uses_the_project_root():
     case = FIXTURES / "subdir-root"
     expected = json.loads((case / "expected.json").read_text())
     for target, want in expected.items():
-        got = sorted(
-            ({"rule": f.rule, "line": f.line} for f in check(case / target).findings),
-            key=lambda f: (f["line"], f["rule"]),
-        )
-        assert got == sorted(want, key=lambda f: (f["line"], f["rule"])), target
-        assert not any(f.rule == "project.no-tests" for f in check(case / target).findings)
+        findings = check(case / target).findings
+        assert _same_findings(findings, want, target), target
+        assert not any(f.rule == "project.no-tests" for f in findings)
 
 
 def test_unparseable_and_empty_targets_are_not_graded(tmp_path):
@@ -121,3 +132,117 @@ def test_spread_formula_values():
     principle = RULES[rule].principle
     assert errors["principles"][principle]["files"] == 3
     assert errors["principles"][principle]["penalty"] == 0.15
+
+
+def _project(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    (path / "pyproject.toml").write_text("[project]\nname = 'p'\n")
+    (path / "tests").mkdir(exist_ok=True)
+    (path / "tests" / "test_p.py").write_text("def test_p():\n    assert True\n")
+    return path
+
+
+MUTABLE = "def f(x=[]):\n    return x\n"
+
+
+def test_nested_repositories_virtualenvs_and_tool_dirs_are_not_the_project(tmp_path):
+    root = _project(tmp_path / "proj")
+    for sub in ("vendor/clone", ".claude/worktrees/w", ".tox/py312", "env"):
+        (root / sub).mkdir(parents=True)
+        (root / sub / "m.py").write_text(MUTABLE)
+    (root / "vendor/clone/.git").mkdir()
+    (root / ".claude/worktrees/w/.git").write_text("gitdir: /elsewhere\n")
+    (root / "env/pyvenv.cfg").write_text("home = /usr\n")
+    assert check(root).findings == []
+    # named explicitly, a pruned directory is checked
+    clone = check(root / "vendor/clone", root=root)
+    assert [f.path for f in clone.findings] == ["vendor/clone/m.py"]
+
+
+def test_a_project_below_a_directory_named_build_is_checked(tmp_path):
+    root = _project(tmp_path / "build" / "proj")
+    (root / "m.py").write_text(MUTABLE)
+    assert [f.rule for f in check(root).findings] == ["readability.mutable-default"]
+
+
+@pytest.mark.skipif(os.name != "posix" or os.geteuid() == 0, reason="needs an unreadable file")
+def test_odd_files_named_py_never_crash_or_hang(tmp_path):
+    root = _project(tmp_path / "proj")
+    (root / "pkg.py").mkdir()
+    (root / "dangling.py").symlink_to(tmp_path / "missing.py")
+    os.mkfifo(root / "pipe.py")
+    (root / "locked.py").write_text("x = 1\n")
+    (root / "locked.py").chmod(0)
+    try:
+        result = check(root)
+    finally:
+        (root / "locked.py").chmod(0o644)
+    assert [(f.path, f.rule) for f in result.findings] == [("locked.py", "tooling.unparseable")]
+    assert "cannot read" in result.findings[0].message
+
+
+def test_a_file_target_parses_only_that_file(tmp_path, monkeypatch):
+    import henriquefy.check as runner
+
+    root = _project(tmp_path / "proj")
+    (root / "m.py").write_text(MUTABLE)
+    monkeypatch.setattr(runner, "python_files", lambda *a: pytest.fail("walked the root"))
+    assert [f.rule for f in check(root / "m.py").findings] == ["readability.mutable-default"]
+
+
+def test_root_search_stops_below_home(tmp_path, monkeypatch):
+    from henriquefy.check import find_root
+
+    (tmp_path / ".git").mkdir()  # a dotfiles repository in $HOME
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+    loose = tmp_path / "scratch"
+    loose.mkdir()
+    assert find_root(loose) == loose
+    assert find_root(tmp_path) == tmp_path
+
+
+def test_target_outside_root_is_an_error(tmp_path, capsys):
+    from henriquefy.cli import main
+
+    a, b = _project(tmp_path / "a"), _project(tmp_path / "b")
+    with pytest.raises(ValueError):
+        check(a, root=b)
+    assert main(["check", str(a), "--root", str(b)]) == 2
+    assert "not inside" in capsys.readouterr().err
+
+
+def test_long_import_and_class_chains_do_not_hit_the_recursion_limit(tmp_path):
+    root = _project(tmp_path / "proj")
+    n = 1500
+    for i in range(n):
+        nxt = (i + 1) % n  # the last module closes one cycle through all of them
+        (root / f"m{i:04}.py").write_text(f"import m{nxt:04}\n")
+    classes = [f"class C{i}(C{i - 1}):\n    pass\n" for i in range(1, n)]
+    (root / "deep.py").write_text("\n".join(["class C0:\n    pass\n", *classes]))
+    findings = check(root).findings
+    assert [f.path for f in findings if f.rule == "modeling.import-cycle"] == ["m0000.py"]
+    assert sum(f.rule == "modeling.inheritance-depth" for f in findings) == n - 3
+
+
+def test_a_cycle_reaching_into_the_target_is_reported_there(tmp_path):
+    root = _project(tmp_path / "proj")
+    (root / "pkg" / "sub").mkdir(parents=True)
+    (root / "pkg" / "__init__.py").write_text("")
+    (root / "pkg" / "sub" / "__init__.py").write_text("")
+    (root / "pkg" / "a.py").write_text("from pkg.sub import b\n")
+    (root / "pkg" / "sub" / "b.py").write_text("from pkg import a\n")
+    assert [f.path for f in check(root).findings] == ["pkg/a.py"]
+    assert [f.path for f in check(root / "pkg" / "sub").findings] == ["pkg/sub/b.py"]
+
+
+def test_malformed_overrides_are_named_not_tracebacks(tmp_path, monkeypatch, capsys):
+    from henriquefy.overrides import load_overrides
+
+    monkeypatch.setenv("HENRIQUEFY_HOME", str(tmp_path))
+    for text in ("[weights\n", "weights = 3\n"):
+        (tmp_path / "rubric.toml").write_text(text)
+        with pytest.raises(SystemExit, match="rubric.toml"):
+            load_overrides(load_principles())
+    (tmp_path / "rubric.toml").write_text("[weights]\nno-such-principle = 4\n")
+    assert load_overrides(load_principles()) == []
+    assert "names no principle" in capsys.readouterr().err

@@ -11,5 +11,6 @@
  ],
  "test_clean.py": [],
  "conftest.py": [],
- "test_names_clean.py": []
+ "test_names_clean.py": [],
+ "test_nested_clean.py": []
 }

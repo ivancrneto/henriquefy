@@ -1,2 +1,20 @@
-{"app": [{"rule": "project.environ-without-decouple", "line": 3}, {"rule": "modeling.import-cycle", "line": 1}],
- "app/settings.py": [{"rule": "project.environ-without-decouple", "line": 3}]}
+{
+ "app": [
+  {
+   "path": "app/settings.py",
+   "rule": "project.environ-without-decouple",
+   "line": 3
+  },
+  {
+   "path": "app/a.py",
+   "rule": "modeling.import-cycle",
+   "line": 1
+  }
+ ],
+ "app/settings.py": [
+  {
+   "rule": "project.environ-without-decouple",
+   "line": 3
+  }
+ ]
+}

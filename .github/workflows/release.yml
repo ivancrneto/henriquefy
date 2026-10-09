@@ -10,6 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
+      - name: tag matches the package version
+        run: test "${GITHUB_REF_NAME#v}" = "$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
+      - run: uv sync --group dev
+      - run: uv run pytest -q
       - run: uv build
       - uses: actions/upload-artifact@v4
         with:

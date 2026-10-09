@@ -24,7 +24,11 @@ jobs:
       - name: install smoke test from a built wheel
         run: |
           uv build
+          WHEEL="$(ls "$GITHUB_WORKSPACE"/dist/*.whl)"
+          V="$(uvx --from "$WHEEL" henriquefy --version | cut -d' ' -f2)"
+          test "$V" = "$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
           cd "$(mktemp -d)"
-          uvx --from "$(ls $GITHUB_WORKSPACE/dist/*.whl)" henriquefy install --project
-          grep -q "henriquefy_version:" .claude/skills/henriquefy/SKILL.md
+          uvx --from "$WHEEL" henriquefy install --project
+          # the source SKILL.md already holds the key, so check the stamped value
+          grep -qx "  henriquefy_version: $V" .claude/skills/henriquefy/SKILL.md
           test -f .claude/skills/henriquefy/references/kb/INDEX.md

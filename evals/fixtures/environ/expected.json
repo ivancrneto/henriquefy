@@ -1,1 +1,14 @@
-{".": [{"rule": "project.environ-without-decouple", "line": 3}, {"rule": "project.environ-without-decouple", "line": 4}]}
+{
+ ".": [
+  {
+   "path": "bad.py",
+   "rule": "project.environ-without-decouple",
+   "line": 3
+  },
+  {
+   "path": "bad.py",
+   "rule": "project.environ-without-decouple",
+   "line": 4
+  }
+ ]
+}

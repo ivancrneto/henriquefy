@@ -70,7 +70,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "install":
         target = _skills_target(args)
         target.mkdir(parents=True, exist_ok=True)
-        for path in install(target, all_skills=args.all):
+        try:
+            written = install(target, all_skills=args.all)
+        except ValueError as exc:
+            print(exc, file=sys.stderr)
+            return 2
+        for path in written:
             print(f"installed {path}")
         if args.project:
             print("note: the KB copy under .claude/skills/ is now inside this repo's git tree")
@@ -95,7 +100,11 @@ def _check_or_grade(args: argparse.Namespace) -> int:
     if not args.path.exists():
         print(f"no such path: {args.path}", file=sys.stderr)
         return 2
-    result = check(args.path, root=args.root)
+    try:
+        result = check(args.path, root=args.root)
+    except ValueError as exc:  # --root that does not contain the path
+        print(exc, file=sys.stderr)
+        return 2
     principles = load_principles()
     if args.command == "check":
         print(result.to_json() if args.json else describe(result, principles))

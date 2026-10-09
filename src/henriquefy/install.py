@@ -24,7 +24,11 @@ def install(target: Path, *, all_skills: bool = False) -> list[Path]:
     for name in names:
         src = skills_dir() / name
         dest = target / name
-        if dest.exists():
+        if dest.resolve() == src.resolve() or src.resolve().is_relative_to(dest.resolve()):
+            raise ValueError(f"{dest} is the skill's own source; install somewhere else")
+        if dest.is_symlink():  # a link (stow, dotfiles) is replaced, never followed into
+            dest.unlink()
+        elif dest.exists():
             shutil.rmtree(dest)
         shutil.copytree(src, dest)
         if name == CONSUMER:

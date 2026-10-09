@@ -56,7 +56,11 @@ def _closest(dotted: str, modules: set[str]) -> set[str]:
     return set()
 
 
-def import_cycles(trees: dict[str, ast.AST], root_paths: dict[str, str]) -> list[Finding]:
+def import_cycles(
+    trees: dict[str, ast.AST], root_paths: dict[str, str], scope: set[str] | None = None
+) -> list[Finding]:
+    """One finding per cycle, anchored at line 1 of its first member inside `scope` (all paths
+    when None), so a cycle that reaches into a checked subdirectory is reported there."""
     modules = set(trees)
     graph: dict[str, set[str]] = {m: set() for m in modules}
     for name, tree in trees.items():
@@ -67,47 +71,54 @@ def import_cycles(trees: dict[str, ast.AST], root_paths: dict[str, str]) -> list
     for component in _tarjan(graph):
         if len(component) > 1:
             members = sorted(component)
+            inside = [m for m in members if scope is None or root_paths[m] in scope]
+            anchor = (inside or members)[0]
             findings.append(
-                Finding(
-                    CYCLE_RULE, root_paths[members[0]], 1, "import cycle: " + " -> ".join(members)
-                )
+                Finding(CYCLE_RULE, root_paths[anchor], 1, "import cycle: " + " -> ".join(members))
             )
     return findings
 
 
 def _tarjan(graph: dict[str, set[str]]) -> list[set[str]]:
+    """Strongly connected components, iteratively: a long import chain must not hit the
+    recursion limit."""
     index: dict[str, int] = {}
     low: dict[str, int] = {}
     stack: list[str] = []
     on_stack: set[str] = set()
     out: list[set[str]] = []
-    counter = 0
-
-    def strong(v: str) -> None:
-        nonlocal counter
-        index[v] = low[v] = counter
-        counter += 1
-        stack.append(v)
-        on_stack.add(v)
-        for w in graph.get(v, ()):
-            if w not in index:
-                strong(w)
-                low[v] = min(low[v], low[w])
-            elif w in on_stack:
-                low[v] = min(low[v], index[w])
-        if low[v] == index[v]:
-            component = set()
-            while True:
-                w = stack.pop()
-                on_stack.discard(w)
-                component.add(w)
-                if w == v:
-                    break
-            out.append(component)
-
-    for v in sorted(graph):
-        if v not in index:
-            strong(v)
+    for root in sorted(graph):
+        if root in index:
+            continue
+        index[root] = low[root] = len(index)
+        stack.append(root)
+        on_stack.add(root)
+        work = [(root, iter(sorted(graph.get(root, ()))))]
+        while work:
+            v, edges = work[-1]
+            w = next(edges, None)
+            if w is not None:
+                if w not in index:
+                    index[w] = low[w] = len(index)
+                    stack.append(w)
+                    on_stack.add(w)
+                    work.append((w, iter(sorted(graph.get(w, ())))))
+                elif w in on_stack:
+                    low[v] = min(low[v], index[w])
+                continue
+            work.pop()
+            if work:
+                parent = work[-1][0]
+                low[parent] = min(low[parent], low[v])
+            if low[v] == index[v]:
+                component = set()
+                while True:
+                    w = stack.pop()
+                    on_stack.discard(w)
+                    component.add(w)
+                    if w == v:
+                        break
+                out.append(component)
     return out
 
 
@@ -136,18 +147,38 @@ def inheritance_depth(trees: dict[str, ast.AST], root_paths: dict[str, str]) -> 
         candidates = by_name.get(base, [])
         return candidates[0] if len(candidates) == 1 else None
 
+    def parents(key: tuple[str, str]) -> list[tuple[str, str]]:
+        return [r for r in (resolve(key[0], b) for b in classes[key][1]) if r is not None]
+
     cache: dict[tuple[str, str], int] = {}
 
-    def depth(key: tuple[str, str], seen: frozenset = frozenset()) -> int:
-        if key in seen:
-            return 0
-        if key in cache:
-            return cache[key]
-        _, bases = classes[key]
-        resolved = [resolve(key[0], b) for b in bases]
-        d = max((1 + depth(r, seen | {key}) for r in resolved if r is not None), default=0)
-        cache[key] = d
-        return d
+    def depth(start: tuple[str, str]) -> int:
+        """Longest chain of project bases above `start`, iteratively (generated code can chain
+        past the recursion limit); a base already on the path (a cycle) counts one level."""
+        if start in cache:
+            return cache[start]
+        best = {start: 0}
+        path = [(start, iter(parents(start)))]
+        on_path = {start}
+        while path:
+            key, todo = path[-1]
+            base = next(todo, None)
+            if base is None:
+                path.pop()
+                on_path.discard(key)
+                cache.setdefault(key, best[key])
+                if path:
+                    below = path[-1][0]
+                    best[below] = max(best[below], 1 + cache[key])
+            elif base in on_path:
+                best[key] = max(best[key], 1)
+            elif base in cache:
+                best[key] = max(best[key], 1 + cache[base])
+            else:
+                best[base] = 0
+                on_path.add(base)
+                path.append((base, iter(parents(base))))
+        return cache[start]
 
     findings = []
     for key, (line, _) in sorted(classes.items(), key=lambda kv: (kv[0][0], kv[1][0])):
@@ -165,6 +196,8 @@ def inheritance_depth(trees: dict[str, ast.AST], root_paths: dict[str, str]) -> 
 
 
 def _base_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Subscript):  # class Repo(Base[Model])
+        node = node.value
     if isinstance(node, ast.Name):
         return node.id
     if isinstance(node, ast.Attribute):

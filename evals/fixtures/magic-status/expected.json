@@ -32,5 +32,19 @@
    "rule": "api.magic-status",
    "line": 8
   }
+ ],
+ "bad_annotated.py": [
+  {
+   "rule": "api.magic-status",
+   "line": 5
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 9
+  },
+  {
+   "rule": "api.magic-status",
+   "line": 9
+  }
  ]
 }

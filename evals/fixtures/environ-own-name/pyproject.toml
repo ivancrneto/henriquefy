@@ -1,0 +1,4 @@
+[project]
+name = "python-decouple"  # the library itself, not a dependency on it
+dependencies = []
+# we decoupled settings from code long ago

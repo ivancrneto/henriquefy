@@ -19,5 +19,6 @@
    "rule": "errors.bool-in-except",
    "line": 8
   }
- ]
+ ],
+ "nested_def_clean.py": []
 }

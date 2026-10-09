@@ -3,6 +3,7 @@ rules on the files in scope, the whole-repo rules over the root, and apply suppr
 
 import ast
 import json
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -11,7 +12,23 @@ from .repo_rules import import_cycles, inheritance_depth, module_name
 from .rules import HTTP_METHODS, RESPONSE_CALL, ROUTE_CALLS, RULES, Context, Finding, run_file_rules
 
 IGNORE = re.compile(r"#\s*henriquefy:\s*ignore\[([\w.,\s-]+)\]")
-SKIP_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", ".henriquefy", "build", "dist"}
+SKIP_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    ".henriquefy",
+    "build",
+    "dist",
+    ".tox",
+    ".nox",
+    ".eggs",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "site-packages",
+}
 TEST_FILE = re.compile(r"(^|/)(tests?/|test_[^/]+\.py$|[^/]+_test\.py$|conftest\.py$)")
 ROOT_MARKERS = ("pyproject.toml", "setup.py", "setup.cfg", ".git")
 UNPARSEABLE = "tooling.unparseable"
@@ -37,28 +54,59 @@ class Result:
         return json.dumps(data, indent=2, ensure_ascii=False)
 
 
+DECOUPLE_REQUIREMENT = re.compile(r"(^|[\"'\s,\[])python[-_.]decouple\b", re.I)
+OWN_NAME = re.compile(r"\bname\s*[=:]\s*[\"'][^\"']*[\"']")
+
+
 def find_root(target: Path) -> Path:
-    """Nearest ancestor holding a project marker; the target's directory when none exists."""
+    """Nearest ancestor holding a project marker; the target's directory when none exists.
+    The search stops below the home directory: a dotfiles `~/.git` is not the project."""
     start = target if target.is_dir() else target.parent
+    home = Path.home().resolve()
     for directory in (start, *start.parents):
+        if directory == home and directory != start:
+            break
         if any((directory / marker).exists() for marker in ROOT_MARKERS):
             return directory
     return start
 
 
-def python_files(root: Path) -> list[Path]:
+def python_files(root: Path, target: Path | None = None) -> list[Path]:
+    """Regular `.py` files under root. Tool directories, virtualenvs and nested repositories
+    (a subdirectory with its own `.git`: a clone, a submodule, a worktree) are pruned, unless
+    the target lies inside them."""
     if root.is_file():
         return [root]
-    return sorted(p for p in root.rglob("*.py") if not any(part in SKIP_DIRS for part in p.parts))
+    keep = {target, *target.parents} if target else set()
+    found = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        here = Path(dirpath)
+        dirnames[:] = [d for d in dirnames if here / d in keep or not _foreign(here / d)]
+        found += [here / f for f in filenames if f.endswith(".py") and (here / f).is_file()]
+    return sorted(found)
+
+
+def _foreign(directory: Path) -> bool:
+    return (
+        directory.name in SKIP_DIRS
+        or (directory / ".git").exists()
+        or (directory / "pyvenv.cfg").is_file()
+    )
 
 
 def depends_on_decouple(root: Path) -> bool:
+    """A `python-decouple` requirement in the dependency files; a comment, or the project's own
+    `name = "python-decouple"`, is not one."""
     names = ("pyproject.toml", "setup.py", "setup.cfg", "Pipfile")
     candidates = [root / n for n in names] + list(root.glob("requirements*.txt"))
-    return any(
-        f.is_file() and "decouple" in f.read_text(encoding="utf-8", errors="replace")
-        for f in candidates
-    )
+    for f in candidates:
+        if not f.is_file():
+            continue
+        for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = OWN_NAME.sub("", line.split("#", 1)[0])
+            if DECOUPLE_REQUIREMENT.search(line):
+                return True
+    return False
 
 
 def detect_framework(sources: list[str]) -> str:
@@ -81,9 +129,10 @@ def check(target: Path, root: Path | None = None) -> Result:
     the target); every repo-level signal is computed from the root, findings from the target."""
     target = target.resolve()
     root = root.resolve() if root else find_root(target)
-    all_files = python_files(root)
-    if target.is_file() and target not in all_files:
-        all_files.append(target)
+    if target != root and root not in target.parents:
+        raise ValueError(f"{target} is not inside the project root {root}")
+    # A file target needs no other file parsed: the repo rules run on directories only.
+    all_files = python_files(root, target) if target.is_dir() else [target]
     in_scope = {p for p in all_files if p == target or target in p.parents}
     decouple = depends_on_decouple(root)
     packages = _packages(root)
@@ -97,22 +146,24 @@ def check(target: Path, root: Path | None = None) -> Result:
     for path in all_files:
         rel = path.relative_to(root) if path.is_relative_to(root) else path
         rel_str = str(rel).replace("\\", "/")
-        source = path.read_text(encoding="utf-8", errors="replace")
         is_test = bool(TEST_FILE.search(rel_str))
         try:
+            source = path.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(path))
-        except PARSE_ERRORS as exc:
+        except (OSError, *PARSE_ERRORS) as exc:
             if path in in_scope:
                 unparseable += 1
-                msg = getattr(exc, "msg", None) or type(exc).__name__
-                findings.append(
-                    Finding(
-                        UNPARSEABLE,
-                        rel_str,
-                        getattr(exc, "lineno", None) or 1,
-                        f"cannot parse ({msg}); excluded from scoring. Newer syntax? Run under"
-                        " `uvx --python 3.14 henriquefy`",
+                if isinstance(exc, OSError):
+                    reason = exc.strerror or type(exc).__name__
+                    msg = f"cannot read ({reason}); excluded from scoring"
+                else:
+                    msg = (
+                        f"cannot parse ({getattr(exc, 'msg', None) or type(exc).__name__});"
+                        " excluded from scoring. Newer syntax? Run under"
+                        " `uvx --python 3.14 henriquefy`"
                     )
+                findings.append(
+                    Finding(UNPARSEABLE, rel_str, getattr(exc, "lineno", None) or 1, msg)
                 )
             continue
         root_test_files += is_test
@@ -139,7 +190,8 @@ def check(target: Path, root: Path | None = None) -> Result:
         scope_paths = {
             str(p.relative_to(root)).replace("\\", "/") for p in in_scope if p.is_relative_to(root)
         }
-        repo_findings = import_cycles(trees, rel_paths) + inheritance_depth(trees, rel_paths)
+        repo_findings = import_cycles(trees, rel_paths, scope_paths)
+        repo_findings += inheritance_depth(trees, rel_paths)
         findings.extend(f for f in repo_findings if f.path in scope_paths)
         if root_test_files == 0:
             findings.append(Finding("project.no-tests", ".", 0, "no test files found"))

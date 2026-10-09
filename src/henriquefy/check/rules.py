@@ -21,6 +21,7 @@ HTTP_METHODS = {"get", "post", "put", "patch", "delete", "options", "head"}
 BROAD_EXCEPTIONS = {"Exception", "BaseException"}
 ASSERT_PREFIX = "assert"
 CLASS_METHOD_LIMIT = 15
+SCOPES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)
 
 
 @dataclass(frozen=True)
@@ -76,8 +77,9 @@ def _f(rule_id: str, ctx: Context, node: ast.AST, message: str) -> Finding:
     "HTTP status as a bare integer",
     "An integer literal from 100 to 599 passed as `status=` or `status_code=` to a response or "
     "HTTP error constructor (`JsonResponse`, `Response`, `HTTPException`, `render`, ...), or "
-    "assigned to `status_code` (as a class attribute anywhere, as an attribute outside tests), "
-    "or compared with a `.status_code` attribute (`!= 401`, `== 200`, tests included). "
+    "assigned to `status_code` (as a class attribute anywhere, annotated or not, as an attribute "
+    "outside tests), or compared with a `.status_code` attribute (`!= 401`, `== 200`, "
+    "`in (200, 201)`, tests included). "
     "A mock like `responses.add(status=200)` or a fake `Response()` set up in a test describes "
     "someone else's reply and is not flagged.",
     "Use `http.HTTPStatus.<NAME>` (or `fastapi.status`) so the code reads as the status name.",
@@ -88,15 +90,23 @@ def magic_status(tree, lines, ctx):
             for kw in node.keywords:
                 if kw.arg in STATUS_KWARGS and _is_status_int(kw.value):
                     yield _f("api.magic-status", ctx, kw.value, f"{kw.arg}={kw.value.value}")
-        elif isinstance(node, ast.Assign) and _is_status_int(node.value):
-            if any(_is_status_target(t, ctx.is_test) for t in node.targets):
+        elif isinstance(node, ast.Assign | ast.AnnAssign) and _is_status_int(node.value):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if any(_is_status_target(t, ctx.is_test) for t in targets):
                 yield _f("api.magic-status", ctx, node.value, f"status_code = {node.value.value}")
         elif isinstance(node, ast.Compare):
             operands = [node.left, *node.comparators]
             if any(_is_status_attr(o) for o in operands):
                 for o in operands:
-                    if _is_status_int(o):
-                        yield _f("api.magic-status", ctx, o, f"status_code compared with {o.value}")
+                    group = o.elts if isinstance(o, ast.Tuple | ast.List | ast.Set) else [o]
+                    for item in group:
+                        if _is_status_int(item):
+                            yield _f(
+                                "api.magic-status",
+                                ctx,
+                                item,
+                                f"status_code compared with {item.value}",
+                            )
 
 
 def _is_status_attr(node: ast.AST) -> bool:
@@ -149,7 +159,19 @@ def _is_broad(node) -> bool:
 
 
 def _reraises(handler: ast.ExceptHandler) -> bool:
-    return any(isinstance(n, ast.Raise) for n in ast.walk(handler))
+    return any(isinstance(n, ast.Raise) for n in _walk_local(handler))
+
+
+def _walk_local(node: ast.AST):
+    """ast.walk that stays in the current scope: a nested def, lambda or class runs later,
+    so its `raise` or `return` is not the handler's."""
+    todo = [node]
+    while todo:
+        n = todo.pop()
+        yield n
+        for child in ast.iter_child_nodes(n):
+            if not isinstance(child, SCOPES):
+                todo.append(child)
 
 
 @rule(
@@ -163,7 +185,7 @@ def bool_in_except(tree, lines, ctx):
     seen: set[int] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.ExceptHandler):
-            for inner in ast.walk(node):
+            for inner in _walk_local(node):
                 if isinstance(inner, ast.Return) and _is_false_or_none(inner.value):
                     if id(inner) in seen:
                         continue
@@ -181,12 +203,13 @@ def _is_false_or_none(node) -> bool:
     "readability.mutable-default",
     "o-codigo-e-a-interface",
     "Mutable default argument",
-    "A list, dict or set literal (or call to list/dict/set) as a parameter default.",
+    "A list, dict or set literal (or call to list/dict/set) as a parameter default, in a "
+    "`def` or a `lambda`.",
     "Default to `None` and build the value inside the function, or use an immutable default.",
 )
 def mutable_default(tree, lines, ctx):
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.Lambda):
             defaults = node.args.defaults + node.args.kw_defaults
             for d in defaults:
                 if d is not None and _is_mutable_literal(d):
@@ -207,22 +230,33 @@ def _is_mutable_literal(node) -> bool:
     "testing.no-assert",
     "teste-primeiro-das-folhas",
     "Test without an assertion",
-    "A `test_*` function or method with no `assert` statement, no call to an attribute whose "
-    "name starts with `assert`, and no `pytest.raises`/`pytest.warns` block.",
+    "A `test_*` function or method that pytest collects (not one nested inside another "
+    "function) with no `assert` statement, no call to an attribute whose name starts with "
+    "`assert`, and no `pytest.raises`/`pytest.warns` block.",
     "Assert the behavior the test name promises, or delete the test.",
 )
 def no_assert(tree, lines, ctx):
     if not ctx.is_test or ctx.path.name == "conftest.py":
         return
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-            continue
+    for node in _collectable_functions(tree):
         if not node.name.startswith("test"):
             continue
         if any("fixture" in ast.unparse(d) for d in node.decorator_list):
             continue
         if not any(_is_assertion(n) for n in ast.walk(node)):
             yield _f("testing.no-assert", ctx, node, f"{node.name} asserts nothing")
+
+
+def _collectable_functions(tree: ast.AST):
+    """Functions at module or class level; a `def test_helper()` inside a test is not a test."""
+    todo = [tree]
+    while todo:
+        n = todo.pop()
+        for child in ast.iter_child_nodes(n):
+            if isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
+                yield child
+            elif not isinstance(child, ast.Lambda):
+                todo.append(child)
 
 
 def _is_assertion(node) -> bool:
@@ -277,15 +311,16 @@ def environ_without_decouple(tree, lines, ctx):
     "modeling.class-size",
     "uma-responsabilidade-por-identidade",
     "Class with too many methods",
-    f"A class defining more than {CLASS_METHOD_LIMIT} methods.",
+    f"A class defining more than {CLASS_METHOD_LIMIT} methods, counted by name: a property "
+    "setter or an `@overload` stub is the same method again.",
     "Find the second identity hiding in the class and give it its own name.",
 )
 def class_size(tree, lines, ctx):
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
-            methods = [
-                n for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
-            ]
+            methods = {
+                n.name for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+            }
             if len(methods) > CLASS_METHOD_LIMIT:
                 yield _f(
                     "modeling.class-size", ctx, node, f"{node.name} has {len(methods)} methods"
