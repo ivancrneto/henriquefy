@@ -15,7 +15,7 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 - **ask**: answer a question or review a snippet against the KB.
 - **check**: mechanical findings from the CLI, then your judgment findings, each cited.
 - **grade**: the Nota mecânica from the CLI, then the Nota do Henrique with your judgment.
-- transform: not shipped yet; say so if asked.
+- **transform**: rewrite in his style, one principle per change, tests between changes.
 
 ## check
 
@@ -70,6 +70,14 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
    for a framework he did not show. Say which one you are quoting.
 6. Quotes marked `verified: false` are transcript paraphrases: render them without quotation marks.
 7. `scripts/henriquefy.sh` runs the CLI for `check` and `grade`; `ask` never runs it.
+
+## transform
+
+Follow `references/transform-playbook.md` exactly: check, fence behavior with tests before any
+edit, one principle per change with the tests run after each, then explain the diff with
+citations. Never commit or branch unless asked. Public names, signatures and return contracts
+stay; a boolean return stays a boolean even when a principle prefers an exception, and that is
+recorded as a finding that remains. Do not generalize.
 
 ## Never
 

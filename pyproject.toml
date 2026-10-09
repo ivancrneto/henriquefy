@@ -43,7 +43,11 @@ packages = ["src/henriquefy"]
 include = ["src", "kb", "skills", "state", "tests", "README.md", "LICENSE", "NOTICE.md", "PLAN.md"]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = [
+    "django>=4.2",
+    "pytest>=8",
+    "ruff>=0.6",
+]
 
 [[tool.uv.index]]
 name = "testpypi"
