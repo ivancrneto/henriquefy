@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" alt="henriquefy logo" width="128"></p>
+
 # henriquefy
 
 Claude Code skills that know how [Henrique Bastos](https://github.com/henriquebastos)
