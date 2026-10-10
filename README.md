@@ -40,10 +40,10 @@ verdict. The letter that follows it is the skill's judgment, and the skill says 
 ## Knowledge base
 
 The skill reads `kb/`. The generated list of every principle, pattern, repository and course is
-[kb/INDEX.md](kb/INDEX.md): 29 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
+[kb/INDEX.md](kb/INDEX.md): 34 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
 dates how his tooling changed. Principle files are in English. Course digests are in Portuguese.
 
-Six course digests are in `kb/courses/`, written from the automatic captions of the playlists.
+Seven course digests are in `kb/courses/`, written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper).
 A quote in a digest is a paraphrase of those captions and has not been checked against the video.
 
 | Digest | Course | Lessons |

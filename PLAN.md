@@ -4,9 +4,9 @@ Goal: a set of Claude Code skills that know how Henrique Bastos (HB Network) wri
 designs APIs, models objects, tests, and thinks about a developer career, and that can
 **apply** that knowledge to any codebase: explain, check, grade, and transform.
 
-Status (2026-10-09): Phases 0 to 5 built; v1.0.0 tagged. Phase 6 (`watch.py`) is not in the
-tree. Six course digests, 29 principles, 15 patterns, 13 repository digests plus `kb/repos/drift.md`.
-Of the tier 1 playlists, only Dicas de Programação (53 videos, 2.6 h) is still queued. Work goes
+Status (2026-10-10): Phases 0 to 5 built; v1.0.0 tagged. Phase 6 (`watch.py`) is not in the
+tree. Seven course digests, 34 principles, 15 patterns, 13 repository digests plus `kb/repos/drift.md`.
+Every tier 1 playlist is ingested. Work goes
 through pull requests Ivan merges, then a tag.
 
 ## 1. Shape of the system
@@ -299,7 +299,7 @@ starts after tier 1 and runs one playlist per session, interleaved with tier 2.
 
 Tier 1 was about 13 hours and is what `transform` and `check` need most. As of 2026-10-09 the
 digests for Raio-X da OO, Refatoração, Procedural em OO and Raio-X do TDD are in `kb/courses/`.
-Dicas de Programação (2.6 h) is the tier 1 playlist still queued. Welcome to the Django mostly
+Dicas de Programação (2.6 h) was ingested on 2026-10-10, which finishes tier 1. Welcome to the Django mostly
 teaches Django and waits until the grading of plain Python is calibrated.
 
 Design de API has nine lessons of two to three hours each (24 h in the PDF); a three-hour lesson
@@ -437,7 +437,7 @@ Order follows his method, not a lint list:
 - `yt_fetch.py`: metadata plus `--write-auto-sub --sub-lang pt-orig --sub-format json3 --skip-download --sleep-subtitles 2`; convert json3 (`events[].tStartMs`, `segs[].utf8`; drop `aAppend` events and newline-only segs) to timestamped text, chunk per lesson and, inside a lesson, into windows of about 15 minutes with overlap. Auto captions have no punctuation and mis-hear names and code; the distiller must be told so.
 - `prompts/distill-transcript.md`: the two PDFs' table of contents becomes the output schema of the distiller, so every course digest has the same shape: visão geral, filosofia e método, pilares conceituais, tabela de aulas, resumo por aula, princípios transversais, citações-chave, evolução técnica aula a aula, arsenal técnico, glossário, perguntas e respostas, repositórios, análise linha a linha do código real, execução real dos testes.
 - The distiller works lesson by lesson from the timestamped transcript, then a second pass writes the cross-cutting sections. Timestamps survive into quotes and principle citations. A quote lifted from an auto caption carries `verified: false` and is rendered as a paraphrase with timestamp, not in quotation marks, until someone has listened to the clip and fixed the wording; only then is it a verbatim Portuguese quote.
-- Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order. Done through Raio-X do TDD (2026-10-09). Next: Dicas de Programação.
+- Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order. Done through Dicas de Programação (2026-10-10), which finishes tier 1.
 - **Exit criterion (CI):** a third course digest exists under `kb/courses/` and a test checks it has a heading per schema section (keyword match; the line-by-line and execution sections may be placeholders when a course published no code). **(manual):** `evals/ask.md` gains two questions answerable only from the new course, each with an expected principle id and a lesson plus timestamp citation, and the installed skill answers both with the expected id and a citation that exists in the digest.
 
 ### Phase 5: transform (2 sessions)
@@ -467,7 +467,7 @@ Assumed, change if wrong:
 - Code sources: all of his repos count, course-related or not. Alumni code is mined too, flagged `alumni`, used for calibration and mistake rules, never cited as his practice.
 - Frameworks: principles are framework-free; patterns carry one rendition per framework, flagged `his` or `translated`. Django and FastAPI are both first-class from Phase 1; the checker detects the framework.
 - Grading: strict 2026 by default, `--era` flag for calibration on old repos, era tags only on tooling principles.
-- Ingest order after the two HTML digests: tier 1 of the playlist inventory, Raio-X da OO first as a smoke test, then Refatoração, then the rest of the table. As of 2026-10-09 that leaves Dicas de Programação, then tier 2 interleaved with the career playlists.
+- Ingest order after the two HTML digests: tier 1 of the playlist inventory, Raio-X da OO first as a smoke test, then Refatoração, then the rest of the table. As of 2026-10-10 that leaves tier 2 interleaved with the career playlists.
 
 Decided 2026-10-08 after the adversarial review:
 - Licenses: MIT for code, CC BY 4.0 for `kb/` except `kb/courses/`, which stays unlicensed (published with permission) until Henrique confirms in writing. Ivan will ask him to add MIT to `monopoly`, `eventex` and `pacote-desafios-pythonicos`.
