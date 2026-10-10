@@ -15,3 +15,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | Why does he insist that instance attributes be initialized in `__init__` instead of inside other methods? | inicialize-o-estado-no-init | raio-x-da-oo lesson 4 at 0:12:51 |
 | I was handed a legacy program with no tests. What does he do first, and how does he make it safe to refactor? | execute-antes-de-ler | refatoracao-na-pratica lesson 20 at 0:02:17 and 0:05:08 |
 | Why does he delete the `asc` function he just extracted in the wordcount refactoring? | nao-projete-a-generalizacao | refatoracao-na-pratica lesson 24 at 0:02:30 |
+| My boss wants a quick change today that I know is a hack. How does he handle it? | estanque-e-depois-repare | dicas-de-programacao lesson 40 at 0:01:20 and 0:01:45 |
+| Should I wrap Django behind my own interface so we can swap frameworks later? | use-o-framework-sem-abstrai-lo | dicas-de-programacao lesson 33 at 0:00:17 and 0:01:28 |
