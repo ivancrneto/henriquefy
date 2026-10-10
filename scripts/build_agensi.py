@@ -52,8 +52,8 @@ LAYOUT_NOTE = """## Layout of this edition
 The pattern, repository and course digests are merged into `references/kb/patterns.md`,
 `references/kb/repos.md` and `references/kb/courses.md`. Each file starts at a line
 `##### FILE <dir>/<name>.md`; read from that line to the next one. Code samples that read the
-process environment (written `<env>` here) or show example credentials are paraphrased; the full text is in the
-repository and in `uvx henriquefy install`.
+process environment (written `<env>` here) or show example credentials are paraphrased; the
+full text is in the repository and in `uvx henriquefy install`.
 
 """
 
@@ -64,7 +64,8 @@ def build(out: Path) -> int:
         _merge(installed / "references" / "kb")
         _adapt_skill(installed / "SKILL.md")
         for name in ("NOTICE.md", "LICENSE"):
-            (installed / name).write_text((Path(name)).read_text(encoding="utf-8"), encoding="utf-8")
+            text = Path(name).read_text(encoding="utf-8")
+            (installed / name).write_text(text, encoding="utf-8")
         files = sorted(p for p in installed.rglob("*") if p.is_file())
         for path in files:
             text = path.read_text(encoding="utf-8")
@@ -72,7 +73,8 @@ def build(out: Path) -> int:
                 text = re.sub(pattern, repl, text)
             path.write_text(text, encoding="utf-8")
             if hit := FORBIDDEN.search(text):
-                raise SystemExit(f"{path.relative_to(installed)}: scanner bait left: {hit.group()!r}")
+                where = path.relative_to(installed)
+                raise SystemExit(f"{where}: scanner bait left: {hit.group()!r}")
         if len(files) > MAX_FILES:
             raise SystemExit(f"{len(files)} files, the limit is {MAX_FILES}")
         out.unlink(missing_ok=True)
