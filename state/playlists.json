@@ -22,7 +22,7 @@
     {
       "id": "PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW",
       "title": "Raio-X da Orientação a Objetos",
-      "tier": "1",
+      "tier": "done",
       "videos": 5,
       "hours": 0.7,
       "course": "raio-x-da-oo"
@@ -30,7 +30,7 @@
     {
       "id": "PLeKXYyZCJHxfTqEvicb9dqcbj-eCOFhhj",
       "title": "Refatoração na Prática",
-      "tier": "1",
+      "tier": "done",
       "videos": 34,
       "hours": 4.0,
       "course": "refatoracao-na-pratica"
@@ -38,7 +38,7 @@
     {
       "id": "PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7",
       "title": "Transforme seu código Procedural em Orientado a Objetos",
-      "tier": "1",
+      "tier": "done",
       "videos": 10,
       "hours": 3.3,
       "course": "procedural-para-oo"
@@ -46,7 +46,7 @@
     {
       "id": "PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7",
       "title": "Raio-X do Test-Driven Development",
-      "tier": "1",
+      "tier": "done",
       "videos": 5,
       "hours": 2.3,
       "course": "raio-x-do-tdd"

@@ -4,8 +4,10 @@ Goal: a set of Claude Code skills that know how Henrique Bastos (HB Network) wri
 designs APIs, models objects, tests, and thinks about a developer career, and that can
 **apply** that knowledge to any codebase: explain, check, grade, and transform.
 
-Status (2026-10-08): Phases 0 to 5 built; v0.4.0 on PyPI. Four course digests, 25 principles,
-15 patterns, 14 repo digests. Work goes through pull requests Ivan merges, then a tag.
+Status (2026-10-09): Phases 0 to 5 built; v1.0.0 tagged. Phase 6 (`watch.py`) is not in the
+tree. Six course digests, 29 principles, 15 patterns, 13 repository digests plus `kb/repos/drift.md`.
+Of the tier 1 playlists, only Dicas de Programação (53 videos, 2.6 h) is still queued. Work goes
+through pull requests Ivan merges, then a tag.
 
 ## 1. Shape of the system
 
@@ -34,11 +36,11 @@ henriquefy/
 ├── NOTICE.md                      # non-affiliation note, Henrique's OK, licensing facts per repo, YouTube terms note on caption fetching
 ├── pyproject.toml                 # name henriquefy, src layout, [project.scripts] henriquefy = "henriquefy.cli:main"
 ├── src/henriquefy/
-│   ├── cli.py                     # install | update | check | grade (ingest and watch run as python -m from a checkout)
+│   ├── cli.py                     # install | update | check | grade (ingest runs as python -m from a checkout)
 │   ├── check/                     # rules.py (per-file), repo_rules.py (whole repo); each rule -> principle id
 │   ├── grade/                     # rubric loader, aggregation, report.py renders report.md and the JSON
 │   ├── ingest/                    # html_to_md, yt_fetch, gh_fetch, build_index, calibrate
-│   ├── watch.py                   # Phase 6
+│   ├── watch.py                   # Phase 6, not built
 │   ├── install.py overrides.py
 │   └── paths.py                   # importlib.resources access to kb/, skills/ and state/
 ├── kb/                            # knowledge base, shipped into the wheel via hatch force-include
@@ -70,8 +72,9 @@ uvx henriquefy install --all      # also installs henrique-ingest and henrique-w
 uvx henriquefy@latest update      # the only command that pins @latest: re-installs the skill, keeps ~/.henriquefy/
 uvx henriquefy check path/        # mechanical rules only, no Claude needed, JSON or text
 uvx henriquefy grade path/        # Nota mecânica: deterministic, from mechanical findings only
-uvx henriquefy ingest <source>    # fetch + prepare; distillation prompts are printed for the agent
-uvx henriquefy watch              # diff YouTube and GitHub against ~/.henriquefy/state
+# ingest is not a CLI subcommand. From a checkout:
+#   uv run python -m henriquefy.ingest.yt_fetch <course-id> --windows
+# watch is Phase 6 and is not built.
 ```
 
 `install` writes each skill as `SKILL.md` + `references/` + `scripts/`, copies the KB into
@@ -106,8 +109,11 @@ for other agents (Henrique himself uses pi and codex).
 ### Public repo
 
 - Transcripts and clones of his repos are never committed; `kb/` holds digests, short cited
-  quotes and excerpts. The two digests are Ivan's; the committed form is their markdown
-  conversion under `kb/courses/`, and the PDFs move to gitignored `sources/pdf/`.
+  quotes and excerpts. Orientação a Objetos na Prática and Design de API na Prática started as
+  Ivan's HTML digests; the committed form is their markdown under `kb/courses/`, and the PDFs
+  stay in gitignored `sources/pdf/`. Raio X da Orientação a Objetos and Refatoração na Prática
+  (2026-10-08), then Transforme seu código Procedural em Orientado a Objetos and Raio-X do
+  Test-Driven Development (2026-10-09), were distilled from automatic captions.
 - README states plainly: independent project, not affiliated with or endorsed by Henrique Bastos
   or HB Network, credit for the ideas to him, links to the channel and repos. Henrique OK'd
   publishing (confirmed by Ivan, 2026-10-08); `NOTICE.md` records the date and medium.
@@ -258,10 +264,10 @@ Ingest priority, by relevance to the four skill modes and by cost in hours of vi
 |---|---|---|---|---|---|
 | done | Orientação a Objetos na Prática | `PLeKXYyZCJHxemNCYYvDUw0wRsMiN7aX1m` | 23 | 8.0 | modeling, simplicity, testing |
 | done | Design de API na Prática | `PLeKXYyZCJHxdD1CXDeEymwI1S9wlcsmYo` | 9 | 24.0 | api, errors, project |
-| 1 | Refatoração na Prática | `PLeKXYyZCJHxfTqEvicb9dqcbj-eCOFhhj` | 34 | 4.0 | transform, check |
-| 1 | Transforme seu código Procedural em OO | `PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7` | 10 | 3.3 | transform, modeling |
-| 1 | Raio-X do Test-Driven Development | `PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7` | 5 | 2.3 | testing |
-| 1 | Raio-X da Orientação a Objetos | `PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW` | 5 | 0.7 | modeling |
+| done | Refatoração na Prática | `PLeKXYyZCJHxfTqEvicb9dqcbj-eCOFhhj` | 34 | 4.0 | transform, check |
+| done | Transforme seu código Procedural em OO | `PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7` | 10 | 3.3 | transform, modeling |
+| done | Raio-X do Test-Driven Development | `PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7` | 5 | 2.3 | testing |
+| done | Raio-X da Orientação a Objetos | `PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW` | 5 | 0.7 | modeling |
 | 1 | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
 | 2 | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
 | 2 | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
@@ -291,8 +297,10 @@ Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work met
 development practice, career 3 the short broad clips, career 4 the business side. Career ingest
 starts after tier 1 and runs one playlist per session, interleaved with tier 2.
 
-Tier 1 is about 13 hours of video and is what `transform` and `check` need most. Welcome to the
-Django mostly teaches Django and waits until the grading of plain Python is calibrated.
+Tier 1 was about 13 hours and is what `transform` and `check` need most. As of 2026-10-09 the
+digests for Raio-X da OO, Refatoração, Procedural em OO and Raio-X do TDD are in `kb/courses/`.
+Dicas de Programação (2.6 h) is the tier 1 playlist still queued. Welcome to the Django mostly
+teaches Django and waits until the grading of plain Python is calibrated.
 
 Design de API has nine lessons of two to three hours each (24 h in the PDF); a three-hour lesson
 transcript is too long to distill with citations in one pass, hence the windows in Phase 4.
@@ -429,7 +437,7 @@ Order follows his method, not a lint list:
 - `yt_fetch.py`: metadata plus `--write-auto-sub --sub-lang pt-orig --sub-format json3 --skip-download --sleep-subtitles 2`; convert json3 (`events[].tStartMs`, `segs[].utf8`; drop `aAppend` events and newline-only segs) to timestamped text, chunk per lesson and, inside a lesson, into windows of about 15 minutes with overlap. Auto captions have no punctuation and mis-hear names and code; the distiller must be told so.
 - `prompts/distill-transcript.md`: the two PDFs' table of contents becomes the output schema of the distiller, so every course digest has the same shape: visão geral, filosofia e método, pilares conceituais, tabela de aulas, resumo por aula, princípios transversais, citações-chave, evolução técnica aula a aula, arsenal técnico, glossário, perguntas e respostas, repositórios, análise linha a linha do código real, execução real dos testes.
 - The distiller works lesson by lesson from the timestamped transcript, then a second pass writes the cross-cutting sections. Timestamps survive into quotes and principle citations. A quote lifted from an auto caption carries `verified: false` and is rendered as a paraphrase with timestamp, not in quotation marks, until someone has listened to the clip and fixed the wording; only then is it a verbatim Portuguese quote.
-- Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order.
+- Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order. Done through Raio-X do TDD (2026-10-09). Next: Dicas de Programação.
 - **Exit criterion (CI):** a third course digest exists under `kb/courses/` and a test checks it has a heading per schema section (keyword match; the line-by-line and execution sections may be placeholders when a course published no code). **(manual):** `evals/ask.md` gains two questions answerable only from the new course, each with an expected principle id and a lesson plus timestamp citation, and the installed skill answers both with the expected id and a citation that exists in the digest.
 
 ### Phase 5: transform (2 sessions)
@@ -459,7 +467,7 @@ Assumed, change if wrong:
 - Code sources: all of his repos count, course-related or not. Alumni code is mined too, flagged `alumni`, used for calibration and mistake rules, never cited as his practice.
 - Frameworks: principles are framework-free; patterns carry one rendition per framework, flagged `his` or `translated`. Django and FastAPI are both first-class from Phase 1; the checker detects the framework.
 - Grading: strict 2026 by default, `--era` flag for calibration on old repos, era tags only on tooling principles.
-- Ingest order after the two we have: tier 1 of the playlist inventory, Raio-X da OO first as a smoke test.
+- Ingest order after the two HTML digests: tier 1 of the playlist inventory, Raio-X da OO first as a smoke test, then Refatoração, then the rest of the table. As of 2026-10-09 that leaves Dicas de Programação, then tier 2 interleaved with the career playlists.
 
 Decided 2026-10-08 after the adversarial review:
 - Licenses: MIT for code, CC BY 4.0 for `kb/` except `kb/courses/`, which stays unlicensed (published with permission) until Henrique confirms in writing. Ivan will ask him to add MIT to `monopoly`, `eventex` and `pacote-desafios-pythonicos`.
