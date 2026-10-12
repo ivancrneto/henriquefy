@@ -28,11 +28,19 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
    `references/kb/check-rules.md` maps each rule to its principle, what it fires on and the fix.
 2. Judgment pass. Scope: the path given; with no path, the files with mechanical findings plus,
    in a git repo, files changed in the working tree; if the user asks for everything, say how
-   many files that is before starting (this is a request to you, not a CLI flag). Read each file with the matching principle files open and add
-   findings the rules cannot see: responsibility leaks, generalization designed too early,
-   modeling that fights the domain. Cite every one.
+   many files that is before starting (this is a request to you, not a CLI flag).
+   - **Checklist.** Every principle marked `judgment` or `partial` in `references/kb/INDEX.md`.
+     Open each once per run; its "How to detect" signals are what you look for. Signals that
+     need history (commits, diffs) apply only with the git log in scope; a principle with no
+     code signal at all is out of scope. Never skip one because it is new or has no rule.
+   - **Sweep.** Read every file in scope against the whole checklist, not only the principles
+     a file brings to mind. Look across files for signals that span them (the same loop shape
+     in three functions, a long import list, a wrapper with one implementation). Cite each one.
 3. Report one line per finding: `path:line`, rule or principle id, why in one sentence in his
-   reasoning, citation, fix. Mechanical findings first, judgment findings after, labeled.
+   reasoning, citation, fix. Mechanical findings first, judgment findings after, labeled. End
+   with **Principles consulted**: files read, then every checklist principle under one of with
+   a finding, no finding, or out of scope (with a few words why). A principle in none of the
+   three was not consulted, which is a defect of the run.
 
 ## grade
 

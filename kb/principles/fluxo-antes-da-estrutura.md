@@ -59,9 +59,12 @@ sections 3.1 and 6.1.
 the end considers a `Board` class. Bad: a refactoring that opens with `class Coordinate` and
 `class Board` and then tries to fit the old commands into them.
 
-**How to detect.** Judgment. A refactoring diff whose first commits add classes or type
-hierarchies while the old procedural flow is still in place; new structure with no test showing
-the flow unchanged.
+**How to detect.** Judgment. In a snapshot: a path through the program that no single function
+reads top to bottom, because it is spread over a structure (a node graph wired by module-level
+calls, a registry, a class hierarchy) and can only be followed in a diagram or a debugger; steps
+that exist in the structure but are never reached. In history: a refactoring diff whose first
+commits add classes or type hierarchies while the old procedural flow is still in place; new
+structure with no test showing the flow unchanged.
 
 **How to fix.** Run the program, read it from the entry point simulating execution, write a test
 that pins each path (see `execute-antes-de-ler`). Then move one step at a time with functions,
