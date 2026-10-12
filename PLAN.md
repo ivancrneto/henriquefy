@@ -9,7 +9,7 @@ that knowledge to any codebase: explain, check, grade, and transform.
 
 ## Status (2026-10-12)
 
-Latest release: **v1.1.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
+Latest release: **v1.2.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12).
 
@@ -19,7 +19,7 @@ with Domine o Método da Refatoração Rápida (2026-10-12).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0, v1.2.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | **next**, not in the tree | |
 | 7 | Hardening | ongoing | |
