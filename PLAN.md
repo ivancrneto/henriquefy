@@ -5,11 +5,11 @@ designs APIs, models objects, tests, and thinks about a developer career, and th
 that knowledge to any codebase: explain, check, grade, and transform.
 
 **Working agreement.** Work goes through pull requests that Ivan merges; a release is a tag
-`vX.Y.Z` on the merge commit, after a version-bump PR.
+`vX.Y.Z`, which `release.yml` publishes and pushes itself when a version-bump PR merges.
 
 ## Status (2026-10-12)
 
-Latest release: **v1.2.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
+Latest release: **v1.3.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12).
 
@@ -19,7 +19,7 @@ with Domine o Método da Refatoração Rápida (2026-10-12).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0, v1.2.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | **next**, not in the tree | |
 | 7 | Hardening | ongoing | |
@@ -135,8 +135,10 @@ other agents (Henrique himself uses pi and codex).
 
 - **Version policy.** The KB is content, so every KB change is a release. Patch for fixes and new
   quotes, minor for new principles or courses, major for rubric changes that move grades.
-- **Flow.** Work branch, PR, Ivan merges; a version-bump PR, Ivan merges; tag `vX.Y.Z` on the
-  merge commit. `release.yml` checks that the tag equals the `pyproject.toml` version.
+- **Flow.** Work branch, PR, Ivan merges; a version-bump PR, Ivan merges, and that merge
+  releases: `release.yml` runs on any push to main that touches `pyproject.toml`, and when
+  `vX.Y.Z` for its version is not tagged yet it tests, publishes, then tags the merge commit.
+  A hand-pushed tag still releases, after checking that it equals the `pyproject.toml` version.
 - **Publishing.** `release.yml` runs `uv build` and `uv publish` with trusted publishing
   (`permissions: id-token: write`) to TestPyPI (`uv publish --publish-url`) and then PyPI. Each
   index needs a pending publisher, registered by Ivan in the browser before the first tag, with
