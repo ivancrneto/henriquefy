@@ -1,15 +1,41 @@
 # henriquefy Plan
 
-Goal: a set of Claude Code skills that know how Henrique Bastos (HB Network) writes Python,
-designs APIs, models objects, tests, and thinks about a developer career, and that can
-**apply** that knowledge to any codebase: explain, check, grade, and transform.
+**Goal.** A set of Claude Code skills that know how Henrique Bastos (HB Network) writes Python,
+designs APIs, models objects, tests, and thinks about a developer career, and that can **apply**
+that knowledge to any codebase: explain, check, grade, and transform.
 
-Status (2026-10-10): Phases 0 to 5 built; v1.0.0 tagged. Phase 6 (`watch.py`) is not in the
-tree. Seven course digests, 34 principles, 15 patterns, 13 repository digests plus `kb/repos/drift.md`.
-Every tier 1 playlist is ingested. Work goes
-through pull requests Ivan merges, then a tag.
+**Working agreement.** Work goes through pull requests that Ivan merges; a release is a tag
+`vX.Y.Z` on the merge commit, after a version-bump PR.
+
+## Status (2026-10-12)
+
+Latest release: **v1.1.0** on PyPI. The KB holds 7 course digests, 34 principles, 15 patterns,
+13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested.
+
+| Phase | What | State | Release |
+|---|---|---|---|
+| 0 | Scaffold, CI, release pipeline | done | v0.0.1 |
+| 1 | KB v0 from the two HTML digests | done | v0.1.0 |
+| 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
+| 3 | Repo mining and alumni calibration | done | v0.3.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 and career queued | v0.4.0, v1.1.0 |
+| 5 | `transform` | done | v1.0.0 |
+| 6 | `watch` (`watch.py`) | **next**, not in the tree | |
+| 7 | Hardening | ongoing | |
+
+## Contents
+
+1. [Shape of the system](#1-shape-of-the-system)
+2. [Knowledge base design](#2-knowledge-base-design)
+3. [henriquefy modes](#3-henriquefy-modes)
+4. [Phases](#4-phases)
+5. [Decisions](#5-decisions)
+
+---
 
 ## 1. Shape of the system
+
+### 1.1 Three skills, one knowledge base
 
 Three concerns, three skills, one shared knowledge base (KB). Skills are thin; the KB is the product.
 
@@ -18,22 +44,22 @@ Three concerns, three skills, one shared knowledge base (KB). Skills are thin; t
 | `kb/` | The distilled knowledge: principles, patterns, rubric, course and repo digests, quotes, glossary | Read by every skill |
 | `skills/henriquefy` | Consumer. Applies the KB to code: `ask`, `check`, `grade`, `transform` | You, on any repo |
 | `skills/henrique-ingest` | Producer. Turns a source (video, playlist, PDF, repo) into KB entries with citations | You, when a new source appears |
-| `skills/henrique-watch` | Monitor. Detects new videos, repos, commits; queues them for ingest | Scheduled: cron or launchd on the maintainer's machine, or any agent scheduler |
+| `skills/henrique-watch` | Monitor. Detects new videos, repos and commits; queues them for ingest | Scheduled: cron or launchd on the maintainer's machine, or any agent scheduler |
 
-Why split: ingest is slow, token-heavy, and run rarely. henriquefy must be fast and load only
-what a task needs (progressive disclosure: short `SKILL.md`, details in `references/`).
+Why split: ingest is slow, token-heavy and rare. `henriquefy` must be fast and load only what a
+task needs (progressive disclosure: short `SKILL.md`, details in `references/`).
 
-### Repo layout
+### 1.2 Repo layout
 
-Published as the `henriquefy` package on PyPI since v0.0.1. One package, one
-CLI, three skills shipped as package data.
+Published as the `henriquefy` package on PyPI since v0.0.1: one package, one CLI, three skills
+shipped as package data.
 
 ```
 henriquefy/
 ├── PLAN.md
 ├── README.md
-├── LICENSE                        # MIT; kb/LICENSE is CC BY 4.0 except kb/courses/ (see "Public repo")
-├── NOTICE.md                      # non-affiliation note, Henrique's OK, licensing facts per repo, YouTube terms note on caption fetching
+├── LICENSE                        # MIT; kb/LICENSE is CC BY 4.0 except kb/courses/ (see 1.5)
+├── NOTICE.md                      # non-affiliation, Henrique's OK, per-repo licensing, YouTube terms note
 ├── pyproject.toml                 # name henriquefy, src layout, [project.scripts] henriquefy = "henriquefy.cli:main"
 ├── src/henriquefy/
 │   ├── cli.py                     # install | update | check | grade (ingest runs as python -m from a checkout)
@@ -41,29 +67,31 @@ henriquefy/
 │   ├── grade/                     # rubric loader, aggregation, report.py renders report.md and the JSON
 │   ├── ingest/                    # html_to_md, yt_fetch, gh_fetch, build_index, calibrate
 │   ├── watch.py                   # Phase 6, not built
-│   ├── install.py overrides.py
+│   ├── install.py  overrides.py
 │   └── paths.py                   # importlib.resources access to kb/, skills/ and state/
 ├── kb/                            # knowledge base, shipped into the wheel via hatch force-include
 │   ├── INDEX.md
-│   ├── principles/ patterns/ courses/ repos/ career/
-│   ├── rubric.md check-rules.md   # generated by build_index.py: weights per dimension; rule id -> principle id
-│   └── glossary.md quotes.md
+│   ├── principles/  patterns/  courses/  repos/  career/
+│   ├── rubric.md  check-rules.md  # generated by build_index.py: weights per dimension; rule id -> principle id
+│   └── glossary.md  quotes.md
 ├── skills/                        # shipped into the wheel the same way
-│   ├── henriquefy/SKILL.md + references/ (transform-playbook.md; kb/ is copied here at install) + scripts/
-│   ├── henrique-ingest/SKILL.md + prompts/ (distill-transcript.md, distill-repo.md)
-│   └── henrique-watch/SKILL.md
-├── state/                         # playlists.json seed, force-included into the wheel like kb/; per-user state lives in ~/.henriquefy/ (state/, rubric.toml, ignore.toml)
+│   ├── henriquefy/                # SKILL.md + references/ (transform-playbook.md; kb/ is copied here at install) + scripts/
+│   ├── henrique-ingest/           # SKILL.md + prompts/ (distill-transcript.md, distill-repo.md)
+│   └── henrique-watch/            # SKILL.md
+├── state/                         # playlists.json seed, force-included like kb/
 ├── evals/                         # ask.md, fixtures/, transform/, calibration/ (his.json, alumni.json)
 ├── sources/                       # local only, gitignored: html/, pdf/, transcripts/, repos/ (with manifest.json)
 └── .github/workflows/             # ci.yml (ruff, pytest, evals), release.yml (uv build + trusted publishing on tag)
 ```
 
-`kb/` and `skills/` stay at the repo root so they read well on GitHub; the wheel includes them
-under `henriquefy/kb` and `henriquefy/skills`. `paths.py` tries
-`importlib.resources.files("henriquefy") / "kb"` and falls back to the repo root, because an
-editable install (`uv run`) resolves the package to `src/henriquefy/`, which has no `kb/`.
+- `kb/` and `skills/` stay at the repo root so they read well on GitHub; the wheel includes them
+  under `henriquefy/kb` and `henriquefy/skills`.
+- `paths.py` tries `importlib.resources.files("henriquefy") / "kb"` and falls back to the repo
+  root, because an editable install (`uv run`) resolves the package to `src/henriquefy/`, which
+  has no `kb/`.
+- Per-user state lives in `~/.henriquefy/` (`state/`, `rubric.toml`, `ignore.toml`).
 
-### Distribution
+### 1.3 Distribution
 
 ```
 uvx henriquefy install            # writes the self-contained henriquefy skill into ~/.claude/skills/
@@ -77,67 +105,86 @@ uvx henriquefy grade path/        # Nota mecânica: deterministic, from mechanic
 # watch is Phase 6 and is not built.
 ```
 
-`install` writes each skill as `SKILL.md` + `references/` + `scripts/`, copies the KB into
-`references/kb/` of the `henriquefy` skill only, and replaces the skill directory wholesale. User
-files live in `~/.henriquefy/` (`rubric.toml`, `ignore.toml`, `state/`), which `install` and
-`update` never touch; when a rubric override is active the report prints "rubric overrides
-active" with the overridden keys, and calibration and exit criteria run with none. The installed
-skill never points into site-packages, because the uvx environment is a cache uv may prune. Its
-scripts call `uvx henriquefy==X ...` with the version `install` wrote, so skill and CLI never
-diverge; uvx contacts the index on every run and fails without network unless `--offline` (uv
-0.11.32), so the scripts try `--offline` first and retry without it on a cold cache. With no cache
-and no network the script prints one line, `henriquefy X not cached; connect once or run uvx
-henriquefy@latest update`, and exits non-zero. `uv tool install henriquefy` gives a fixed binary
-on PATH instead. `install` writes the version as
-`metadata: {henriquefy_version: X}`, the one frontmatter key the Agent Skills spec leaves free;
-any other custom key fails skill packaging. `SKILL.md` stays under 100 lines and never inlines KB
-content; it points at `references/kb/INDEX.md`. Only `henriquefy` is installed by default,
-because Claude Code loads every installed skill's frontmatter into every session.
-`install --project` puts the KB copy under the target repo's git and says so.
+How `install` behaves:
 
-Version policy: the KB is content, so every KB change is a release. Patch for fixes and new
-quotes, minor for new principles or courses, major for rubric changes that move grades.
-Releases: tag `vX.Y.Z`; `release.yml` runs `uv build` and `uv publish` with trusted publishing
-(`permissions: id-token: write`) to TestPyPI (`uv publish --publish-url`) and
-then PyPI. Each index needs a pending publisher, registered by Ivan in the browser before the first
-tag, with the exact GitHub repo name, the workflow filename `release.yml` and the environment
-name the job uses. No tokens in the repo.
+- Writes each skill as `SKILL.md` + `references/` + `scripts/`, copies the KB into
+  `references/kb/` of the `henriquefy` skill only, and replaces the skill directory wholesale.
+- Never touches `~/.henriquefy/`. When a rubric override is active the report prints "rubric
+  overrides active" with the overridden keys; calibration and exit criteria run with none.
+- The installed skill never points into site-packages, because the uvx environment is a cache
+  uv may prune. Its scripts call `uvx henriquefy==X ...` with the version `install` wrote, so
+  skill and CLI never diverge.
+- uvx contacts the index on every run and fails without network unless `--offline` (uv 0.11.32),
+  so the scripts try `--offline` first and retry without it on a cold cache. With no cache and no
+  network the script prints one line, `henriquefy X not cached; connect once or run uvx
+  henriquefy@latest update`, and exits non-zero. `uv tool install henriquefy` gives a fixed
+  binary on PATH instead.
+- Writes the version as `metadata: {henriquefy_version: X}`, the one frontmatter key the Agent
+  Skills spec leaves free; any other custom key fails skill packaging.
+- `SKILL.md` stays under 100 lines and never inlines KB content; it points at
+  `references/kb/INDEX.md`.
+- Only `henriquefy` is installed by default, because Claude Code loads every installed skill's
+  frontmatter into every session.
+- `install --project` puts the KB copy under the target repo's git and says so.
 
-Later, not now: a Claude Code plugin manifest for marketplace install, and `install --target`
-for other agents (Henrique himself uses pi and codex).
+Later, not now: a Claude Code plugin manifest for marketplace install, and `install --target` for
+other agents (Henrique himself uses pi and codex).
 
-### Public repo
+### 1.4 Versions and releases
 
-- Transcripts and clones of his repos are never committed; `kb/` holds digests, short cited
-  quotes and excerpts. Orientação a Objetos na Prática and Design de API na Prática started as
+- **Version policy.** The KB is content, so every KB change is a release. Patch for fixes and new
+  quotes, minor for new principles or courses, major for rubric changes that move grades.
+- **Flow.** Work branch, PR, Ivan merges; a version-bump PR, Ivan merges; tag `vX.Y.Z` on the
+  merge commit. `release.yml` checks that the tag equals the `pyproject.toml` version.
+- **Publishing.** `release.yml` runs `uv build` and `uv publish` with trusted publishing
+  (`permissions: id-token: write`) to TestPyPI (`uv publish --publish-url`) and then PyPI. Each
+  index needs a pending publisher, registered by Ivan in the browser before the first tag, with
+  the exact GitHub repo name, the workflow filename `release.yml` and the environment name the
+  job uses. No tokens in the repo.
+- **Gotchas.** PyPI's JSON API lags about a minute after upload (`uvx --refresh` then works).
+  Pushing branches that touch `.github/workflows` needs the gh token to have the `workflow` scope
+  (`gh auth refresh -s workflow`).
+
+### 1.5 Public repo and licensing
+
+- **Never committed:** transcripts and clones of his repos. `kb/` holds digests, short cited
+  quotes and excerpts.
+- **Course digests.** Orientação a Objetos na Prática and Design de API na Prática started as
   Ivan's HTML digests; the committed form is their markdown under `kb/courses/`, and the PDFs
-  stay in gitignored `sources/pdf/`. Raio X da Orientação a Objetos and Refatoração na Prática
-  (2026-10-08), then Transforme seu código Procedural em Orientado a Objetos and Raio-X do
-  Test-Driven Development (2026-10-09), were distilled from automatic captions.
-- README states plainly: independent project, not affiliated with or endorsed by Henrique Bastos
-  or HB Network, credit for the ideas to him, links to the channel and repos. Henrique OK'd
-  publishing (confirmed by Ivan, 2026-10-08); `NOTICE.md` records the date and medium.
-- MIT for the code (`LICENSE`). CC BY 4.0 for `kb/` prose we wrote: principles, patterns, repo and
-  career notes (`kb/LICENSE`). The course digests under `kb/courses/` carry no license for now:
-  they derive from his lectures, so they are published with his permission, all rights reserved,
-  until he confirms a license in writing; `NOTICE.md` and `kb/courses/README.md` say so, and
-  pyproject's `license = "MIT AND CC-BY-4.0"` is accompanied by that exclusion in `NOTICE.md`.
-  Quotes are his, brief and cited. Code excerpts follow the repo license; `monopoly`, `eventex`,
-  `pacote-desafios-pythonicos` have none (checked 2026-10-08), and `gnucash-to-beancount`,
-  `itauscraper`, `dcache`, `chipy8` are copyleft or BSD-4-Clause: excerpts from all seven stay
-  quotation-length with path and commit; Ivan will ask him to add MIT to the three.
-- Alumni repos: naming a public, self-described course reimplementation as a reference is fine
-  (the API digest names `virb30/design-api` and `HenriqueCCdA/Design_de_API_na_pratica`; `kb/`
-  may link such repos as "see also"). Grading, ranking or excerpting a student's repo in public
-  is not: no alumni code in `kb/` (forks inherit the missing licenses above; the two
-  reimplementations are unlicensed), no per-repo score or rank in reports or committed data, no
-  alumni repo named as a bad example. Alumni repos are read locally; a recurring mistake becomes
-  a rule plus a synthetic fixture, and `alumni.json` keys scores by random id (never a hash of the name), with the
-  id-to-repo map in gitignored `sources/`.
+  stay in gitignored `sources/pdf/`. The other digests were distilled from automatic captions.
+- **Non-affiliation.** The README states plainly: independent project, not affiliated with or
+  endorsed by Henrique Bastos or HB Network, credit for the ideas to him, links to the channel and
+  repos. Henrique OK'd publishing (confirmed by Ivan, 2026-10-08); `NOTICE.md` records the date
+  and medium.
+- **Licenses.**
+  - MIT for the code (`LICENSE`).
+  - CC BY 4.0 for the `kb/` prose we wrote: principles, patterns, repo and career notes
+    (`kb/LICENSE`).
+  - The course digests under `kb/courses/` carry no license for now: they derive from his
+    lectures, so they are published with his permission, all rights reserved, until he confirms a
+    license in writing. `NOTICE.md` and `kb/courses/README.md` say so, and pyproject's
+    `license = "MIT AND CC-BY-4.0"` is accompanied by that exclusion in `NOTICE.md`.
+  - Quotes are his, brief and cited.
+  - Code excerpts follow the repo license. `monopoly`, `eventex` and `pacote-desafios-pythonicos`
+    have none (checked 2026-10-08); `gnucash-to-beancount`, `itauscraper`, `dcache` and `chipy8`
+    are copyleft or BSD-4-Clause. Excerpts from all seven stay quotation-length with path and
+    commit. Ivan will ask him to add MIT to the first three.
+- **Alumni repos.**
+  - Allowed: naming a public, self-described course reimplementation as a reference (the API
+    digest names `virb30/design-api` and `HenriqueCCdA/Design_de_API_na_pratica`; `kb/` may link
+    such repos as "see also").
+  - Not allowed: grading, ranking or excerpting a student's repo in public. No alumni code in
+    `kb/` (forks inherit the missing licenses above; the two reimplementations are unlicensed),
+    no per-repo score or rank in reports or committed data, no alumni repo named as a bad example.
+  - Alumni repos are read locally. A recurring mistake becomes a rule plus a synthetic fixture.
+    `alumni.json` keys scores by random id (never a hash of the name), with the id-to-repo map in
+    gitignored `sources/`.
+
+---
 
 ## 2. Knowledge base design
 
-### Principle file (the atomic unit)
+### 2.1 Principle file (the atomic unit)
 
 ```markdown
 ---
@@ -152,10 +199,10 @@ sources:
   - type: course
     course: oo-na-pratica
     lesson: null            # set only when the section is a per-lesson one; section 12 is cross-cutting
-    section: "12.9"         # section of kb/courses/oo-na-pratica.md, which keeps the PDF numbering; the PDF itself is gitignored
+    section: "12.9"         # section of kb/courses/oo-na-pratica.md, which keeps the PDF numbering
     timestamp: null         # hh:mm:ss in the lesson video when the source is a transcript
   - type: repo
-    class: his              # his | course | alumni (see "Code sources"); alumni never appears in a principle
+    class: his              # his | course | alumni (see 2.3); alumni never appears in a principle
     repo: henriquebastos/monopoly
     path: game.py
     commit: <sha>           # files move; a citation without a commit goes stale
@@ -171,11 +218,26 @@ sources:
 **How to fix.** The refactor, step by step, in his order.
 ```
 
-Every claim carries a citation (course, lesson and section or timestamp; or repo, path and commit). No citation, no entry.
-`kb/INDEX.md` is what the skill reads first: one line per principle and per pattern (id,
-category, one-sentence rule), no prose, at most 200 lines; `build_index.py` fails above that.
+- Every claim carries a citation (course, lesson and section or timestamp; or repo, path and
+  commit). No citation, no entry.
+- `kb/INDEX.md` is what the skill reads first: one line per principle and per pattern (id,
+  category, one-sentence rule), no prose, at most 200 lines; `build_index.py` fails above that.
 
-### Framework coverage: Django and FastAPI
+**Seed material from the two HTML digests.**
+
+- OO na Prática, section 12, gives ten principles outright; they became the ten Phase 1 files:
+  1. Deixe o código descansar. 2. Não projete a generalização, deixe o código pedi-la.
+  3. Escolha a regra mais simples. 4. Postergue decisões enquanto o entendimento cresce.
+  5. Pense localmente, nunca globalmente. 6. Uma responsabilidade por identidade.
+  7. Evite ciclos; busque a árvore. 8. Componha em vez de herdar, quando puder.
+  9. Prefira exceções específicas a booleanos e if. 10. O código é a interface.
+- Design de API na Prática gives the four pillars (interface, resource, representation,
+  identifier), Richardson maturity levels 0 to 3, `HTTPStatus` over magic numbers, decorators with
+  `functools.wraps`, exception-to-HTTP middleware, verb semantics, HATEOAS as a state machine,
+  the service layer, money representation in JSON, and pragmatism over purity. Plus the pedagogy
+  itself: "content pulled by the student's need, not pushed by preconception".
+
+### 2.2 Framework coverage: Django and FastAPI
 
 Henrique teaches on Django, but the KB must serve FastAPI equally. A principle never names a
 framework; frameworks appear only in `kb/patterns/`, one section per framework:
@@ -190,54 +252,46 @@ frameworks:
 ---
 ```
 
-`origin` is `his` for code from his repos or lessons and `translated` for a rendition we wrote by
-applying his principle to a framework he did not show. There is no `alumni` origin: a
-reimplementation may be linked under "see also", never supply the rendition. Findings and
-reports carry the flag, so a FastAPI finding backed by a translated pattern says so.
+- `origin: his` is code from his repos or lessons; `origin: translated` is a rendition we wrote
+  by applying his principle to a framework he did not show. There is no `alumni` origin.
+  Findings and reports carry the flag, so a FastAPI finding backed by a translated pattern says so.
+- His FastAPI-era code: `hamsterdan` (2026, host API) and pydantic-heavy `beans`, `jira-genie` and
+  `python-jsonstar`. `petrus` serves HTTP with the standard library at its 2026 commit, not
+  Starlette. So for FastAPI the 2026 default for models and serialization is pydantic (Django
+  keeps its models and forms); `python-decouple` for config applies to both.
+- Translation plan, Django to FastAPI:
 
-His FastAPI and Starlette code: `hamsterdan` (2026, host API); `petrus` serves HTTP with the standard library at its 2026 commit, not Starlette; both pydantic-heavy,
-like `beans`, `jira-genie` and `python-jsonstar`. So for FastAPI the 2026 default for models and
-serialization is pydantic (Django keeps its models and forms); `python-decouple` for config applies to both.
+  | Django | FastAPI |
+  |---|---|
+  | `allow` method decorator | per-method route decorators |
+  | exception middleware | `app.exception_handler` |
+  | test client | `TestClient` |
+  | forms and models | pydantic schemas plus the project's persistence |
+  | `HTTPStatus`, service layer, HATEOAS links by state | unchanged |
 
-Translation plan, Django to FastAPI: the `allow` method decorator becomes per-method route
-decorators; the exception middleware becomes `app.exception_handler`; `HTTPStatus`, the service
-layer and HATEOAS links by state stay; the Django test client becomes `TestClient`; forms and
-models become pydantic schemas plus the project's persistence. One pattern file each, with both
-renditions and a fixture per framework; Phase 1 writes the three the fixtures need, Phase 3 the rest.
+  One pattern file each, with both renditions and a fixture per framework.
 
-### What we already have (from the PDFs)
-
-OO na Prática, section 12, gives ten principles outright; they become the ten Phase 1 principle files:
-1. Deixe o código descansar. 2. Não projete a generalização, deixe o código pedi-la.
-3. Escolha a regra mais simples. 4. Postergue decisões enquanto o entendimento cresce.
-5. Pense localmente, nunca globalmente. 6. Uma responsabilidade por identidade.
-7. Evite ciclos; busque a árvore. 8. Componha em vez de herdar, quando puder.
-9. Prefira exceções específicas a booleanos e if (the template above). 10. O código é a interface.
-
-Design de API na Prática gives: the four pillars (interface, resource, representation,
-identifier), Richardson maturity levels 0 to 3, `HTTPStatus` over magic numbers, decorators with
-`functools.wraps`, exception-to-HTTP middleware, verb semantics, HATEOAS as a state machine,
-service layer, money representation in JSON, pragmatism over purity. Plus the pedagogy itself:
-"content pulled by the student's need, not pushed by preconception".
-
-### Code sources: three classes, three trust levels
+### 2.3 Code sources: three classes, three trust levels
 
 | Class | What | Trust | Used for |
 |---|---|---|---|
-| `his` | Henrique's 61 public repos, course-related or not, and the HBNetwork org (python-decouple, pds-*, coding-dojo, django-ultratenant, django-custom-permissions, dcache, python-eduzz) | ground truth | principles, patterns, calibration |
-| `course` | Code written live in a lesson, recovered from transcript or from a PDF's line-by-line section | ground truth, dated to the lesson | patterns with lesson citations |
-| `alumni` | Students' and community reimplementations of his courses: `virb30/design-api`, `HenriqueCCdA/Design_de_API_na_pratica` (both named in the API PDF, section 14.2), the 9 forks of `eventex` plus eventex-style repos found by search (a few hundred candidates, mostly noise), the 224 forks of pacote-desafios-pythonicos, pds-* forks | evidence, never ground truth; read locally, may be linked as a reference, never excerpted, scored or ranked in public (see "Public repo") | calibration spread, mistake rules with synthetic fixtures |
+| `his` | His 61 public repos, course-related or not, and the HBNetwork org (python-decouple, pds-*, coding-dojo, django-ultratenant, django-custom-permissions, dcache, python-eduzz) | ground truth | principles, patterns, calibration |
+| `course` | Code written live in a lesson, recovered from a transcript or a PDF's line-by-line section | ground truth, dated to the lesson | patterns with lesson citations |
+| `alumni` | Students' and community reimplementations: `virb30/design-api`, `HenriqueCCdA/Design_de_API_na_pratica`, the 9 forks of `eventex` plus eventex-style repos found by search (a few hundred candidates, mostly noise), the 224 forks of pacote-desafios-pythonicos, pds-* forks | evidence, never ground truth; read locally, may be linked as a reference, never excerpted, scored or ranked in public (see 1.5) | calibration spread, mistake rules with synthetic fixtures |
 
-Every KB entry and code excerpt carries its class in frontmatter; the report never cites an
-alumni repo as "Henrique does this". Alumni code shows how the principles land for others,
-supplies realistic mistakes for rules and fixtures, and gives a like-for-like rubric check:
-`eventex` and `pacote-desafios-pythonicos` against their own forks, the original expected at or
-above the fork median on every timeless dimension.
+- Every KB entry and code excerpt carries its class in frontmatter; the report never cites an
+  alumni repo as "Henrique does this".
+- Alumni code shows how the principles land for others, supplies realistic mistakes for rules and
+  fixtures, and gives a like-for-like rubric check: `eventex` and `pacote-desafios-pythonicos`
+  against their own forks, the original expected at or above the fork median on every timeless
+  dimension.
+- His repos outside the courses count fully (requests-pro, python-jsonstar, python-decouple, the
+  2012 libraries, the 2026 agent-era repos): how he writes when nobody is watching is the style to
+  reproduce.
 
-His repos outside the courses count fully (requests-pro, python-jsonstar, python-decouple, the 2012
-libraries, the 2026 agent-era repos): how he writes when nobody is watching is the style to reproduce.
+### 2.4 Repos worth mining first
 
-### Repos worth mining first (from `gh api`, 61 public repos)
+From `gh api`, 61 public repos:
 
 | Repo | Why | Era |
 |---|---|---|
@@ -251,14 +305,17 @@ libraries, the 2026 agent-era repos): how he writes when nobody is watching is t
 | `beans`, `jira-genie`, `petrus-engine`, `petrus` | Current practice with AI agents, CLI, Petri nets, Starlette, pydantic | 2026 |
 | `django-aggregate-if`, `django-test-without-migrations`, `sqlformatter` | Classic Django-era libraries | 2012-2015 |
 
-### Sources that need the ingest pipeline
+### 2.5 Video sources and ingest queue
 
-Channel: HB Network, id `UCEbLV4AfUhoxNb_-Ionw83g`, 41 playlists (enumerated 2026-10-08 with
-`yt-dlp --flat-playlist`). Auto captions spot-checked as available in `pt-orig`, `pt` and `en`,
-formats json3/vtt/srt; no human subtitles. Prefer `pt-orig`, fall back to `pt`, and have
-`yt_fetch.py` log and skip a video with neither instead of failing the playlist.
+**Channel.** HB Network, id `UCEbLV4AfUhoxNb_-Ionw83g`, 41 playlists (enumerated 2026-10-08 with
+`yt-dlp --flat-playlist`). Auto captions exist in `pt-orig`, `pt` and `en` (json3/vtt/srt); no
+human subtitles. Prefer `pt-orig`, fall back to `pt`, and have `yt_fetch.py` log and skip a video
+with neither instead of failing the playlist. The `en` and `en-orig` tracks are English
+auto-translation over Portuguese speech and are unusable; a video with no Portuguese captions is
+transcribed with Whisper instead (done for 11 lessons of Dicas de Programação).
 
-Ingest priority, by relevance to the four skill modes and by cost in hours of video:
+**Priority.** By relevance to the four skill modes and by cost in hours of video. `state/playlists.json`
+is seeded from this table.
 
 | Tier | Playlist | id | Videos | Hours | Feeds |
 |---|---|---|---|---|---|
@@ -268,7 +325,7 @@ Ingest priority, by relevance to the four skill modes and by cost in hours of vi
 | done | Transforme seu código Procedural em OO | `PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7` | 10 | 3.3 | transform, modeling |
 | done | Raio-X do Test-Driven Development | `PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7` | 5 | 2.3 | testing |
 | done | Raio-X da Orientação a Objetos | `PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW` | 5 | 0.7 | modeling |
-| 1 | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
+| done | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
 | 2 | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
 | 2 | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
 | 2 | Superando o Labirinto dos Testes | `PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg` | 8 | 2.2 | testing |
@@ -289,206 +346,332 @@ Ingest priority, by relevance to the four skill modes and by cost in hours of vi
 | career 4 | Calculando o Valor que Você Gera | `PLeKXYyZCJHxcyBcjqbmrmX_1PdDFzLgel` | 5 | 1.3 | business side: pricing |
 | career 4 | Marketing Pessoal e Vendas | `PLeKXYyZCJHxd51nPK6GELCbi29z9qxI0C` | 7 | 2.3 | business side: selling |
 
-Not prioritized: SHOTS, Palestras, Mão na Massa, Regex, Algoritmos, Programação Dinâmica,
-app desktop, SaaS, previdência, Data Science, Porta lógica, depoimentos, and the three long
-workshops for non-programmers (novo normal 9.3 h, sem ser programado 11.1 h, medo de empreender 8.7 h). Revisit after tier 2.
+**Order.**
 
-Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also feed
-development practice, career 3 the short broad clips, career 4 the business side. Career ingest
-starts after tier 1 and runs one playlist per session, interleaved with tier 2.
+- Tier 1 (about 13 hours, what `transform` and `check` need most) is finished: the last digest
+  was Dicas de Programação on 2026-10-10. Tier 2 and the career playlists are next, one playlist
+  per session, interleaved.
+- Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
+  feed development practice, career 3 the short broad clips, career 4 the business side.
+- Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
+  calibrated.
+- Design de API has nine lessons of two to three hours each (24 h in the PDF); a three-hour
+  transcript is too long to distill with citations in one pass, hence the windows in Phase 4.
 
-Tier 1 was about 13 hours and is what `transform` and `check` need most. As of 2026-10-09 the
-digests for Raio-X da OO, Refatoração, Procedural em OO and Raio-X do TDD are in `kb/courses/`.
-Dicas de Programação (2.6 h) was ingested on 2026-10-10, which finishes tier 1. Welcome to the Django mostly
-teaches Django and waits until the grading of plain Python is calibrated.
+**Not prioritized.** SHOTS, Palestras, Mão na Massa, Regex, Algoritmos, Programação Dinâmica, app
+desktop, SaaS, previdência, Data Science, Porta lógica, depoimentos, and the three long workshops
+for non-programmers (novo normal 9.3 h, sem ser programado 11.1 h, medo de empreender 8.7 h).
+Revisit after tier 2.
 
-Design de API has nine lessons of two to three hours each (24 h in the PDF); a three-hour lesson
-transcript is too long to distill with citations in one pass, hence the windows in Phase 4.
+---
 
 ## 3. henriquefy modes
 
-### `ask`: "what would Henrique do"
-Input: a question or a code snippet. Output: an answer grounded in the KB, with citations and
-the lesson to watch (playlist and lesson number until Phase 4 stores video ids); the cheapest mode. Every sentence attributed to him carries a principle id
-or a lesson and timestamp. When the KB has no entry, `ask` says so first and marks any further
-advice as its own, never his; a `translated` pattern is named as ours.
+### 3.1 `ask`: "what would Henrique do"
 
-### `check`: what to fix and why
-0. Detect the framework from imports and dependencies (`django`, `fastapi`, `starlette`, neither). Rules load the matching pattern rendition; plain-Python rules always run.
-1. Run `uvx henriquefy check` on the target (file, dir, or repo). Per-file `ast` rules: magic
-   HTTP numbers (integer literals 100 to 599 in status arguments); bare or broad `except`;
-   mutable defaults; tests without assertions (a `test_*` function with no `assert`, no call to
-   an attribute named `assert*`, which covers `self.assert*` and `mock.assert_called*`, and no
-   `pytest.raises` or `pytest.warns` block; known false positive: assertions in a helper, handled
-   with the ignore comment); `os.environ` or `os.getenv` only in a project that already depends
-   on `python-decouple` in `pyproject.toml` or a requirements file (whether to adopt decouple is
-   a judgment finding or the Projeto e config signal; FastAPI projects commonly use
-   pydantic-settings); class size thresholds; `return False` inside an `except` handler, the
-   only mechanical form of "boolean as error signal" (the rest is judgment in step 2).
-   Whole-repo rules needing cross-file import resolution: import cycles, inheritance depth.
-   A file `ast.parse` rejects (newer syntax than the running Python) is one finding, never a crash.
-   Every rule, per-file or whole-repo, has a `# henriquefy: ignore[rule-id]` suppression (on the
-   finding's line, the line above, or the file's first two lines) and a clean fixture it must not
-   fire on. Output: a JSON list of findings, each with its rule id. The project root is the
-   nearest pyproject, setup.py or .git above the target (`--root` overrides); repo-level signals
-   come from the root, findings from the target. Unparseable files are reported and excluded
-   from scoring.
-2. Claude reads the code plus the matching principle files and adds judgment findings:
+- **Input:** a question or a code snippet.
+- **Output:** an answer grounded in the KB, with citations and the lesson to watch. It is the
+  cheapest mode.
+- Every sentence attributed to him carries a principle id, or a lesson and timestamp.
+- When the KB has no entry, `ask` says so first and marks any further advice as its own, never
+  his; a `translated` pattern is named as ours.
+
+### 3.2 `check`: what to fix and why
+
+0. **Detect the framework** from imports and dependencies (`django`, `fastapi`, `starlette`,
+   neither). Rules load the matching pattern rendition; plain-Python rules always run.
+1. **Run `uvx henriquefy check`** on the target (file, dir or repo).
+   - Per-file `ast` rules:
+     - magic HTTP numbers (integer literals 100 to 599 in status arguments);
+     - bare or broad `except`;
+     - mutable defaults;
+     - tests without assertions (a `test_*` function with no `assert`, no call to an attribute
+       named `assert*`, which covers `self.assert*` and `mock.assert_called*`, and no
+       `pytest.raises` or `pytest.warns` block; known false positive: assertions in a helper,
+       handled with the ignore comment);
+     - `os.environ` or `os.getenv` only in a project that already depends on `python-decouple` in
+       `pyproject.toml` or a requirements file (whether to adopt decouple is a judgment finding
+       or the Projeto e config signal; FastAPI projects commonly use pydantic-settings);
+     - class size thresholds;
+     - `return False` inside an `except` handler, the only mechanical form of "boolean as error
+       signal" (the rest is judgment in step 2).
+   - Whole-repo rules needing cross-file import resolution: import cycles, inheritance depth.
+   - A file `ast.parse` rejects (newer syntax than the running Python) is one finding, never a
+     crash. Unparseable files are reported and excluded from scoring.
+   - Every rule, per-file or whole-repo, has a `# henriquefy: ignore[rule-id]` suppression (on the
+     finding's line, the line above, or the file's first two lines) and a clean fixture it must
+     not fire on.
+   - Output: a JSON list of findings, each with its rule id. The project root is the nearest
+     pyproject, setup.py or .git above the target (`--root` overrides); repo-level signals come
+     from the root, findings from the target.
+2. **Claude adds judgment findings** from the code plus the matching principle files:
    responsibility leaks, generalization designed too early, modeling that fights the domain.
-   Scope: the path given; with no path, the files with mechanical findings plus, inside a git
-   repo, the files changed in the working tree (outside git, mechanical findings only); `--all`
-   reads everything and says how many files that is before starting.
-3. Report, one line per finding: `path:line`, rule, why (one sentence in Henrique's reasoning), citation, fix.
+   - Scope: the path given; with no path, the files with mechanical findings plus, inside a git
+     repo, the files changed in the working tree (outside git, mechanical findings only).
+   - `--all` reads everything and says how many files that is before starting.
+3. **Report**, one line per finding: `path:line`, rule, why (one sentence in Henrique's
+   reasoning), citation, fix.
 
-### `grade`: the Nota Henrique
-Rubric dimensions (weights from principle frontmatter, compiled by `build_index.py`): Modelagem,
-Simplicidade, Erros, Testes, API, Projeto e config, Legibilidade, each 0 to 10 and mapped 1:1 to
-a principle `category`; `career` has no dimension. The API dimension scores Richardson level,
-status codes, verb semantics, error contract and service layer, which read the same in Django and
-FastAPI. A dimension with no evidence in the target (no HTTP layer, no tests) is N/A and left out
-of the overall. Overall score; the letter grade is attached to the Nota do Henrique only, and the Nota mecânica stays a bare number so a lint score is never read as his verdict. A per-dimension "aula para assistir" for the
-weakest area. Repo grade adds structure signals, static only (the target's code never runs): tests
-present, settings via decouple, README, dependency pinning sanity (the OO digest, section 20.3, found
-`monopoly`'s own `pytest==6.1.2` pin broken; the check is honest, not fan-like).
-Two scores, always labeled:
-- **Nota mecânica.** A pure function of the mechanical JSON findings and the weights in
-  principle frontmatter (mirrored in `rubric.md`): two runs on the same commit give the same
-  number. Penalty per principle is spread, files with a finding over max(files in scope, 5),
-  decided 2026-10-08 in place of finding density, which saturated on one dense file. It is what
-  `uvx henriquefy grade` prints, what the JSON trend file stores, and what exit criteria and calibration use.
-  Dimensions with a mechanical component: Erros and Testes fully; API through status codes and
-  verbs; Projeto e config through the decouple rule only, until the README, settings and
-  pin-sanity signals exist;
-  Modelagem and Legibilidade through shape signals only (class size, inheritance depth, mutable
-  defaults); Simplicidade none, so it is absent here.
-- **Nota do Henrique.** The full rubric over all seven dimensions, produced only when Claude
-  runs `grade` and adds its judgment findings from `check` step 2. Labeled non-deterministic;
-  every dimension lists its evidence (finding, file, line, principle id). The judgment
-  contribution is unbounded but labeled until the Phase 7 spread data exists.
-Output: stdout by default; `--report` writes `.henriquefy/report.md` (the Nota mecânica and
-findings; the Nota do Henrique is produced by the skill) and appends to `.henriquefy/grade.jsonl`, the
-Nota mecânica for trend across runs.
+### 3.3 `grade`: the Nota Henrique
 
-Era policy (decided 2026-10-08): grade strict to his current, 2026 practice by default. `era` on
-principles serves only the `--era` flag (older repos graded against their time, for calibration)
-and the report's tooling-drift note on Projeto e config findings. Modeling, simplicity, errors,
-testing and readability are timeless.
+**Rubric.** Seven dimensions, weights from principle frontmatter compiled by `build_index.py`,
+each 0 to 10 and mapped 1:1 to a principle `category`: Modelagem, Simplicidade, Erros, Testes, API,
+Projeto e config, Legibilidade. `career` has no dimension.
 
-Calibration rule, on the Nota mecânica (threshold lowered from 8 to 7.5 on 2026-10-08 after the
-status-comparison rule found five true literals in requests-pro): `requests-pro` (2026) at 7.5 or
-above on every scored dimension of the default rubric; `monopoly` (2022) at 7.5 or above on the
-timeless dimensions, with
-Projeto e config allowed to be low (the OO digest, section 20.3, documents the broken
-`pytest==6.1.2` pin) and marked as tooling drift. No principle is dated after 2020, so the
-`--era` drift logic has nothing to drop on monopoly yet; it is exercised once a 2026-dated tooling
-principle exists. If a timeless dimension of
-`monopoly` scores a 5, read every finding: true findings stay, and the rubric changes only for
-false positives or a weight that contradicts a principle he states. Weights never move to raise
-his score.
+- The API dimension scores Richardson level, status codes, verb semantics, error contract and
+  service layer, which read the same in Django and FastAPI.
+- A dimension with no evidence in the target (no HTTP layer, no tests) is N/A and left out of the
+  overall.
+- There is an overall score. The letter grade is attached to the Nota do Henrique only; the Nota
+  mecânica stays a bare number so a lint score is never read as his verdict.
+- A per-dimension "aula para assistir" points at the weakest area.
+- Repo grade adds static structure signals only (the target's code never runs): tests present,
+  settings via decouple, README, dependency pinning sanity (the OO digest, section 20.3, found
+  `monopoly`'s own `pytest==6.1.2` pin broken; the check is honest, not fan-like).
 
-### `transform`: rewrite in his style
+**Two scores, always labeled.**
+
+| | Nota mecânica | Nota do Henrique |
+|---|---|---|
+| What | A pure function of the mechanical JSON findings and the weights in principle frontmatter (mirrored in `rubric.md`) | The full rubric over all seven dimensions |
+| Determinism | Two runs on the same commit give the same number | Non-deterministic, labeled; every dimension lists its evidence (finding, file, line, principle id) |
+| Produced by | `uvx henriquefy grade`; stored in the JSON trend file; used by exit criteria and calibration | Claude, when it runs `grade` and adds the judgment findings from `check` step 2 |
+| Penalty | Per principle, files with a finding over max(files in scope, 5), decided 2026-10-08 in place of finding density, which saturated on one dense file | Judgment contribution is unbounded but labeled until the Phase 7 spread data exists |
+
+Mechanical coverage by dimension: Erros and Testes fully; API through status codes and verbs;
+Projeto e config through the decouple rule only, until the README, settings and pin-sanity
+signals exist; Modelagem and Legibilidade through shape signals only (class size, inheritance
+depth, mutable defaults); Simplicidade none, so it is absent from the Nota mecânica.
+
+**Output.** Stdout by default. `--report` writes `.henriquefy/report.md` (the Nota mecânica and
+findings; the Nota do Henrique is produced by the skill) and appends to `.henriquefy/grade.jsonl`,
+the Nota mecânica for trend across runs.
+
+**Era policy** (decided 2026-10-08). Grade strict to his current, 2026 practice by default. `era`
+on principles serves only the `--era` flag (older repos graded against their time, for
+calibration) and the report's tooling-drift note on Projeto e config findings. Modeling,
+simplicity, errors, testing and readability are timeless.
+
+**Calibration rule**, on the Nota mecânica (threshold lowered from 8 to 7.5 on 2026-10-08 after
+the status-comparison rule found five true literals in requests-pro):
+
+- `requests-pro` (2026) at 7.5 or above on every scored dimension of the default rubric.
+- `monopoly` (2022) at 7.5 or above on the timeless dimensions, with Projeto e config allowed to
+  be low (the broken `pytest==6.1.2` pin) and marked as tooling drift.
+- No principle is dated after 2020, so the `--era` drift logic has nothing to drop on monopoly
+  yet; it is exercised once a 2026-dated tooling principle exists.
+- If a timeless dimension of `monopoly` scores a 5, read every finding: true findings stay, and
+  the rubric changes only for false positives or a weight that contradicts a principle he states.
+  Weights never move to raise his score.
+
+### 3.4 `transform`: rewrite in his style
+
 Order follows his method, not a lint list:
+
 1. `check` first. Pick findings by weight.
-2. If tests are missing, write characterization tests before touching code (TDD is non-negotiable in the course).
+2. If tests are missing, write characterization tests before touching code (TDD is
+   non-negotiable in the course).
 3. Propose one change per principle, in his order, running the tests after each; never change
-   public behavior. No commits, staging or branches unless asked: the working tree is left
-   changed with a note of what a commit per principle would be. Use the project's test runner,
-   or add pytest under `tests/` and say so.
+   public behavior.
+   - No commits, staging or branches unless asked: the working tree is left changed with a note
+     of what a commit per principle would be.
+   - Use the project's test runner, or add pytest under `tests/` and say so.
 4. Explain the diff with citations. The explanation is the deliverable. Stop at "deixe o código
    descansar": do not generalize.
 
+---
+
 ## 4. Phases
 
-### Phase 0: Scaffold (1 session)
-- `uv init --package --build-backend hatch` (uv 0.11 defaults to `uv_build`, which has no force-include), src layout, `pyproject.toml` with `[project.scripts] henriquefy = "henriquefy.cli:main"` and `[tool.hatch.build.targets.wheel.force-include]` mapping `kb`, `skills` and `state` to `henriquefy/kb`, `henriquefy/skills` and `henriquefy/state`. `requires-python = ">=3.12"` (decided; his 2026 repos range from 3.10 to 3.14, so `check` runs on `hamsterdan` and `petrus` under `uvx --python 3.14`).
+Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or **release**.
+
+### Phase 0: Scaffold (done, v0.0.1)
+
+- `uv init --package --build-backend hatch` (uv 0.11 defaults to `uv_build`, which has no
+  force-include), src layout, `pyproject.toml` with `[project.scripts] henriquefy =
+  "henriquefy.cli:main"` and `[tool.hatch.build.targets.wheel.force-include]` mapping `kb`,
+  `skills` and `state` to `henriquefy/kb`, `henriquefy/skills` and `henriquefy/state`.
+- `requires-python = ">=3.12"` (decided; his 2026 repos range from 3.10 to 3.14, so `check` runs
+  on `hamsterdan` and `petrus` under `uvx --python 3.14`).
 - `.gitignore`: `sources/transcripts/`, `sources/repos/`, `sources/pdf/`, `.venv`, `.henriquefy/`.
-- `cli.py` with `install` and `--version` only. `uv run henriquefy install` must produce a working skill dir on day one.
-- Skeleton for the three skills: frontmatter with `name` equal to the directory name and `description` carrying the trigger phrases ("what would Henrique do", "nota Henrique", "henriquefy this file"; Claude Code picks a skill by its description, and `/henriquefy` is the skill name), a `SKILL.md` under 100 lines that never inlines KB content, empty `references/`.
-- `kb/INDEX.md` stub, principle template, `evals/` stub, `LICENSE`, `NOTICE.md`, README with the non-affiliation note.
-- `ci.yml` running ruff, pytest and the install smoke test; `release.yml` as described under Distribution.
-- Order (a pending publisher reserves nothing; the name is taken only by the first publish, so tag early): first commit; create the public GitHub repo `henriquefy` under Ivan's account and push; confirm `henriquefy` is still free on TestPyPI and PyPI (both 404 on 2026-10-08); register the pending publisher on each with that repo name, `release.yml` and the environment name; then `uv build` and tag `v0.0.1`, so the empty package reaches TestPyPI and PyPI and proves the pipeline before any content exists.
-- **Exit criterion (CI):** `ci.yml` is green, including an install smoke test that runs `henriquefy install --project` inside a temporary directory and asserts `SKILL.md` with `metadata.henriquefy_version` exists; the `v0.0.1` release job is green on both indexes.
+- `cli.py` with `install` and `--version` only; `uv run henriquefy install` produces a working
+  skill dir on day one.
+- Skeletons for the three skills: frontmatter with `name` equal to the directory name and
+  `description` carrying the trigger phrases ("what would Henrique do", "nota Henrique",
+  "henriquefy this file"; Claude Code picks a skill by its description), a `SKILL.md` under 100
+  lines that never inlines KB content, empty `references/`.
+- `kb/INDEX.md` stub, principle template, `evals/` stub, `LICENSE`, `NOTICE.md`, README with the
+  non-affiliation note. `ci.yml` (ruff, pytest, install smoke test) and `release.yml`.
+- Order: a pending publisher reserves nothing, the name is taken only by the first publish, so tag
+  early. First commit; create the public repo and push; confirm `henriquefy` is free on TestPyPI
+  and PyPI (both 404 on 2026-10-08); register the pending publisher on each; `uv build` and tag
+  `v0.0.1`, so the empty package proves the pipeline before any content exists.
+- **Exit (CI):** `ci.yml` is green, including a smoke test that runs `henriquefy install
+  --project` in a temporary directory and asserts `SKILL.md` with `metadata.henriquefy_version`;
+  the `v0.0.1` release job is green on both indexes.
 
-### Phase 1: KB v0 from the two PDFs (2-3 sessions)
-- `html_to_md.py`: convert the two HTML digests (`sources/html/`, gitignored like the PDFs) to `kb/courses/<course>.md`, keeping the `h2` numbering as section ids, tables, `pre` blocks and blockquotes; the HTML is clean (25 and 17 `h2`, no ids, inline CSS only), so no PDF extraction is needed.
-- Distill `oo-na-pratica` into: 10 principle files, `courses/oo-na-pratica.md`, glossary and quotes merged (digest quotes come from transcripts and were not checked against the video, so every one carries `verified: false`), patterns from the line-by-line analysis of the seven `monopoly` modules.
-- Distill `design-api-na-pratica` into: API principles, Richardson pattern files, `courses/design-api-na-pratica.md`. Pattern files get the Django rendition from the course. FastAPI renditions marked `translated` are written only for the patterns that Phase 2 fixtures exercise (status codes, exception handler, verb semantics); the rest wait for Phase 3, where `hamsterdan` supplies `his` renditions.
-- `build_index.py` produces `INDEX.md` and `rubric.md` (and, from Phase 2, `check-rules.md`). Generated files are committed so GitHub and the wheel show them without a build step; CI regenerates them and fails on any diff.
-- **Exit criterion (manual, needs the agent):** `evals/ask.md` holds five questions (three OO, two API) with the expected principle id and citation; the installed skill answers all five with the expected id and a citation that exists in the KB. (CI) a test checks every citation id in `evals/ask.md` exists in `kb/`.
+### Phase 1: KB v0 from the two HTML digests (done, v0.1.0)
 
-### Phase 2: henriquefy v0, check and grade (2 sessions)
-- `check/` with the first 8 to 10 per-file mechanical rules, each mapped to a principle id; `build_index.py` emits `kb/check-rules.md` from them. Whole-repo rules (import cycles, inheritance depth) come in Phase 3 with the repo corpus to test them on.
-- `grade/` with `report.py`. Rubric weights from frontmatter; the scoring formula written in `rubric.md`.
-- `evals/fixtures/`: five bad samples with expected findings; one clean sample per rule with zero findings. API fixtures come in pairs, one Django and one FastAPI, with the same expected findings.
-- Calibrate on `monopoly` and `requests-pro`, cloned by hand into gitignored `sources/repos/`; the repo and commit SHA used go in `evals/calibration/his.json`, updated by hand after each calibration run.
-- **Exit criterion (CI):** every fixture matches its expected findings exactly; two runs of `grade` on the same commit give identical JSON. **(manual):** the Nota mecânica meets the calibration rule in section 3 for `monopoly` and `requests-pro`, and every finding on them survives a hand review as true. **(release):** `0.1.0` is on PyPI.
+- `html_to_md.py`: converts the two HTML digests (`sources/html/`, gitignored like the PDFs) to
+  `kb/courses/<course>.md`, keeping the `h2` numbering as section ids, tables, `pre` blocks and
+  blockquotes. The HTML is clean (25 and 17 `h2`, no ids, inline CSS only), so no PDF extraction.
+- `oo-na-pratica` distilled into 10 principle files, the course digest, glossary and quotes
+  (digest quotes come from transcripts and were not checked against the video, so each carries
+  `verified: false`), and patterns from the line-by-line analysis of the seven `monopoly` modules.
+- `design-api-na-pratica` distilled into API principles, Richardson pattern files and the course
+  digest. Patterns get the Django rendition from the course; FastAPI renditions marked
+  `translated` only for the patterns the Phase 2 fixtures exercise (status codes, exception
+  handler, verb semantics).
+- `build_index.py` produces `INDEX.md`, `rubric.md` and, from Phase 2, `check-rules.md`. Generated
+  files are committed so GitHub and the wheel show them without a build step; CI regenerates them
+  and fails on any diff.
+- **Exit (manual):** `evals/ask.md` holds five questions (three OO, two API) with the expected
+  principle id and citation; the installed skill answers all five correctly.
+  **Exit (CI):** every citation id in `evals/ask.md` exists in `kb/`.
 
-### Phase 3: Repo mining (3 sessions)
-- `gh_fetch.py`: list repos for `henriquebastos` (61 public) and `HBNetwork` (11 public), shallow clone the mining list, write `sources/repos/manifest.json` with SHA, pushed date, license and class (`his` | `alumni`). Needs `gh auth` or `GITHUB_TOKEN` (unauthenticated REST is 60 requests an hour; search is capped at 1000 results and 10 requests a minute, 30 with auth).
-- Pass 1, his code: the mining table in section 2, oldest to newest so drift shows up. The remaining repos are ingested one per later session in the order `gh_fetch.py` lists them.
-- Pass 2, alumni: `gh_fetch.py --alumni` collects the 9 forks of `eventex`, a sample of 25 of the 224 forks of `pacote-desafios-pythonicos`, `pds-*` forks and the two API reimplementations. The eventex-style search is deferred until the rubric is stable. Clone shallow, run `check` and `grade` over all of them, keep the score distribution in `evals/calibration/alumni.json` keyed by opaque id (see "Public repo"). Read the five best and five worst by hand, locally; mistakes that recur become checker rules and synthetic eval fixtures.
-- Mine `hamsterdan` first: its `engineering-conventions.md`, `AGENTS.md` and architecture tests are his rules in his words, and its `host/api.py` is the FastAPI reference. Then `monopoly`, `requests-pro`, `eventex`.
-- `prompts/distill-repo.md`: what to extract (layout, test style, naming, error handling, packaging, Makefile, CI, README voice). Output `kb/repos/<name>.md` and new or amended `kb/patterns/`.
-- Set `era` on tooling principles and patterns only; everything else stays `timeless`. Note drift between old and new repos as its own KB entry, so the report can say "he did this in 2013, not now".
-- **Exit criterion (CI):** a test asserts every principle that backs a mechanical rule has at least one `his` example in `kb/patterns/`, cited with repo, path and commit, or with course, lesson and section for lesson code. Partial principles without a rule yet (the four from Phase 4) get their examples in Phase 7. **(manual):** `evals/calibration/alumni.json` exists and `eventex` and `pacote-desafios-pythonicos` each score at or above the median of their own forks on every timeless dimension of the Nota mecânica.
+### Phase 2: check and grade (done, v0.2.0)
 
-### Phase 4: YouTube ingest (2-3 sessions)
-- Channel id and playlists are pinned (see the inventory in section 2). `state/playlists.json` seeds from that table.
-- `yt_fetch.py`: metadata plus `--write-auto-sub --sub-lang pt-orig --sub-format json3 --skip-download --sleep-subtitles 2`; convert json3 (`events[].tStartMs`, `segs[].utf8`; drop `aAppend` events and newline-only segs) to timestamped text, chunk per lesson and, inside a lesson, into windows of about 15 minutes with overlap. Auto captions have no punctuation and mis-hear names and code; the distiller must be told so.
-- `prompts/distill-transcript.md`: the two PDFs' table of contents becomes the output schema of the distiller, so every course digest has the same shape: visão geral, filosofia e método, pilares conceituais, tabela de aulas, resumo por aula, princípios transversais, citações-chave, evolução técnica aula a aula, arsenal técnico, glossário, perguntas e respostas, repositórios, análise linha a linha do código real, execução real dos testes.
-- The distiller works lesson by lesson from the timestamped transcript, then a second pass writes the cross-cutting sections. Timestamps survive into quotes and principle citations. A quote lifted from an auto caption carries `verified: false` and is rendered as a paraphrase with timestamp, not in quotation marks, until someone has listened to the clip and fixed the wording; only then is it a verbatim Portuguese quote.
-- Ingest Raio-X da OO (0.7 h) as the pipeline smoke test, then Refatoração na Prática (4 h). The rest of tier 1 is ingested one playlist per later session, in table order. Done through Dicas de Programação (2026-10-10), which finishes tier 1.
-- **Exit criterion (CI):** a third course digest exists under `kb/courses/` and a test checks it has a heading per schema section (keyword match; the line-by-line and execution sections may be placeholders when a course published no code). **(manual):** `evals/ask.md` gains two questions answerable only from the new course, each with an expected principle id and a lesson plus timestamp citation, and the installed skill answers both with the expected id and a citation that exists in the digest.
+- `check/` with the first 8 to 10 per-file mechanical rules, each mapped to a principle id;
+  `build_index.py` emits `kb/check-rules.md`. Whole-repo rules came in Phase 3.
+- `grade/` with `report.py`; rubric weights from frontmatter, the formula written in `rubric.md`.
+- `evals/fixtures/`: five bad samples with expected findings and one clean sample per rule with
+  zero findings. API fixtures come in pairs, one Django and one FastAPI, with the same expected
+  findings.
+- Calibrated on `monopoly` and `requests-pro`, cloned by hand into gitignored `sources/repos/`;
+  the repo and commit SHA used go in `evals/calibration/his.json`.
+- **Exit (CI):** every fixture matches its expected findings exactly; two `grade` runs on the
+  same commit give identical JSON.
+  **Exit (manual):** the Nota mecânica meets the calibration rule (3.3) for `monopoly` and
+  `requests-pro`, and every finding on them survives a hand review as true.
+  **Exit (release):** `0.1.0` is on PyPI.
 
-### Phase 5: transform (2 sessions)
-- `transform-playbook.md` with the ordered method and the stop rules.
-- `evals/transform/magic-status/`: a Django view module (Django is a dev dependency) with magic status numbers, a bare `except` and a boolean error return, plus `tests/` that pass on it and `expected.md` listing which rule ids must be gone after the transform, which findings must remain (the boolean return: raising instead changes public behavior), and the public names and signatures that must survive. Django only in Phase 5; a FastAPI twin is Phase 7 work.
-- Run on that fixture and on one small real module (done on python-decouple: its one change was rejected by his own test and reverted; not committed).
-- **Exit criterion (manual run, CI verified):** the agent transforms the fixture; a CI test then runs the fixture's `tests/` on the committed `after/`, runs `check` on it and asserts the rule ids in `expected.md` are gone and the ones listed as remaining are still reported, and imports `after/` to assert the public names and signatures are unchanged.
+### Phase 3: Repo mining (done, v0.3.0)
 
-### Phase 6: watch (1 session)
-- `watch.py`: list YouTube uploads from two keyless RSS feeds, the per-playlist feeds (`youtube.com/feeds/videos.xml?playlist_id=`, newest 15 each) and the channel feed (`youtube.com/feeds/videos.xml?channel_id=UCEbLV4AfUhoxNb_-Ionw83g`, newest 15 channel-wide, enough for a weekly run), plus the GitHub repo list with `pushed_at` from `gh api`; compare against `~/.henriquefy/state/*.json` (seeded from the shipped `state/playlists.json` on first run); print a queue of new sources with the ingest command to run. A video on the channel feed but in no known playlist is queued as "unassigned, check for a new playlist", since playlists cannot be listed without yt-dlp or an API key.
-- Run weekly from cron or launchd on the maintainer's machine, or from any agent scheduler; the command is what matters. Results land in `~/.henriquefy/state/queue.md`.
-- **Exit criterion (CI):** fixture feeds with one "new video" in a known playlist and one in none, against a temporary state file and no network, produce a queued ingest task and an unassigned entry.
+- `gh_fetch.py`: lists repos for `henriquebastos` (61 public) and `HBNetwork` (11 public), shallow
+  clones the mining list, writes `sources/repos/manifest.json` with SHA, pushed date, license and
+  class (`his` | `alumni`). Needs `gh auth` or `GITHUB_TOKEN` (unauthenticated REST is 60 requests
+  an hour; search is capped at 1000 results and 10 requests a minute, 30 with auth).
+- **Pass 1, his code.** The mining table in 2.4, oldest to newest so drift shows up; `hamsterdan`
+  first (its `engineering-conventions.md`, `AGENTS.md` and architecture tests are his rules in his
+  words, and `host/api.py` is the FastAPI reference), then `monopoly`, `requests-pro`, `eventex`.
+  The remaining repos are ingested one per later session.
+- **Pass 2, alumni.** `gh_fetch.py --alumni` collects the 9 forks of `eventex`, a sample of 25 of
+  the 224 forks of `pacote-desafios-pythonicos`, `pds-*` forks and the two API reimplementations.
+  The eventex-style search is deferred until the rubric is stable. Clone shallow, run `check` and
+  `grade`, keep the score distribution in `evals/calibration/alumni.json` keyed by opaque id. Read
+  the five best and five worst by hand, locally; recurring mistakes become checker rules and
+  synthetic fixtures.
+- `prompts/distill-repo.md`: what to extract (layout, test style, naming, error handling,
+  packaging, Makefile, CI, README voice). Output `kb/repos/<name>.md` and new or amended
+  `kb/patterns/`.
+- `era` is set on tooling principles and patterns only; everything else stays `timeless`. Drift
+  between old and new repos is its own KB entry (`kb/repos/drift.md`), so the report can say "he
+  did this in 2013, not now".
+- **Exit (CI):** every principle that backs a mechanical rule has at least one `his` example in
+  `kb/patterns/`, cited with repo, path and commit, or with course, lesson and section for lesson
+  code.
+  **Exit (manual):** `evals/calibration/alumni.json` exists and `eventex` and
+  `pacote-desafios-pythonicos` each score at or above the median of their own forks on every
+  timeless dimension of the Nota mecânica.
+
+### Phase 4: YouTube ingest (pipeline done, v0.4.0; content ongoing)
+
+- `yt_fetch.py`: metadata plus `--write-auto-sub --sub-lang pt-orig --sub-format json3
+  --skip-download --sleep-subtitles 2`. Converts json3 (`events[].tStartMs`, `segs[].utf8`; drops
+  `aAppend` events and newline-only segs) to timestamped text, chunked per lesson and, inside a
+  lesson, into windows of about 15 minutes with overlap. Auto captions have no punctuation and
+  mis-hear names and code; the distiller is told so.
+- `prompts/distill-transcript.md`: the two HTML digests' table of contents is the output schema, so
+  every course digest has the same 14 sections: visão geral, filosofia e método, pilares
+  conceituais, tabela de aulas, resumo por aula, princípios transversais, citações-chave, evolução
+  técnica aula a aula, arsenal técnico, glossário, perguntas e respostas, repositórios, análise
+  linha a linha do código real, execução real dos testes.
+- The distiller works lesson by lesson from the timestamped transcript, then a second pass writes
+  the cross-cutting sections. Timestamps survive into quotes and principle citations. A quote
+  lifted from an auto caption carries `verified: false` and is rendered as a paraphrase with
+  timestamp, not in quotation marks, until someone has listened to the clip and fixed the wording.
+- Working method that has held up: parallel subagents on disjoint lesson ranges for the per-lesson
+  pass, then one assembly agent for the cross-cutting sections, then spot-checks against the
+  transcripts.
+- **Digests so far:** Raio-X da OO (smoke test), Refatoração na Prática, Procedural para OO,
+  Raio-X do TDD, Dicas de Programação (2026-10-10). Remaining: tier 2, then the career playlists
+  (see 2.5).
+- **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
+  line-by-line and execution sections may be placeholders when a course published no code).
+  **Exit (manual):** `evals/ask.md` gains questions answerable only from the new course, and the
+  installed skill answers them with the expected id and a citation that exists in the digest.
+
+### Phase 5: transform (done, v1.0.0)
+
+- `transform-playbook.md` with the ordered method and the stop rules: public behavior, names and
+  signatures stay; no generalization; an existing test that forbids a fix wins; a broad `except`
+  narrows to the narrowest class that keeps tests green.
+- `evals/transform/magic-status/`: a Django view module (Django is a dev dependency) with magic
+  status numbers, a bare `except` and a boolean error return, plus `tests/` that pass on it and
+  `expected.md` listing the rule ids that must be gone, the findings that must remain (the boolean
+  return: raising instead changes public behavior), and the public names and signatures that must
+  survive.
+- Also run on one small real module (python-decouple): its one change was rejected by his own test
+  and reverted, which is the desired behavior.
+- **Exit (manual run, CI verified):** the agent transforms the fixture; a CI test runs the
+  fixture's `tests/` on the committed `after/`, runs `check` on it, asserts the rule ids in
+  `expected.md` are gone and the remaining ones are still reported, and imports `after/` to assert
+  the public names and signatures are unchanged.
+
+### Phase 6: watch (next, 1 session)
+
+- `watch.py` lists YouTube uploads from two keyless RSS feeds:
+  - per-playlist feeds, `youtube.com/feeds/videos.xml?playlist_id=` (newest 15 each);
+  - the channel feed, `youtube.com/feeds/videos.xml?channel_id=UCEbLV4AfUhoxNb_-Ionw83g` (newest
+    15 channel-wide, enough for a weekly run);
+  - plus the GitHub repo list with `pushed_at` from `gh api`.
+- It compares against `~/.henriquefy/state/*.json` (seeded from the shipped
+  `state/playlists.json` on first run) and prints a queue of new sources with the ingest command to
+  run. A video on the channel feed but in no known playlist is queued as "unassigned, check for a
+  new playlist", since playlists cannot be listed without yt-dlp or an API key.
+- Run weekly from cron or launchd on the maintainer's machine, or from any agent scheduler; the
+  command is what matters. Results land in `~/.henriquefy/state/queue.md`.
+- **Exit (CI):** fixture feeds with one "new video" in a known playlist and one in none, against a
+  temporary state file and no network, produce a queued ingest task and an unassigned entry.
 
 ### Phase 7: Hardening (ongoing)
-Two kinds of evals, and every exit criterion above is labeled with one. CI, no Claude: fixture
-findings, Nota mecânica determinism, the install smoke test, citation ids resolving, digest schema
-checks, generated files up to date, the transform fixture's after-state. Manual, agent in the
-loop: `ask` against `evals/ask.md`, judgment findings, running `transform`, Nota do Henrique spread.
-- Expand evals: Nota do Henrique spread over five runs on the same commit (report the range, no threshold yet); false-positive budget for mechanical rules: on his repos, a rule whose hand-reviewed false-positive rate is above 10% is demoted to `detectable: partial` and leaves the Nota mecânica.
-- The FastAPI twin of the Phase 5 transform fixture. README with a worked example of each mode.
 
-## 5. Decisions and open questions
+Two kinds of evals. CI, no Claude: fixture findings, Nota mecânica determinism, the install smoke
+test, citation ids resolving, digest schema checks, generated files up to date, the transform
+fixture's after-state. Manual, agent in the loop: `ask` against `evals/ask.md`, judgment findings,
+running `transform`, Nota do Henrique spread.
 
-Assumed, change if wrong:
-- KB language: course digests under `kb/courses/` stay in the language of the source, Portuguese, including the digest schema's section names and the principle `title` lines that quote his phrasing; principles, patterns, rubric, repo digests, career notes and reports are English; quotes are Portuguese verbatim, or a `verified: false` paraphrase when lifted from an auto caption.
-- Public repo, MIT code, PyPI package `henriquefy`, installed with `uvx henriquefy install`. Henrique has approved publishing. Raw transcripts and clones stay out of git; distilled digests are committed.
-- Code sources: all of his repos count, course-related or not. Alumni code is mined too, flagged `alumni`, used for calibration and mistake rules, never cited as his practice.
-- Frameworks: principles are framework-free; patterns carry one rendition per framework, flagged `his` or `translated`. Django and FastAPI are both first-class from Phase 1; the checker detects the framework.
-- Grading: strict 2026 by default, `--era` flag for calibration on old repos, era tags only on tooling principles.
-- Ingest order after the two HTML digests: tier 1 of the playlist inventory, Raio-X da OO first as a smoke test, then Refatoração, then the rest of the table. As of 2026-10-10 that leaves tier 2 interleaved with the career playlists.
+- Nota do Henrique spread over five runs on the same commit (report the range, no threshold yet).
+- False-positive budget for mechanical rules: on his repos, a rule whose hand-reviewed
+  false-positive rate is above 10% is demoted to `detectable: partial` and leaves the Nota
+  mecânica.
+- Examples from his code for the partial principles that have no rule yet.
+- The FastAPI twin of the Phase 5 transform fixture.
+- Known gaps: no dependency-pinning rule yet (monopoly's broken pytest pin is not caught).
+- README with a worked example of each mode.
 
-Decided 2026-10-08 after the adversarial review:
-- Licenses: MIT for code, CC BY 4.0 for `kb/` except `kb/courses/`, which stays unlicensed (published with permission) until Henrique confirms in writing. Ivan will ask him to add MIT to `monopoly`, `eventex` and `pacote-desafios-pythonicos`.
-- Nota do Henrique: judgment contribution unbounded but labeled until Phase 7 spread data exists; the letter grade attaches to it only.
-- Python floor 3.12. Caption fetching stays, with the YouTube terms note in `NOTICE.md`.
-- Phase 5 transform fixture is Django only; the FastAPI twin is Phase 7.
-- Career playlists ingested in the career 1 to 4 order of the inventory.
+---
 
-Decided 2026-10-08 after the second review:
-- The digests' HTML sources exist (added to the repo folder); Phase 1 converts HTML, not PDF.
-- Digest quotes were not checked against video: all carry `verified: false`; the method goes in `NOTICE.md`.
-- Phase 3 alumni pass samples 25 forks and hand-reads the five best and five worst.
-- `grade` prints to stdout; `--report` writes `.henriquefy/report.md`.
+## 5. Decisions
 
-No open questions.
+Open questions: none.
 
-## 6. First concrete session
-
-1. Phase 0 scaffold: package, CLI `install`, CI, first commit, GitHub repo, pending publishers, `v0.0.1` release.
-2. `ingest/html_to_md.py`, run on both HTML digests.
-3. Write two OO principle files from section 12 of the OO digest, with citations, as the vertical slice; the other eight are Phase 1 work.
-4. Write `kb/INDEX.md` by hand for now; `build_index.py` comes in Phase 1.
-5. Minimal `skills/henriquefy/SKILL.md` with `ask` only, pointing at `references/kb/INDEX.md`. Install it with the CLI and try it on a snippet.
-If the TestPyPI publish is not green by the end of the session, items 3 to 5 slip; the pipeline is the point of session one.
+| Date | Decision |
+|---|---|
+| assumed | **KB language.** Course digests under `kb/courses/` stay in the source language, Portuguese, including the digest schema's section names and the principle `title` lines that quote his phrasing. Principles, patterns, rubric, repo digests, career notes and reports are English. Quotes are Portuguese verbatim, or a `verified: false` paraphrase when lifted from an auto caption. |
+| assumed | **Distribution.** Public repo, MIT code, PyPI package `henriquefy`, installed with `uvx henriquefy install`. Henrique approved publishing. Raw transcripts and clones stay out of git; distilled digests are committed. |
+| assumed | **Code sources.** All of his repos count, course-related or not. Alumni code is mined too, flagged `alumni`, used for calibration and mistake rules, never cited as his practice. |
+| assumed | **Frameworks.** Principles are framework-free; patterns carry one rendition per framework, flagged `his` or `translated`. Django and FastAPI are both first-class from Phase 1; the checker detects the framework. |
+| assumed | **Grading.** Strict 2026 by default, `--era` flag for calibration on old repos, era tags only on tooling principles. |
+| assumed | **Ingest order.** After the two HTML digests: tier 1 of the inventory, Raio-X da OO first as a smoke test, then Refatoração, then the rest of the table. As of 2026-10-12 that leaves tier 2 interleaved with the career playlists. |
+| 2026-10-08 | **Licenses.** MIT for code, CC BY 4.0 for `kb/` except `kb/courses/`, which stays unlicensed (published with permission) until Henrique confirms in writing. Ivan will ask him to add MIT to `monopoly`, `eventex` and `pacote-desafios-pythonicos`. |
+| 2026-10-08 | **Nota do Henrique.** Judgment contribution unbounded but labeled until Phase 7 spread data exists; the letter grade attaches to it only. |
+| 2026-10-08 | **Python floor 3.12.** Caption fetching stays, with the YouTube terms note in `NOTICE.md`. |
+| 2026-10-08 | **Phase 5 fixture** is Django only; the FastAPI twin is Phase 7. |
+| 2026-10-08 | **Career playlists** are ingested in the career 1 to 4 order of the inventory. |
+| 2026-10-08 | **Phase 1 source** is the HTML digests (added to the repo folder), not the PDFs. |
+| 2026-10-08 | **Digest quotes** were not checked against video: all carry `verified: false`; the method goes in `NOTICE.md`. |
+| 2026-10-08 | **Alumni pass** samples 25 forks and hand-reads the five best and five worst. |
+| 2026-10-08 | **`grade` output** prints to stdout; `--report` writes `.henriquefy/report.md`. |
+| 2026-10-08 | **Major version.** Ivan chose 1.0.0 because grades moved. |
+| 2026-10-10 | **Whisper for captionless lessons.** When a lesson has no Portuguese captions, transcribe the audio with Whisper and say so in the digest colophon. Never use the `en` tracks. |
