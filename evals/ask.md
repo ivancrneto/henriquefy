@@ -17,3 +17,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | Why does he delete the `asc` function he just extracted in the wordcount refactoring? | nao-projete-a-generalizacao | refatoracao-na-pratica lesson 24 at 0:02:30 |
 | My boss wants a quick change today that I know is a hack. How does he handle it? | estanque-e-depois-repare | dicas-de-programacao lesson 40 at 0:01:20 and 0:01:45 |
 | Should I wrap Django behind my own interface so we can swap frameworks later? | use-o-framework-sem-abstrai-lo | dicas-de-programacao lesson 33 at 0:00:17 and 0:01:28 |
+| I'm refactoring a legacy script and want to start by introducing a `Board` class and a `Coordinate` type. Would he? | fluxo-antes-da-estrutura | refatoracao-rapida lesson 4 at 0:03:33 and lesson 8 at 0:08:07 |
+| Three functions each loop over a rectangle of cells with nested `for`s. What does he do with them? | separe-a-navegacao-da-decisao | refatoracao-rapida lesson 12 at 0:04:58 and 0:05:43 |

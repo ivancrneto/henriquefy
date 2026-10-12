@@ -29,6 +29,17 @@ sources:
     lesson: 2
     section: "5"
     timestamp: null
+  - type: course
+    course: refatoracao-rapida
+    lesson: null
+    section: "6.4"
+    timestamp: null
+  - type: course
+    course: refatoracao-rapida
+    lesson: 6
+    section: "5"
+    timestamp: "0:04:18"
+    verified: false
 ---
 **Rule.** Never refactor code you cannot prove still works. Before reading legacy code, run it;
 before changing it, fence its current behavior with black-box tests, golden files for a
@@ -42,6 +53,11 @@ paraphrase). Then he captures its output as golden files and compares with `diff
 turns that into pytest, so every later step has a verdict (lesson 20, 0:05:08 to 0:06:49,
 `verified: false`, transcript paraphrase). Refactoring is changing structure without changing
 behavior (digest section 6.1), and behavior you have not pinned cannot be shown unchanged.
+In Refatoração Rápida he runs the same student program before opening its functions (lesson 5,
+0:05:24 to 0:05:47), asks how to change it safely and answers with a test (lesson 6, 0:04:18 to
+0:04:28, `verified: false`, transcript paraphrase), and puts it plainly: running by hand is not
+the problem, depending on running by hand is (lesson 7, 0:08:04 to 0:08:08). Digest
+`refatoracao-rapida` sections 6.3 and 6.4.
 
 **Looks like.** A `tests/` directory that appears in the first commit of a refactoring, holding
 characterization tests of the program as found, warts included; then small commits, each green.

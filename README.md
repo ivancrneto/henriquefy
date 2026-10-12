@@ -40,10 +40,10 @@ verdict. The letter that follows it is the skill's judgment, and the skill says 
 ## Knowledge base
 
 The skill reads `kb/`. The generated list of every principle, pattern, repository and course is
-[kb/INDEX.md](kb/INDEX.md): 34 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
+[kb/INDEX.md](kb/INDEX.md): 37 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
 dates how his tooling changed. Principle files are in English. Course digests are in Portuguese.
 
-Seven course digests are in `kb/courses/`, written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper).
+Eight course digests are in `kb/courses/`, written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper).
 A quote in a digest is a paraphrase of those captions and has not been checked against the video.
 
 | Digest | Course | Lessons |
@@ -54,6 +54,8 @@ A quote in a digest is a paraphrase of those captions and has not been checked a
 | `raio-x-da-oo` | [Raio X da Orientação a Objetos](https://www.youtube.com/playlist?list=PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW) | 5 |
 | `procedural-para-oo` | [Transforme seu código Procedural em Orientado a Objetos](https://www.youtube.com/playlist?list=PLeKXYyZCJHxeKQ13fuBUuLyfeOK9Jr8t7) | 10 |
 | `raio-x-do-tdd` | [Raio-X do Test-Driven Development](https://www.youtube.com/playlist?list=PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7) | 5 |
+| `dicas-de-programacao` | [Dicas de Programação](https://www.youtube.com/playlist?list=PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ) | 53 |
+| `refatoracao-rapida` | [Domine o Método da Refatoração Rápida](https://www.youtube.com/playlist?list=PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY) | 16 |
 
 The playlist inventory, including what is still queued, is [state/playlists.json](state/playlists.json).
 The plan is [PLAN.md](PLAN.md).

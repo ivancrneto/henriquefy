@@ -29,6 +29,17 @@ sources:
     repo: henriquebastos/monopoly
     path: monopoly/player.py
     commit: bffb0c269b00836066d0bb064ca4e38a80cad210
+  - type: course
+    course: refatoracao-rapida
+    lesson: null
+    section: "6.8"
+    timestamp: null
+  - type: course
+    course: refatoracao-rapida
+    lesson: 12
+    section: "5"
+    timestamp: "0:02:08"
+    verified: false
 ---
 **Rule.** Do not design the abstraction up front. Write the concrete cases first, even if that
 means repeating code, and extract a base class, a factory or a registry only when the repetition
@@ -45,6 +56,14 @@ excesso (lesson 7, 38:28, `verified: false`, transcript paraphrase). The modelin
 same order: lesson 17 leaves the most abstract class for last, and lesson 14 calls any code
 decision taken during modeling "design precoce" (digest section 9). A generalization designed
 before the cases exist encodes an assumption, and an assumption deforms the model.
+
+Refatoração Rápida turns this into a count. One repetition draws attention and he moves on
+(lesson 10, 0:06:12). Two make the functions very alike, and removing the duplication before
+every case is changed would break things, so he makes the cases more obvious instead (lesson 11,
+0:02:59 and 0:03:28 to 0:03:51). At the third, expanding them side by side shows the pattern and
+one function replaces all of them (lesson 12, 0:02:08 to 0:02:15, `verified: false`, transcript
+paraphrase), and even then he generalizes only as far as the cases require (lesson 12, 0:08:04
+to 0:08:16). Digest `refatoracao-rapida` section 6.8.
 
 **Looks like.** `monopoly/player.py` at commit `bffb0c2` has four strategies and a base class that
 holds exactly what the four needed to share, one method:

@@ -9,8 +9,9 @@ that knowledge to any codebase: explain, check, grade, and transform.
 
 ## Status (2026-10-12)
 
-Latest release: **v1.1.0** on PyPI. The KB holds 7 course digests, 34 principles, 15 patterns,
-13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested.
+Latest release: **v1.1.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
+13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
+with Domine o Método da Refatoração Rápida (2026-10-12).
 
 | Phase | What | State | Release |
 |---|---|---|---|
@@ -18,7 +19,7 @@ Latest release: **v1.1.0** on PyPI. The KB holds 7 course digests, 34 principles
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 and career queued | v0.4.0, v1.1.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | **next**, not in the tree | |
 | 7 | Hardening | ongoing | |
@@ -326,7 +327,7 @@ is seeded from this table.
 | done | Raio-X do Test-Driven Development | `PLeKXYyZCJHxe1X_B-o5bMDyNLxIBQB1q7` | 5 | 2.3 | testing |
 | done | Raio-X da Orientação a Objetos | `PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW` | 5 | 0.7 | modeling |
 | done | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
-| 2 | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
+| done | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
 | 2 | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
 | 2 | Superando o Labirinto dos Testes | `PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg` | 8 | 2.2 | testing |
 | 2 | Pacote de Desafios Pythônicos | `PLeKXYyZCJHxetT2NwFzKcslYfiE3yPUWL` | 15 | 0.9 | readability, idioms (repo exists) |
@@ -350,7 +351,8 @@ is seeded from this table.
 
 - Tier 1 (about 13 hours, what `transform` and `check` need most) is finished: the last digest
   was Dicas de Programação on 2026-10-10. Tier 2 and the career playlists are next, one playlist
-  per session, interleaved.
+  per session, interleaved. Tier 2 started with Domine o Método da Refatoração Rápida on
+  2026-10-12, so the next session takes career 1 (Caminho da Autonomia).
 - Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
   feed development practice, career 3 the short broad clips, career 4 the business side.
 - Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
@@ -594,7 +596,8 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   pass, then one assembly agent for the cross-cutting sections, then spot-checks against the
   transcripts.
 - **Digests so far:** Raio-X da OO (smoke test), Refatoração na Prática, Procedural para OO,
-  Raio-X do TDD, Dicas de Programação (2026-10-10). Remaining: tier 2, then the career playlists
+  Raio-X do TDD, Dicas de Programação (2026-10-10), Domine o Método da Refatoração Rápida
+  (2026-10-12, first of tier 2). Remaining: the rest of tier 2, then the career playlists
   (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).
