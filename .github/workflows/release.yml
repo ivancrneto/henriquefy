@@ -1,27 +1,56 @@
 name: release
 
+# A merge to main that changes the pyproject.toml version publishes that version and tags it.
+# Pushing a vX.Y.Z tag by hand still works. The tag this workflow pushes uses GITHUB_TOKEN,
+# which does not trigger workflows, so a release never runs twice.
 on:
   push:
+    branches: [main]
+    paths: [pyproject.toml]
     tags: ["v*"]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.version.outputs.release }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - name: tag matches the package version
-        run: test "${GITHUB_REF_NAME#v}" = "$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
-      - run: uv sync --group dev
-      - run: uv run pytest -q
-      - run: uv build
-      - uses: actions/upload-artifact@v4
+      - name: version to release
+        id: version
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"$/\1/p' pyproject.toml)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            test "${GITHUB_REF_NAME#v}" = "$version"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            echo "v$version is already tagged; nothing to release."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.version.outputs.release == 'true'
+        run: uv sync --group dev
+      - if: steps.version.outputs.release == 'true'
+        run: uv run pytest -q
+      - if: steps.version.outputs.release == 'true'
+        run: uv build
+      - if: steps.version.outputs.release == 'true'
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
 
   testpypi:
     needs: build
+    if: needs.build.outputs.release == 'true'
     runs-on: ubuntu-latest
     environment: testpypi
     permissions:
@@ -47,3 +76,15 @@ jobs:
           name: dist
           path: dist/
       - run: uv publish --trusted-publishing always
+
+  tag:
+    needs: [build, pypi]
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git tag "v${{ needs.build.outputs.version }}" "$GITHUB_SHA"
+          git push origin "v${{ needs.build.outputs.version }}"
