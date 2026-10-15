@@ -33,6 +33,17 @@ sources:
     repo: henriquebastos/monopoly
     path: tests/test_player.py
     commit: bffb0c269b00836066d0bb064ca4e38a80cad210
+  - type: course
+    course: caminho-da-autonomia
+    lesson: null
+    section: "6.3"
+    timestamp: null
+  - type: course
+    course: caminho-da-autonomia
+    lesson: 2
+    section: "5"
+    timestamp: "0:12:35"
+    verified: false
 ---
 **Rule.** Write the test before the code, and start with the leaves of the system: the entities
 with one responsibility and few relations. The cycle is short: write the test, watch it fail,
@@ -48,7 +59,9 @@ jogador, pegando a propriedade, porque eles estão com responsabilidades únicas
 do not exist yet (digest section 7, lesson 6; glossary). The digest's reading of his test files
 (section 19.7) calls them the only source of the specification the transcript does not give:
 `test_pay` states that `p.pay(10) == 10`, and the boundary values in the strategy tests fix the
-rules at `> 50` and `>= 80`.
+rules at `> 50` and `>= 80`. In Caminho da Autonomia, when a student reads his point that action
+shapes thought as a test-first stance, he agrees: the primordial action is a test first (lesson
+2, 0:12:35 to 0:12:40, `verified: false`, transcript paraphrase).
 
 **Looks like.** `monopoly/tests/test_player.py` at commit `bffb0c2`: fifteen small tests, each
 asserting one behavior of `Player`, with a single mock in the whole project, for `random.choice`

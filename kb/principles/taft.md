@@ -30,6 +30,23 @@ sources:
     section: "5"
     timestamp: "0:14:10"
     verified: false
+  - type: course
+    course: caminho-da-autonomia
+    lesson: null
+    section: "6.5"
+    timestamp: null
+  - type: course
+    course: caminho-da-autonomia
+    lesson: 3
+    section: "5"
+    timestamp: "0:23:10"
+    verified: false
+  - type: course
+    course: caminho-da-autonomia
+    lesson: 2
+    section: "5"
+    timestamp: "0:15:30"
+    verified: false
 ---
 **Rule.** Test all the time, and test automatically. Untested code is a risk. Manual testing
 does not scale. The kind of test (functional, unit, load, acceptance) is a tool in the box.
@@ -41,7 +58,10 @@ teste all the fucking all the fucking o tempo inteiro (lesson 1, 0:13:27 and 0:1
 `verified: false`, transcript paraphrase). His line, right after: untested code is a risk to
 society, you have to test the software all the time (0:13:38, `verified: false`, transcript
 paraphrase). Manual testing does not scale, so the test has to be automatic (0:14:10,
-`verified: false`, transcript paraphrase). He attributes the term to Brian Lions, as the
+`verified: false`, transcript paraphrase). The mantra returns outside code in Caminho da Autonomia: describing
+his organized routine, he says he is running the test all the time, progress forward, no stress
+(lesson 3, 0:23:10 to 0:23:21, `verified: false`, transcript paraphrase), and acting means
+writing the code and seeing the test pass (lesson 2, 0:15:30 to 0:15:47). He attributes the term to Brian Lions, as the
 caption hears the name, and does not spell a URL (0:13:47).
 
 **Looks like.** A change lands with an automatic check that already failed once for the wrong

@@ -7,11 +7,13 @@ that knowledge to any codebase: explain, check, grade, and transform.
 **Working agreement.** Work goes through pull requests that Ivan merges; a release is a tag
 `vX.Y.Z`, which `release.yml` publishes and pushes itself when a version-bump PR merges.
 
-## Status (2026-10-12)
+## Status (2026-10-14)
 
-Latest release: **v1.3.0** on PyPI. The KB holds 8 course digests, 37 principles, 15 patterns,
+Latest release: **v1.3.0** on PyPI. The KB holds 9 course digests, 42 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
-with Domine o Método da Refatoração Rápida (2026-10-12).
+with Domine o Método da Refatoração Rápida (2026-10-12) and the career playlists with Caminho da
+Autonomia (2026-10-14), whose five principles are category `career` (no rubric dimension, skipped
+by the `check` checklist).
 
 | Phase | What | State | Release |
 |---|---|---|---|
@@ -19,7 +21,7 @@ with Domine o Método da Refatoração Rápida (2026-10-12).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career queued | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career under way (1 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | **next**, not in the tree | |
 | 7 | Hardening | ongoing | |
@@ -337,7 +339,7 @@ is seeded from this table.
 | 2 | O Ambiente Python Perfeito | `PLeKXYyZCJHxerM2W71_WeWLuvU-O22vUj` | 5 | 0.9 | project |
 | 2 | Evolução constante de código usando Kata | `PLeKXYyZCJHxdxmtm_Kclt_NMvrWLasxgF` | 5 | 0.6 | testing, practice |
 | 3 | Welcome to the Django | `PLeKXYyZCJHxczQsE7L5H9RXTcNFjx3U55` | 121 | 32.8 | django, project (pair with `eventex`) |
-| career 1 | Caminho da Autonomia | `PLeKXYyZCJHxcCf96DZdrCwJmZj7cEilus` | 8 | 3.8 | career: his core thesis on developer autonomy |
+| done | Caminho da Autonomia | `PLeKXYyZCJHxcCf96DZdrCwJmZj7cEilus` | 8 | 3.8 | career: his core thesis on developer autonomy |
 | career 1 | Workshop: Torne-se protagonista da sua carreira na programação | `PLeKXYyZCJHxdeXekJnaSPKtjzL_2Wpwqx` | 3 | 0.4 | career: short, same thesis |
 | career 2 | Método para Cumprir Qualquer Prazo | `PLeKXYyZCJHxfpAJAR9q27VTugkNvHMjgP` | 7 | 2.2 | work method: estimation, delivery |
 | career 2 | Método para Programar do Jeito Fácil | `PLeKXYyZCJHxf6DOZXFVBRVyNFf3WPAu3e` | 6 | 0.8 | work method |
@@ -354,7 +356,8 @@ is seeded from this table.
 - Tier 1 (about 13 hours, what `transform` and `check` need most) is finished: the last digest
   was Dicas de Programação on 2026-10-10. Tier 2 and the career playlists are next, one playlist
   per session, interleaved. Tier 2 started with Domine o Método da Refatoração Rápida on
-  2026-10-12, so the next session takes career 1 (Caminho da Autonomia).
+  2026-10-12 and career 1 with Caminho da Autonomia on 2026-10-14, so the next session takes
+  the next tier 2 playlist.
 - Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
   feed development practice, career 3 the short broad clips, career 4 the business side.
 - Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
@@ -599,8 +602,8 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   transcripts.
 - **Digests so far:** Raio-X da OO (smoke test), Refatoração na Prática, Procedural para OO,
   Raio-X do TDD, Dicas de Programação (2026-10-10), Domine o Método da Refatoração Rápida
-  (2026-10-12, first of tier 2). Remaining: the rest of tier 2, then the career playlists
-  (see 2.5).
+  (2026-10-12, first of tier 2), Caminho da Autonomia (2026-10-14, first career playlist).
+  Remaining: the rest of tier 2 and the career playlists, interleaved (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).
   **Exit (manual):** `evals/ask.md` gains questions answerable only from the new course, and the
