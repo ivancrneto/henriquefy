@@ -19,3 +19,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | Should I wrap Django behind my own interface so we can swap frameworks later? | use-o-framework-sem-abstrai-lo | dicas-de-programacao lesson 33 at 0:00:17 and 0:01:28 |
 | I'm refactoring a legacy script and want to start by introducing a `Board` class and a `Coordinate` type. Would he? | fluxo-antes-da-estrutura | refatoracao-rapida lesson 4 at 0:03:33 and lesson 8 at 0:08:07 |
 | Three functions each loop over a rectangle of cells with nested `for`s. What does he do with them? | separe-a-navegacao-da-decisao | refatoracao-rapida lesson 12 at 0:04:58 and 0:05:43 |
+| I'm a freelance developer charging by the hour and clients keep haggling me down to the cheapest competitor's rate. What would he change? | preco-vem-do-valor-da-oferta | caminho-da-autonomia lesson 7 at 0:28:45 and 0:39:20 |
+| I'm a strong programmer but I accept every deadline my boss sets because I'm afraid of losing the job. What does he say? | reserva-para-dizer-nao | caminho-da-autonomia lesson 5 at 0:45:16 and lesson 7 at 0:31:28 |

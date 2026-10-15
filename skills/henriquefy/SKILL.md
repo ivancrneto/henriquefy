@@ -29,7 +29,8 @@ for Henrique himself. Every sentence you attribute to him carries a citation.
 2. Judgment pass. Scope: the path given; with no path, the files with mechanical findings plus,
    in a git repo, files changed in the working tree; if the user asks for everything, say how
    many files that is before starting (this is a request to you, not a CLI flag).
-   - **Checklist.** Every principle marked `judgment` or `partial` in `references/kb/INDEX.md`.
+   - **Checklist.** Every principle marked `judgment` or `partial` in `references/kb/INDEX.md`,
+     except category `career` (for `ask` only).
      Open each once per run; its "How to detect" signals are what you look for. Signals that
      need history (commits, diffs) apply only with the git log in scope; a principle with no
      code signal at all is out of scope. Never skip one because it is new or has no rule.

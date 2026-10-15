@@ -36,6 +36,17 @@ sources:
     section: "5"
     timestamp: "0:22:12"
     verified: false
+  - type: course
+    course: caminho-da-autonomia
+    lesson: null
+    section: "6.13"
+    timestamp: null
+  - type: course
+    course: caminho-da-autonomia
+    lesson: 6
+    section: "5"
+    timestamp: "0:33:37"
+    verified: false
 ---
 **Rule.** Two parts should meet on a small contact surface. The import list is that surface:
 each name imported is contact the caller has with the other module. A relationship wired
@@ -50,7 +61,10 @@ paraphrase), and swapping two imports for one is a small edit with conceptual pr
 `verified: false`, transcript paraphrase). In the last lesson the same rule rises from modules
 to systems: when he structures the relationship directly, physically in the code, he is tying
 himself down; the relationship has to happen in the dynamics, in the life of the parts (lesson
-10, 0:22:12, `verified: false`, transcript paraphrase).
+10, 0:22:12, `verified: false`, transcript paraphrase). He carries the vocabulary outside software too:
+since we work with systems, look at the legal system as a system and build a structure that
+reduces the coupling and the interface with the government (Caminho da Autonomia, lesson 6,
+0:33:37 to 0:33:52, `verified: false`, transcript paraphrase).
 
 **Looks like.** The game imports one name from the bitmap and asks it for what it needs. Bad:
 the game imports `x`, `y` and the offset and assembles a coordinate the bitmap already knows
