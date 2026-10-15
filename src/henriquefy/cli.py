@@ -33,6 +33,10 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "update", help="re-install the skill from this version; run as uvx henriquefy@latest update"
     )
+    sub.add_parser(
+        "watch",
+        help="queue new HB Network videos and repos for ingest (maintainer; needs yt-dlp, gh)",
+    )
     for name, help_ in (
         ("check", "mechanical rules only; no Claude needed"),
         ("grade", "Nota mecânica, deterministic"),
@@ -83,6 +87,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command in {"check", "grade"}:
         return _check_or_grade(args)
+    if args.command == "watch":
+        from .watch import main as watch
+
+        return watch()
     build_parser().print_help()
     return 2
 

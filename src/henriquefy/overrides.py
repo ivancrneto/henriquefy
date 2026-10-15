@@ -4,14 +4,15 @@ Overrides make the Nota mecânica non-comparable across machines, so the report 
 Calibration and exit criteria run with none.
 """
 
-import os
 import sys
 import tomllib
 from pathlib import Path
 
+from .paths import home
+
 
 def overrides_path() -> Path:
-    return Path(os.environ.get("HENRIQUEFY_HOME", Path.home() / ".henriquefy")) / "rubric.toml"
+    return home() / "rubric.toml"
 
 
 def load_overrides(principles: dict) -> list[str]:
