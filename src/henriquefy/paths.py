@@ -4,6 +4,7 @@ In the built wheel they are force-included under the package; in an editable
 install the package resolves to src/henriquefy/, so we fall back to the repo root.
 """
 
+import os
 from importlib import resources
 from pathlib import Path
 
@@ -32,3 +33,8 @@ def skills_dir() -> Path:
 
 def state_dir() -> Path:
     return data_dir("state")
+
+
+def home() -> Path:
+    """Per-user files: rubric.toml, ignore.toml, state/. HENRIQUEFY_HOME overrides ~/.henriquefy."""
+    return Path(os.environ.get("HENRIQUEFY_HOME", Path.home() / ".henriquefy"))

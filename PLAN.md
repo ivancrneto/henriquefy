@@ -23,7 +23,7 @@ by the `check` checklist).
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
 | 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career under way (1 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
-| 6 | `watch` (`watch.py`) | **next**, not in the tree | |
+| 6 | `watch` (`watch.py`) | done, awaiting release | |
 | 7 | Hardening | ongoing | |
 
 ## Contents
@@ -69,7 +69,7 @@ henriquefy/
 │   ├── check/                     # rules.py (per-file), repo_rules.py (whole repo); each rule -> principle id
 │   ├── grade/                     # rubric loader, aggregation, report.py renders report.md and the JSON
 │   ├── ingest/                    # html_to_md, yt_fetch, gh_fetch, build_index, calibrate
-│   ├── watch.py                   # Phase 6, not built
+│   ├── watch.py                   # queue new videos, playlists and repos for ingest (Phase 6)
 │   ├── install.py  overrides.py
 │   └── paths.py                   # importlib.resources access to kb/, skills/ and state/
 ├── kb/                            # knowledge base, shipped into the wheel via hatch force-include
@@ -103,9 +103,9 @@ uvx henriquefy install --all      # also installs henrique-ingest and henrique-w
 uvx henriquefy@latest update      # the only command that pins @latest: re-installs the skill, keeps ~/.henriquefy/
 uvx henriquefy check path/        # mechanical rules only, no Claude needed, JSON or text
 uvx henriquefy grade path/        # Nota mecânica: deterministic, from mechanical findings only
+uvx henriquefy watch              # maintainer: queue new videos, playlists and repos (needs yt-dlp, gh)
 # ingest is not a CLI subcommand. From a checkout:
 #   uv run python -m henriquefy.ingest.yt_fetch <course-id> --windows
-# watch is Phase 6 and is not built.
 ```
 
 How `install` behaves:
@@ -626,21 +626,29 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   `expected.md` are gone and the remaining ones are still reported, and imports `after/` to assert
   the public names and signatures are unchanged.
 
-### Phase 6: watch (next, 1 session)
+### Phase 6: watch (done)
 
-- `watch.py` lists YouTube uploads from two keyless RSS feeds:
-  - per-playlist feeds, `youtube.com/feeds/videos.xml?playlist_id=` (newest 15 each);
-  - the channel feed, `youtube.com/feeds/videos.xml?channel_id=UCEbLV4AfUhoxNb_-Ionw83g` (newest
-    15 channel-wide, enough for a weekly run);
-  - plus the GitHub repo list with `pushed_at` from `gh api`.
-- It compares against `~/.henriquefy/state/*.json` (seeded from the shipped
-  `state/playlists.json` on first run) and prints a queue of new sources with the ingest command to
-  run. A video on the channel feed but in no known playlist is queued as "unassigned, check for a
-  new playlist", since playlists cannot be listed without yt-dlp or an API key.
-- Run weekly from cron or launchd on the maintainer's machine, or from any agent scheduler; the
-  command is what matters. Results land in `~/.henriquefy/state/queue.md`.
-- **Exit (CI):** fixture feeds with one "new video" in a known playlist and one in none, against a
-  temporary state file and no network, produce a queued ingest task and an unassigned entry.
+- `henriquefy watch` (`src/henriquefy/watch.py`) lists, with yt-dlp, the channel's uploads
+  (`/videos`) and playlists (`/playlists`), and with `gh api` his own repos (forks of other people's
+  excluded) with `pushed_at`. It compares them with `~/.henriquefy/state/watch.json` and appends
+  what is new to `~/.henriquefy/state/queue.md`, one checkbox per item:
+  - a new upload in a playlist of `state/playlists.json`: the `yt_fetch` command for its course;
+  - a new upload in no known playlist: "unassigned, check for a new playlist";
+  - a playlist not in `state/playlists.json`: "add it with a tier";
+  - a new repo, or a repo pushed since the last run: re-run `gh_fetch` and re-distill its digest.
+- The known playlists are opened only when there is an unseen upload to place, so a quiet week is
+  two yt-dlp calls and two `gh api` calls (about 25 s); placing a video takes about 2 minutes.
+- The first run records a baseline (621 videos, 41 playlists, 62 repos on 2026-10-14) and queues
+  nothing. If `gh` fails, the repo state is kept and the videos are still checked.
+- Why not RSS: the plan used the keyless feeds (`youtube.com/feeds/videos.xml`), but they answered
+  404 for the channel and every playlist on 2026-10-14. They also listed only 15 entries, in
+  playlist order for playlist feeds, so videos appended to a long playlist were invisible. yt-dlp
+  is already required by the ingest.
+- Run weekly from cron or launchd on the maintainer's machine, or from any agent scheduler.
+- **Exit (CI):** `tests/test_watch.py` runs fixture listings with one new video in a known playlist
+  and one in none, against a temporary state and no network, and gets a queued ingest command and
+  an unassigned entry; it also covers new playlists and repos, an unreachable GitHub and the
+  baseline run.
 
 ### Phase 7: Hardening (ongoing)
 
@@ -683,3 +691,4 @@ Open questions: none.
 | 2026-10-08 | **`grade` output** prints to stdout; `--report` writes `.henriquefy/report.md`. |
 | 2026-10-08 | **Major version.** Ivan chose 1.0.0 because grades moved. |
 | 2026-10-10 | **Whisper for captionless lessons.** When a lesson has no Portuguese captions, transcribe the audio with Whisper and say so in the digest colophon. Never use the `en` tracks. |
+| 2026-10-14 | **watch lists with yt-dlp, not RSS.** The YouTube feeds answered 404 for every channel and playlist; yt-dlp also sees whole playlists and the channel's playlist list. |
