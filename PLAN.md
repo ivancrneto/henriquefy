@@ -9,7 +9,7 @@ that knowledge to any codebase: explain, check, grade, and transform.
 
 ## Status (2026-10-14)
 
-Latest release: **v1.3.0** on PyPI. The KB holds 10 course digests, 42 principles, 15 patterns,
+Latest release: **v1.3.0** on PyPI. The KB holds 11 course digests, 42 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12) and the career playlists with Caminho da
 Autonomia (2026-10-14), whose five principles are category `career` (no rubric dimension, skipped
@@ -606,6 +606,9 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   IA como veículo de expressão (2026-10-22): a single video from his own channel
   (`UCaL1P7zI_1B6mRjMqcxq0Yg`, not watched by `watch`), a conversation with Alisson Vale about
   agents; digest only, no principles, and Alisson's speech is never attributed to Henrique.
+  Hamster Dan: keeping pull requests moving (2026-10-22): a second single video from his own
+  channel, a 4-minute English demo of the hamsterdan PR agent (`kb/repos/hamsterdan.md`); digest
+  only, from the en-orig captions and `/watch` frames, no principles.
   Remaining: the rest of tier 2 and the career playlists, interleaved (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).
