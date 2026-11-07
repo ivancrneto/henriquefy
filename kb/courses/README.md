@@ -1,6 +1,8 @@
 # Course digests
 
-Digests of HB Network playlists, written by Ivan Neto from the lesson transcripts and the
+Digests of HB Network playlists, and of single videos from Henrique Bastos's own channel
+(`ia-como-veiculo-de-expressao`, a conversation with Alisson Vale whose speech is never
+attributed to Henrique), written by Ivan Neto from the lesson transcripts and the
 public code, in Portuguese, keeping each digest's section numbering so citations like
 `section: "12.9"` resolve here.
 
