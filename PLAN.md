@@ -23,7 +23,7 @@ by the `check` checklist).
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
 | 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career under way (1 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
-| 6 | `watch` (`watch.py`) | done, awaiting release | |
+| 6 | `watch` (`watch.py`) | done | v1.4.0 |
 | 7 | Hardening | ongoing | |
 
 ## Contents
