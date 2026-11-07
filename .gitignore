@@ -14,3 +14,6 @@ build/
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+
+# per-developer agent overrides
+AGENTS.local.md
