@@ -93,6 +93,32 @@ one new citation per practice.
 - Author line unchanged. django-aggregate-if `setup.py:10` (2014) and beans
   `pyproject.toml:7-9` (2026): "Henrique Bastos", `henrique@bastos.net`.
 
+## Outside Python (2026)
+
+`henriquebastos/mirror-on-pi` (created 2026-10-29, read at commit
+`614d5385455925a054ce5816512dee65a87dda97`, not cloned or mined) is his first TypeScript repo in
+the manifest: "a small reflective personal agent on Pi, rebuilt from Mirror Mind" (GitHub
+description). It is outside the KB's scope, since the rules and the checker read Python only,
+but the same 2026 habits show up in another language:
+
+- One gate script that humans, agents and CI all call: `"check": "tsc -p . && eslint . && node
+  --test ..."` (`package.json:12`), run by CI (`.github/workflows/ci.yml:19`) and listed under
+  Validate in `AGENTS.md:19-23`. This is the hamsterdan `scripts/check` shape.
+- Exact pins and a frozen lock: every dependency carries an exact version (`package.json:20-33`),
+  a git dependency is pinned by full sha (`:29`), `packageManager: pnpm@11.5.2` (`:10`),
+  `pnpm install --frozen-lockfile` in CI (`ci.yml:17`). The rule is written down: "Pin the
+  latest Pi release." (`AGENTS.md:13`).
+- The newest runtime as the floor: `"node": ">=26"` (`package.json:8`), Node 26 in CI
+  (`ci.yml:14`), the counterpart of `requires-python >=3.14` in hamsterdan.
+- Mutation testing in the gate: `pnpm test:mutants` in CI (`ci.yml:21`), as `mutmut` is a
+  hamsterdan dev dependency.
+- `AGENTS.md` as the agent's contract, pointing at `docs/` files to read before changing
+  behavior (`AGENTS.md:3-5`), and ending with "Report every check you did not run." (`:27`).
+- Few dependencies: one runtime dependency, `yaml` (`package.json:20-22`).
+- The test runner is the platform's own, `node --test` (`package.json:13`), not a framework.
+
+Read for contrast only. Nothing here is cited as a principle, and no era tag follows from it.
+
 ## Era tags to set
 
 Only tooling entries carry an era (`skills/henrique-ingest/prompts/distill-repo.md:56-57`;
