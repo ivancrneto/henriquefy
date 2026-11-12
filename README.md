@@ -40,10 +40,10 @@ verdict. The letter that follows it is the skill's judgment, and the skill says 
 ## Knowledge base
 
 The skill reads `kb/`. The generated list of every principle, pattern, repository and course is
-[kb/INDEX.md](kb/INDEX.md): 44 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
+[kb/INDEX.md](kb/INDEX.md): 45 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
 dates how his tooling changed. Principle files are in English. Course digests are in Portuguese.
 
-Ten course digests are in `kb/courses/`, written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper).
+Eleven course digests are in `kb/courses/`, written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper, locally with whisper.cpp since 2026-11-11).
 A quote in a digest is a paraphrase of those captions and has not been checked against the video.
 
 | Digest | Course | Lessons |
@@ -58,6 +58,7 @@ A quote in a digest is a paraphrase of those captions and has not been checked a
 | `refatoracao-rapida` | [Domine o Método da Refatoração Rápida](https://www.youtube.com/playlist?list=PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY) | 16 |
 | `caminho-da-autonomia` | [Caminho da Autonomia](https://www.youtube.com/playlist?list=PLeKXYyZCJHxcCf96DZdrCwJmZj7cEilus) (career) | 8 |
 | `refatoracao-poo-legado` | [Refatoração com POO em código legado](https://www.youtube.com/playlist?list=PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx) | 9 |
+| `protagonista-da-carreira` | [Workshop: Torne-se protagonista da sua carreira na programação](https://www.youtube.com/playlist?list=PLeKXYyZCJHxdeXekJnaSPKtjzL_2Wpwqx) (career) | 3 |
 
 The playlist inventory, including what is still queued, is [state/playlists.json](state/playlists.json).
 The plan is [PLAN.md](PLAN.md).
