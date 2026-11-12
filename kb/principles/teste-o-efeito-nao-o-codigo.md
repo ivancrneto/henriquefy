@@ -53,6 +53,5 @@ under test merely happens to use today.
 refactor commit that touches many tests without changing behavior.
 
 **How to fix.** Rewrite the assertion against the observable result, keep stubs and mocks
-where they isolate a unit from a real dependency (he does this himself, lesson 5, 0:15:26 to 0:15:36;
-lesson 6, 0:09:41 to 0:10:22), drop them from private helpers and incidental internals, and rerun the refactor to see the tests stay untouched. Related:
+where they isolate a unit from a real dependency (he does this himself, lesson 5, 0:15:26 to 0:15:36), drop them from private helpers and incidental internals, and rerun the refactor to see the tests stay untouched. Related:
 `a-interface-e-o-que-importa`, `teste-o-minimo-pelo-risco`.
