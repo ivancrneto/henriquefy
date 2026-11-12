@@ -72,7 +72,8 @@
       "title": "Refatoração com POO em código legado",
       "tier": "2",
       "videos": 9,
-      "hours": 1.5
+      "hours": 1.5,
+      "course": "refatoracao-poo-legado"
     },
     {
       "id": "PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg",

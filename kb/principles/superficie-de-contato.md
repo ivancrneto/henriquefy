@@ -47,6 +47,17 @@ sources:
     section: "5"
     timestamp: "0:33:37"
     verified: false
+  - type: course
+    course: refatoracao-poo-legado
+    lesson: null
+    section: "6.9"
+    timestamp: null
+  - type: course
+    course: refatoracao-poo-legado
+    lesson: 9
+    section: "5"
+    timestamp: "0:02:58"
+    verified: false
 ---
 **Rule.** Two parts should meet on a small contact surface. The import list is that surface:
 each name imported is contact the caller has with the other module. A relationship wired
@@ -64,7 +75,10 @@ himself down; the relationship has to happen in the dynamics, in the life of the
 10, 0:22:12, `verified: false`, transcript paraphrase). He carries the vocabulary outside software too:
 since we work with systems, look at the legal system as a system and build a structure that
 reduces the coupling and the interface with the government (Caminho da Autonomia, lesson 6,
-0:33:37 to 0:33:52, `verified: false`, transcript paraphrase).
+0:33:37 to 0:33:52, `verified: false`, transcript paraphrase). Inside a class the rule
+turns into patience: inelegant code that stays encapsulated is no reason for stress, it would be
+if it leaked (Refatoração com POO em código legado, lesson 9, 0:02:58 to 0:03:10, `verified:
+false`, transcript paraphrase).
 
 **Looks like.** The game imports one name from the bitmap and asks it for what it needs. Bad:
 the game imports `x`, `y` and the offset and assembles a coordinate the bitmap already knows
