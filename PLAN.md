@@ -7,9 +7,9 @@ that knowledge to any codebase: explain, check, grade, and transform.
 **Working agreement.** Work goes through pull requests that Ivan merges; a release is a tag
 `vX.Y.Z`, which `release.yml` publishes and pushes itself when a version-bump PR merges.
 
-## Status (2026-10-14)
+## Status (2026-11-11)
 
-Latest release: **v1.3.0** on PyPI. The KB holds 11 course digests, 42 principles, 15 patterns,
+Latest release: **v1.4.0** on PyPI. The KB holds 12 course digests, 44 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12) and the career playlists with Caminho da
 Autonomia (2026-10-14), whose five principles are category `career` (no rubric dimension, skipped
@@ -21,7 +21,7 @@ by the `check` checklist).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (1 of 7); career under way (1 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (2 of 7); career under way (1 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | done | v1.4.0 |
 | 7 | Hardening | ongoing | |
@@ -332,7 +332,7 @@ is seeded from this table.
 | done | Raio-X da Orientação a Objetos | `PLeKXYyZCJHxdT8vUW3x9bd7B8PnwnHINW` | 5 | 0.7 | modeling |
 | done | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
 | done | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
-| 2 | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
+| done | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
 | 2 | Superando o Labirinto dos Testes | `PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg` | 8 | 2.2 | testing |
 | 2 | Pacote de Desafios Pythônicos | `PLeKXYyZCJHxetT2NwFzKcslYfiE3yPUWL` | 15 | 0.9 | readability, idioms (repo exists) |
 | 2 | Publique sua Biblioteca Python do zero | `PLeKXYyZCJHxeM2DehynN89gk1apr1EwQz` | 5 | 0.8 | project, packaging |
@@ -357,7 +357,8 @@ is seeded from this table.
   was Dicas de Programação on 2026-10-10. Tier 2 and the career playlists are next, one playlist
   per session, interleaved. Tier 2 started with Domine o Método da Refatoração Rápida on
   2026-10-12 and career 1 with Caminho da Autonomia on 2026-10-14, so the next session takes
-  the next tier 2 playlist.
+  the next tier 2 playlist. Refatoração com POO em código legado followed on 2026-11-11, so the
+  next session takes career 1 (Workshop: Torne-se protagonista da sua carreira na programação).
 - Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
   feed development practice, career 3 the short broad clips, career 4 the business side.
 - Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
@@ -609,6 +610,9 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   Hamster Dan: keeping pull requests moving (2026-10-22): a second single video from his own
   channel, a 4-minute English demo of the hamsterdan PR agent (`kb/repos/hamsterdan.md`); digest
   only, from the en-orig captions and `/watch` frames, no principles.
+  Refatoração com POO em código legado (2026-11-11, second of tier 2): one live session on a
+  forum member's pygame tutorial, whose author is never named and whose code is never
+  reproduced; two new principles, separe-o-dominio-do-motor and refatore-sem-matar-o-paciente.
   Remaining: the rest of tier 2 and the career playlists, interleaved (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).

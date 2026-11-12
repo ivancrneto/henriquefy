@@ -40,6 +40,17 @@ sources:
     section: "5"
     timestamp: "0:04:18"
     verified: false
+  - type: course
+    course: refatoracao-poo-legado
+    lesson: null
+    section: "6.5"
+    timestamp: null
+  - type: course
+    course: refatoracao-poo-legado
+    lesson: 9
+    section: "5"
+    timestamp: "0:06:59"
+    verified: false
 ---
 **Rule.** Never refactor code you cannot prove still works. Before reading legacy code, run it;
 before changing it, fence its current behavior with black-box tests, golden files for a
@@ -53,6 +64,10 @@ paraphrase). Then he captures its output as golden files and compares with `diff
 turns that into pytest, so every later step has a verdict (lesson 20, 0:05:08 to 0:06:49,
 `verified: false`, transcript paraphrase). Refactoring is changing structure without changing
 behavior (digest section 6.1), and behavior you have not pinned cannot be shown unchanged.
+In Refatoração com POO em código legado he says there is no way around it, you have to write
+tests (lesson 3, 0:01:28 to 0:01:38), and fixing the direction rule was quick only because the
+tests existed: imagine doing it without them (lesson 9, 0:06:59 to 0:07:07, `verified: false`,
+transcript paraphrase).
 In Refatoração Rápida he runs the same student program before opening its functions (lesson 5,
 0:05:24 to 0:05:47), asks how to change it safely and answers with a test (lesson 6, 0:04:18 to
 0:04:28, `verified: false`, transcript paraphrase), and puts it plainly: running by hand is not
