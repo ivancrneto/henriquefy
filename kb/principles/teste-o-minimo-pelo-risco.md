@@ -49,8 +49,8 @@ point the tests (and the coverage you look at) at the paths whose failure costs 
 **Why Henrique says so.** Following Myers (1979), testing is analysing a program to find errors
 and defects, not validating that it works; more defects found means more confidence, and the
 software is never proven to work (Superando o Labirinto dos Testes, lesson 2, 0:00:20 to
-0:01:17, `verified: false`, transcript paraphrase). A test is not a guarantee, not a proof, not
-a silver bullet; confidence is what matters (lesson 3, 0:15:32 to 0:15:57). How much to test is
+0:01:17, `verified: false`, transcript paraphrase). A test is a tool for confidence, not a
+guarantee; it gives evidence that the system works (lesson 3, 0:15:44 to 0:16:22). How much to test is
 always the minimum possible, never less than the minimum, found by risk analysis (lesson 2,
 0:04:38 to 0:05:10). Change the question from how do I test to what do I need to test; the risks
 are to life, money, reputation, opportunity, budget and deadline (lesson 3, 0:16:34 to 0:17:05),
