@@ -23,3 +23,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | I'm a strong programmer but I accept every deadline my boss sets because I'm afraid of losing the job. What does he say? | reserva-para-dizer-nao | caminho-da-autonomia lesson 5 at 0:45:16 and lesson 7 at 0:31:28 |
 | I'm moving logic out of a big legacy loop into a new class, but the loop indexes into a list everywhere. How does he keep the program running during the move? | refatore-sem-matar-o-paciente | refatoracao-poo-legado lesson 5 at 0:06:32 and 0:06:51 |
 | My pygame game has drawing, events and game rules all in one loop. What is his first refactoring move? | separe-o-dominio-do-motor | refatoracao-poo-legado lesson 3 at 0:03:13 and lesson 4 at 0:02:39 |
+| My PR is merged and works on my machine; deploy is a manual checklist ops runs next week. Is my task done? | pronto-e-quando-esta-no-ar | protagonista-da-carreira lesson 3 at 0:06:02 and 0:07:46 |
+| We ship one big release every quarter and the client keeps saying it's not what they asked for. What would he change? | eficacia-acima-de-eficiencia | protagonista-da-carreira lesson 2 at 0:06:41 and 0:07:05 |

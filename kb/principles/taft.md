@@ -47,6 +47,17 @@ sources:
     section: "5"
     timestamp: "0:15:30"
     verified: false
+  - type: course
+    course: protagonista-da-carreira
+    lesson: null
+    section: "6.6"
+    timestamp: null
+  - type: course
+    course: protagonista-da-carreira
+    lesson: 3
+    section: "5"
+    timestamp: "0:05:23"
+    verified: false
 ---
 **Rule.** Test all the time, and test automatically. Untested code is a risk. Manual testing
 does not scale. The kind of test (functional, unit, load, acceptance) is a tool in the box.
@@ -62,7 +73,10 @@ paraphrase). Manual testing does not scale, so the test has to be automatic (0:1
 his organized routine, he says he is running the test all the time, progress forward, no stress
 (lesson 3, 0:23:10 to 0:23:21, `verified: false`, transcript paraphrase), and acting means
 writing the code and seeing the test pass (lesson 2, 0:15:30 to 0:15:47). He attributes the term to Brian Lions, as the
-caption hears the name, and does not spell a URL (0:13:47).
+caption hears the name, and does not spell a URL (0:13:47). In the Protagonista workshop, navigating the system by
+hand to check it, and using the debugger to see whether the logic is right, are both waste
+(Workshop: Torne-se protagonista, lesson 3, 0:05:00 to 0:05:30, `verified: false`, Whisper
+transcript paraphrase).
 
 **Looks like.** A change lands with an automatic check that already failed once for the wrong
 reason and now passes. Bad: a feature considered done because someone clicked through it once.

@@ -30,6 +30,17 @@ sources:
     section: "5"
     timestamp: "0:10:09"
     verified: false
+  - type: course
+    course: protagonista-da-carreira
+    lesson: null
+    section: "6.1"
+    timestamp: null
+  - type: course
+    course: protagonista-da-carreira
+    lesson: 2
+    section: "5"
+    timestamp: "0:06:41"
+    verified: false
 ---
 **Rule.** Aim at effectiveness, doing the right thing for the moment, not efficiency, doing a lot
 quickly. Effectiveness accepts imperfection, errors and missing information: do what can be done
@@ -47,6 +58,10 @@ not getting it right first, it is correcting course fast so it does not sink the
 4, 0:11:28 to 0:12:19). And for code: let go of the ideal, the great data model and the scalable
 environment, deliver a tiny value each day, because code that is not running does nothing
 (lesson 3, 0:10:09 to 0:10:37). Digest sections 6.2 and 6.6.
+The Protagonista workshop gives it the delivery form: instead of months of work shipped as one
+version full of features, deliver software very often, because the shorter the feedback loop,
+the stronger the connection with value (Workshop: Torne-se protagonista, lesson 2, 0:06:41 to
+0:07:08, `verified: false`, Whisper transcript paraphrase).
 
 **Looks like.** Two candidate solutions tried for a week each with agreed indicators, and the
 worse one dropped. Bad: weeks spent on a perfect schema and infrastructure before anyone uses the
