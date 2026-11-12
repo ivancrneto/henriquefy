@@ -25,3 +25,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | My pygame game has drawing, events and game rules all in one loop. What is his first refactoring move? | separe-o-dominio-do-motor | refatoracao-poo-legado lesson 3 at 0:03:13 and lesson 4 at 0:02:39 |
 | My PR is merged and works on my machine; deploy is a manual checklist ops runs next week. Is my task done? | pronto-e-quando-esta-no-ar | protagonista-da-carreira lesson 3 at 0:06:02 and 0:07:46 |
 | We ship one big release every quarter and the client keeps saying it's not what they asked for. What would he change? | eficacia-acima-de-eficiencia | protagonista-da-carreira lesson 2 at 0:06:41 and 0:07:05 |
+| Our CI fails under 100% coverage and the team spends days testing getters while the billing code has one test. What would he change? | teste-o-minimo-pelo-risco | labirinto-dos-testes lesson 2 at 0:04:47 and lesson 3 at 0:16:34 |
+| Every time I refactor a service, half my tests break because they assert which helpers were called. What does he say? | teste-o-efeito-nao-o-codigo | labirinto-dos-testes lesson 4 at 0:07:24 and lesson 7 at 0:00:20 |

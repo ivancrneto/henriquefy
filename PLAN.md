@@ -7,9 +7,9 @@ that knowledge to any codebase: explain, check, grade, and transform.
 **Working agreement.** Work goes through pull requests that Ivan merges; a release is a tag
 `vX.Y.Z`, which `release.yml` publishes and pushes itself when a version-bump PR merges.
 
-## Status (2026-11-11)
+## Status (2026-11-12)
 
-Latest release: **v1.4.0** on PyPI. The KB holds 13 course digests, 45 principles, 15 patterns,
+Latest release: **v1.4.0** on PyPI. The KB holds 14 course digests, 47 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12) and the career playlists with Caminho da
 Autonomia (2026-10-14), whose five principles are category `career` (no rubric dimension, skipped
@@ -21,7 +21,7 @@ by the `check` checklist).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (2 of 7); career under way (2 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (3 of 7); career under way (2 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | done | v1.4.0 |
 | 7 | Hardening | ongoing | |
@@ -333,7 +333,7 @@ is seeded from this table.
 | done | Dicas de Programação | `PLeKXYyZCJHxdnGoV8TBYzKqsm8p3PIEeQ` | 53 | 2.6 | check rules (short, dense) |
 | done | Domine o Método da Refatoração Rápida | `PLeKXYyZCJHxfHUETjNouzr1hyaiuljrUY` | 16 | 4.6 | transform |
 | done | Refatoração com POO em código legado | `PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx` | 9 | 1.5 | transform |
-| 2 | Superando o Labirinto dos Testes | `PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg` | 8 | 2.2 | testing |
+| done | Superando o Labirinto dos Testes | `PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg` | 8 | 2.2 | testing |
 | 2 | Pacote de Desafios Pythônicos | `PLeKXYyZCJHxetT2NwFzKcslYfiE3yPUWL` | 15 | 0.9 | readability, idioms (repo exists) |
 | 2 | Publique sua Biblioteca Python do zero | `PLeKXYyZCJHxeM2DehynN89gk1apr1EwQz` | 5 | 0.8 | project, packaging |
 | 2 | O Ambiente Python Perfeito | `PLeKXYyZCJHxerM2W71_WeWLuvU-O22vUj` | 5 | 0.9 | project |
@@ -359,7 +359,8 @@ is seeded from this table.
   2026-10-12 and career 1 with Caminho da Autonomia on 2026-10-14, so the next session takes
   the next tier 2 playlist. Refatoração com POO em código legado followed on 2026-11-11, so the
   next session took career 1 (Workshop: Torne-se protagonista da sua carreira na programação)
-  the same day, so the next session takes the next tier 2 playlist.
+  the same day, and Superando o Labirinto dos Testes on 2026-11-12, so the next session takes
+  the next career playlist.
 - Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
   feed development practice, career 3 the short broad clips, career 4 the business side.
 - Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
@@ -618,6 +619,9 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   short videos and a funnel for Welcome to the Django): lessons 2 and 3 had no captions and were
   transcribed locally with whisper.cpp (ggml-large-v3-turbo); one new principle,
   pronto-e-quando-esta-no-ar.
+  Superando o Labirinto dos Testes de Software (2026-11-12, third of tier 2): eight lessons with
+  captions and no code; participants' speech is never attributed to him and no student is named;
+  two new principles, teste-o-minimo-pelo-risco and teste-o-efeito-nao-o-codigo.
   Remaining: the rest of tier 2 and the career playlists, interleaved (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).
