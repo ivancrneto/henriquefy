@@ -63,7 +63,7 @@ Um código pequeno pode ter complexidade exponencial, porque saltos e condiciona
 
 ### 3.3 Teste não prova, dá confiança
 
-Pela frase de Myers de 1979 [legenda: Mayer], testar é analisar um programa com a intenção de descobrir erros e defeitos, não validar que ele funciona; quanto mais defeitos se encontram, maior a confiança, e nunca se prova que o software funciona (aula 2, 0:00:20 a 0:01:17). A imagem é o campo minado: vai-se cercando as bombas com bandeirinhas até desarmar todas (aula 2, 0:02:04 a 0:02:23). Na aula 3 o ponto vira definição: teste não é garantia, não é prova, não é bala de prata; é uma ferramenta para dar confiança, com muitos tons de cinza (aula 3, 0:15:44 a 0:16:22).
+Pela frase de Myers de 1979 [legenda: Mayer], testar é analisar um programa com a intenção de descobrir erros e defeitos, não validar que ele funciona; quanto mais defeitos se encontram, maior a confiança, e nunca se prova que o software funciona (aula 2, 0:00:20 a 0:01:17). A imagem é o campo minado: vai-se cercando as bombas com bandeirinhas até desarmar todas (aula 2, 0:02:04 a 0:02:23). Na aula 3 o ponto vira definição: teste não é garantia; é uma ferramenta para dar confiança, com muitos tons de cinza (aula 3, 0:15:44 a 0:16:22).
 
 ### 3.4 Entropia contida, não eliminada
 
@@ -91,7 +91,7 @@ Um teste que muda quando o código muda testa o código; o que se quer é testar
 | 4 | #04: Começando a testar | 9:01 | Passos de bebê (0:00:00); kata, dojo, par (0:04:23); teste o efeito do código (0:07:20). |
 | 5 | #05: Tipos de Testes | 25:11 | Efeito checklist (0:01:10); estático e dinâmico (0:02:50); partição de equivalência e valor limite (0:07:30); unitário a regressão (0:14:52 a 0:25:04). |
 | 6 | #06: Anatomia dos Testes | 11:33 | Erro, defeito e falha (0:00:10); discovery, seleção, runner, reporter (0:02:07); dublês (0:07:27). |
-| 7 | #07: Testando | 21:05 | Camada de indireção (0:01:00); caminho de sucesso primeiro (0:05:23); expandir e colapsar (0:06:05); integração, ordenação, separação, redução (0:17:59). |
+| 7 | #07: Testando | 21:05 | Camada de indireção (0:01:00); caminho de sucesso primeiro (0:05:23); expandir e colapsar (0:06:05); integração, ordenação, separação, redução (0:17:56). |
 | 8 | #08: Conclusão | 3:21 | O mínimo necessário (0:00:13); praticar; o Raio-X do TDD de presente (0:00:36). |
 
 ## 5. Resumo por aula
@@ -355,7 +355,7 @@ Linha do tempo:
 - [0:11:51] integração contínua é a última coisa
 - [0:13:16] depurador, tracer, profiler, linter, coverage
 - [0:16:14] cobertura sem meta, pelo risco
-- [0:17:59] integração, ordenação, separação, redução
+- [0:17:56] integração, ordenação, separação, redução
 - [0:20:03] de 859 para 13 linhas
 - [0:20:45] nunca acesse uma API diretamente
 
@@ -369,7 +369,7 @@ Princípios:
 - Comece junto, pare, olhe e separe: por demãos (0:05:53 a 0:06:55).
 - Todo programador roda todos os testes na própria máquina antes de qualquer CI (0:11:51 a 0:12:19).
 - Cobertura revela cenário faltando; não é meta (0:16:01 a 0:16:55).
-- Legado: integração, ordenação, separação, redução, rodando o teste a cada mudança (0:17:59 a 0:20:32).
+- Legado: integração, ordenação, separação, redução, rodando o teste a cada mudança (0:17:56 a 0:20:32).
 
 Código: reconstrução a partir da fala; não publicada. Os nomes são deste documento; ele diz fecha pull request, abre e lista, recebendo só o número (0:01:07 a 0:01:49), e o teste com um stub que retorna verdadeiro num cenário ou 30 mensagens noutro (0:01:49 a 0:02:11).
 
@@ -479,9 +479,9 @@ O Postfix, estabelecido no mercado, é axioma, e o envio de e-mail se testa com 
 
 [novo; vizinho de use-o-framework-sem-abstrai-lo]
 
-#### 9. Legado: amarre, ordene, separe, reduza, sem reengenharia
+#### 9. Legado: integração, ordenação, separação, redução, sem reengenharia
 
-Ele não faz reengenharia: extrai o trecho crítico para uma função ao lado e testa só ele, um transplante (aula 3, 0:09:53 a 0:11:20; 0:13:19 a 0:13:51). O método tem quatro etapas: integração pelo caso de sucesso (um teste que amarra o comportamento), ordenação sem mudar nada, separação em funções e redução até testes unitários de cada parte (aula 7, 0:17:59 a 0:19:52), rodando o teste a cada mudança para não matar o paciente (aula 7, 0:20:12 a 0:20:32).
+Ele não faz reengenharia: extrai o trecho crítico para uma função ao lado e testa só ele, um transplante (aula 3, 0:09:53 a 0:11:20; 0:13:19 a 0:13:51). O método tem quatro etapas: integração pelo caso de sucesso (um teste que amarra o comportamento), ordenação sem mudar nada, separação em funções e redução até testes unitários de cada parte (aula 7, 0:17:56 a 0:19:52), rodando o teste a cada mudança para não matar o paciente (aula 7, 0:20:12 a 0:20:32).
 
 [já no KB: `kb/principles/execute-antes-de-ler.md` e `kb/principles/refatore-sem-matar-o-paciente.md`]
 
@@ -581,7 +581,7 @@ Nada é demonstrado em tela; tudo é descrito. A coluna diz onde ele descreve.
 | Depurador e tracer | Ver o filme do legado | #7, 0:13:16 a 0:14:19 |
 | Profiler por amostragem | Achar o que mais roda | #7, 0:14:19 a 0:14:58 |
 | Coverage | Revelar cenário faltando, sem meta | #7, 0:15:05 a 0:16:55 |
-| Integração, ordenação, separação, redução | Refatorar legado com teste | #7, 0:17:59 a 0:20:32 |
+| Integração, ordenação, separação, redução | Refatorar legado com teste | #7, 0:17:56 a 0:20:32 |
 
 ## 10. Glossário do curso
 
@@ -611,7 +611,7 @@ Nada é demonstrado em tela; tudo é descrito. A coluna diz onde ele descreve.
 | **Camada de indireção** [legenda: em direção] | Função ou serviço seu entre o sistema e a dependência externa | #7, 0:01:00 a 0:03:20 |
 | **Expandir e colapsar** | Começar junto e separar depois de olhar | #7, 0:05:53 a 0:06:14 |
 | **Demão** | Cada passada sobre o código até ficar bom bastante | #7, 0:06:36 a 0:06:55 |
-| **Integração, ordenação, separação, redução** | O método dele para legado com teste | #7, 0:17:59 a 0:20:32 |
+| **Integração, ordenação, separação, redução** | O método dele para legado com teste | #7, 0:17:56 a 0:20:32 |
 | **Passos de bebê** | Avançar sem pular etapa | #4, 0:00:00 a 0:01:58 |
 | **Kata** [legenda: catar] | Exercício repetido para treinar a forma | #4, 0:02:56; 0:04:23 |
 
@@ -671,7 +671,7 @@ Por último, depois que todo programador roda todos os testes sozinho na máquin
 
 #### Como pôr teste em código legado?
 
-Sem reengenharia: amarrar o caso de sucesso num teste, ordenar sem mudar nada, separar em funções e reduzir, rodando o teste a cada mudança (aula 3, 0:09:53 a 0:11:20; aula 7, 0:17:59 a 0:20:32).
+Sem reengenharia: amarrar o caso de sucesso num teste, ordenar sem mudar nada, separar em funções e reduzir, rodando o teste a cada mudança (aula 3, 0:09:53 a 0:11:20; aula 7, 0:17:56 a 0:20:32).
 
 #### Como convencer um chefe que acha teste um custo?
 

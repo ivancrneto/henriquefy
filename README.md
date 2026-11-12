@@ -43,7 +43,7 @@ The skill reads `kb/`. The generated list of every principle, pattern, repositor
 [kb/INDEX.md](kb/INDEX.md): 47 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
 dates how his tooling changed. Principle files are in English. Course digests are in Portuguese.
 
-Fourteen course digests are in `kb/courses/` (the table lists the thirteen that come from playlists), written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper, locally with whisper.cpp since 2026-11-11).
+Fourteen course digests are in `kb/courses/` (the table lists the twelve that come from playlists), written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper, locally with whisper.cpp since 2026-11-11).
 A quote in a digest is a paraphrase of those captions and has not been checked against the video.
 
 | Digest | Course | Lessons |
