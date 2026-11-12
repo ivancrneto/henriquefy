@@ -40,10 +40,10 @@ verdict. The letter that follows it is the skill's judgment, and the skill says 
 ## Knowledge base
 
 The skill reads `kb/`. The generated list of every principle, pattern, repository and course is
-[kb/INDEX.md](kb/INDEX.md): 47 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
+[kb/INDEX.md](kb/INDEX.md): 50 principles, 15 patterns, 13 repository digests. `kb/repos/drift.md`
 dates how his tooling changed. Principle files are in English. Course digests are in Portuguese.
 
-Fourteen course digests are in `kb/courses/` (the table lists the twelve that come from playlists), written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper, locally with whisper.cpp since 2026-11-11).
+Fifteen course digests are in `kb/courses/` (the table lists the thirteen that come from playlists), written from the automatic captions of the playlists (a few lessons without captions were transcribed with Whisper, locally with whisper.cpp since 2026-11-11).
 A quote in a digest is a paraphrase of those captions and has not been checked against the video.
 
 | Digest | Course | Lessons |
@@ -60,6 +60,7 @@ A quote in a digest is a paraphrase of those captions and has not been checked a
 | `refatoracao-poo-legado` | [Refatoração com POO em código legado](https://www.youtube.com/playlist?list=PLeKXYyZCJHxeEeta6ddgqUagLp_Oo_kAx) | 9 |
 | `protagonista-da-carreira` | [Workshop: Torne-se protagonista da sua carreira na programação](https://www.youtube.com/playlist?list=PLeKXYyZCJHxdeXekJnaSPKtjzL_2Wpwqx) (career) | 3 |
 | `labirinto-dos-testes` | [Superando o Labirinto dos Testes de Software](https://www.youtube.com/playlist?list=PLeKXYyZCJHxfGaSISKQtt4we_3wmuZEzg) | 8 |
+| `cumprir-qualquer-prazo` | [Método para Cumprir Qualquer Prazo](https://www.youtube.com/playlist?list=PLeKXYyZCJHxfpAJAR9q27VTugkNvHMjgP) (career) | 7 |
 
 The playlist inventory, including what is still queued, is [state/playlists.json](state/playlists.json).
 The plan is [PLAN.md](PLAN.md).
