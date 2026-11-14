@@ -54,7 +54,7 @@ transcript paraphrase). He does not ask what can be done in a week; he asks whet
 can be done, then what is least important, and repeats for shorter deadlines (lesson 4, 0:24:19
 to 0:25:29), without discarding the rest and prioritizing the sequence (0:28:35 to 0:28:42). In
 the course's case, the first release is cut down to catalog, search and direct sale (lesson 7,
-0:18:39 to 0:19:12).
+0:20:55 to 0:21:10).
 
 **Looks like.** "You need it by the 30th for the trade fair? Then what has to work at the fair is
 taking orders; reports and the admin come after." Bad: answering "impossible, I need two more
