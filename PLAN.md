@@ -9,7 +9,7 @@ that knowledge to any codebase: explain, check, grade, and transform.
 
 ## Status (2026-11-12)
 
-Latest release: **v1.4.0** on PyPI. The KB holds 14 course digests, 47 principles, 15 patterns,
+Latest release: **v1.4.0** on PyPI. The KB holds 15 course digests, 50 principles, 15 patterns,
 13 repository digests and `kb/repos/drift.md`. Every tier 1 playlist is ingested; tier 2 has begun
 with Domine o Método da Refatoração Rápida (2026-10-12) and the career playlists with Caminho da
 Autonomia (2026-10-14), whose five principles are category `career` (no rubric dimension, skipped
@@ -21,7 +21,7 @@ by the `check` checklist).
 | 1 | KB v0 from the two HTML digests | done | v0.1.0 |
 | 2 | `check` and `grade` (Nota mecânica) | done | v0.2.0 |
 | 3 | Repo mining and alumni calibration | done | v0.3.0 |
-| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (3 of 7); career under way (2 of 13) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
+| 4 | YouTube ingest | pipeline done; tier 1 ingested; tier 2 under way (3 of 7); career under way (3 of 11) | v0.4.0, v1.1.0, v1.2.0, v1.3.0 |
 | 5 | `transform` | done | v1.0.0 |
 | 6 | `watch` (`watch.py`) | done | v1.4.0 |
 | 7 | Hardening | ongoing | |
@@ -341,7 +341,7 @@ is seeded from this table.
 | 3 | Welcome to the Django | `PLeKXYyZCJHxczQsE7L5H9RXTcNFjx3U55` | 121 | 32.8 | django, project (pair with `eventex`) |
 | done | Caminho da Autonomia | `PLeKXYyZCJHxcCf96DZdrCwJmZj7cEilus` | 8 | 3.8 | career: his core thesis on developer autonomy |
 | done | Workshop: Torne-se protagonista da sua carreira na programação | `PLeKXYyZCJHxdeXekJnaSPKtjzL_2Wpwqx` | 3 | 0.4 | career: short, same thesis |
-| career 2 | Método para Cumprir Qualquer Prazo | `PLeKXYyZCJHxfpAJAR9q27VTugkNvHMjgP` | 7 | 2.2 | work method: estimation, delivery |
+| done | Método para Cumprir Qualquer Prazo | `PLeKXYyZCJHxfpAJAR9q27VTugkNvHMjgP` | 7 | 2.2 | work method: estimation, delivery |
 | career 2 | Método para Programar do Jeito Fácil | `PLeKXYyZCJHxf6DOZXFVBRVyNFf3WPAu3e` | 6 | 0.8 | work method |
 | career 2 | O método rápido para aprender um framework novo | `PLeKXYyZCJHxdDXilIsPrEZBQ0AOwyHBgg` | 7 | 2.0 | work method: learning |
 | career 2 | Desmistificando o Desenvolvimento Ágil | `PLeKXYyZCJHxfeseMJ8JCE9J7qEjsWvoNI` | 7 | 1.9 | work method: process |
@@ -359,8 +359,9 @@ is seeded from this table.
   2026-10-12 and career 1 with Caminho da Autonomia on 2026-10-14, so the next session takes
   the next tier 2 playlist. Refatoração com POO em código legado followed on 2026-11-11, so the
   next session took career 1 (Workshop: Torne-se protagonista da sua carreira na programação)
-  the same day, and Superando o Labirinto dos Testes on 2026-11-12, so the next session takes
-  the next career playlist.
+  the same day, and Superando o Labirinto dos Testes on 2026-11-12, so the next session took
+  career 2 (Método para Cumprir Qualquer Prazo) the same day, and the one after takes the next
+  tier 2 playlist.
 - Career order (decided 2026-10-08): career 1 is the thesis, career 2 the work methods that also
   feed development practice, career 3 the short broad clips, career 4 the business side.
 - Welcome to the Django mostly teaches Django and waits until the grading of plain Python is
@@ -622,6 +623,10 @@ Exit criteria are labeled **CI** (no Claude), **manual** (agent in the loop) or 
   Superando o Labirinto dos Testes de Software (2026-11-12, third of tier 2): eight lessons with
   captions and no code; participants' speech is never attributed to him and no student is named;
   two new principles, teste-o-minimo-pelo-risco and teste-o-efeito-nao-o-codigo.
+  Método para Cumprir Qualquer Prazo (2026-11-12, first of career 2): seven lessons with
+  captions, built around one real client case; chat questions he reads out are never his words
+  and no participant is named; three new career principles, discuta-o-problema-nao-o-prazo,
+  liderar-e-remover-obstaculos and feche-numa-acao-com-data.
   Remaining: the rest of tier 2 and the career playlists, interleaved (see 2.5).
 - **Exit (CI):** a digest under `kb/courses/` has a heading per schema section (keyword match; the
   line-by-line and execution sections may be placeholders when a course published no code).
