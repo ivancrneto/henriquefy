@@ -30,3 +30,5 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | My manager says the feature must ship by the 30th and I know it can't. Should I push back on the date? | discuta-o-problema-nao-o-prazo | cumprir-qualquer-prazo lesson 7 at 0:25:50 and 0:27:36 |
 | I'm a mid-level dev with no title; the team is stuck and the lead is absent. Is it my place to step in? | liderar-e-remover-obstaculos | cumprir-qualquer-prazo lesson 5 at 0:02:03 and 0:16:58 |
 | I keep asking the client's IT team for VPN access and it never arrives. How would he phrase the request? | feche-numa-acao-com-data | cumprir-qualquer-prazo lesson 6 at 0:06:18 and 0:11:47 |
+| I named the two lists `a` and `b` in front_x, and `s` in verbing. Where would he look for better names? | nomes-do-dominio-do-problema | desafios-pythonicos lesson 5 at 0:01:32 and lesson 9 at 0:01:39 |
+| I rewrote match_ends as a one-line generator expression just to make it shorter. Does that make it better? | o-obvio-antes-do-sofisticado | desafios-pythonicos lesson 8 at 0:02:39 and 0:02:44 |

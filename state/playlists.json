@@ -88,7 +88,8 @@
       "title": "Pacote de Desafios Pythônicos",
       "tier": "2",
       "videos": 15,
-      "hours": 0.9
+      "hours": 0.9,
+      "course": "desafios-pythonicos"
     },
     {
       "id": "PLeKXYyZCJHxeM2DehynN89gk1apr1EwQz",
