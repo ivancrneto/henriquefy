@@ -27,3 +27,6 @@ id listed here exists under `kb/`; the answers are checked by hand (manual eval)
 | We ship one big release every quarter and the client keeps saying it's not what they asked for. What would he change? | eficacia-acima-de-eficiencia | protagonista-da-carreira lesson 2 at 0:06:41 and 0:07:05 |
 | Our CI fails under 100% coverage and the team spends days testing getters while the billing code has one test. What would he change? | teste-o-minimo-pelo-risco | labirinto-dos-testes lesson 2 at 0:04:47 and lesson 3 at 0:16:34 |
 | Every time I refactor a service, half my tests break because they assert which helpers were called. What does he say? | teste-o-efeito-nao-o-codigo | labirinto-dos-testes lesson 4 at 0:07:24 and lesson 7 at 0:00:20 |
+| My manager says the feature must ship by the 30th and I know it can't. Should I push back on the date? | discuta-o-problema-nao-o-prazo | cumprir-qualquer-prazo lesson 7 at 0:25:50 and 0:27:36 |
+| I'm a mid-level dev with no title; the team is stuck and the lead is absent. Is it my place to step in? | liderar-e-remover-obstaculos | cumprir-qualquer-prazo lesson 5 at 0:02:03 and 0:16:58 |
+| I keep asking the client's IT team for VPN access and it never arrives. How would he phrase the request? | feche-numa-acao-com-data | cumprir-qualquer-prazo lesson 6 at 0:06:18 and 0:11:47 |
